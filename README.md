@@ -164,9 +164,11 @@ apps/api/
 ```bash
 # API Base URL
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
-
-# Other environment variables
-# (see .env.example for complete list)
+NEXT_PUBLIC_TINY_MCE_API_KEY=your_tiny_mce_api_key_here
+NEXT_PUBLIC_DEFAULT_LANGUAGE=de
+NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
+NEXT_PUBLIC_ACTIVE_SOUND=true
+TZ=Europe/Berlin
 ```
 
 #### API Server (`.env`)

@@ -130,6 +130,7 @@ jobs:
           echo "NEXT_PUBLIC_ACTIVE_SOUND=true" >> .env.production
           echo "TURBO_TELEMETRY_DISABLED=1" >> .env.production
           echo "NEXT_TELEMETRY_DISABLED=1" >> .env.production
+          echo "NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}" >> .env.production
           cat .env.production
       - name: Build application with Turbo
         run: npm run build
