@@ -1,0 +1,51 @@
+{
+  "name": "dashboard-root",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@11.6.3",
+  "description": "Full-stack Management Dashboard for todos, finances, and contacts. Built with Next.js 15, React 19, TypeScript, and modern glassmorphism design.",
+  "keywords": [
+    "dashboard",
+    "management",
+    "todo",
+    "productivity",
+    "multi-language"
+  ],
+  "author": {
+    "name": "Munir Mardinli",
+    "url": "https://github.com/munirmardinli"
+  },
+  "contributors": [
+    {
+      "name": "Munir Mardinli",
+      "url": "https://github.com/munirmardinli"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/munirmardinli/dashboard#readme",
+  "bugs": {
+    "url": "https://github.com/munirmardinli/dashboard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/munirmardinli/dashboard.git"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check"
+  },
+  "devDependencies": {
+    "turbo": "2.6.1",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

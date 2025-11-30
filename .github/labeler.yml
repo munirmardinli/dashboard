@@ -1,0 +1,82 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
+  - changed-files:
+      - any-glob-to-any-file: "README.md"
+  - changed-files:
+      - any-glob-to-any-file: "SECURITY.md"
+
+coding:
+  - changed-files:
+      - any-glob-to-any-file: "src/**/*.ts"
+      - any-glob-to-any-file: "src/**/*.tsx"
+
+components:
+  - changed-files:
+      - any-glob-to-any-file: "src/components/**"
+
+stores:
+  - changed-files:
+      - any-glob-to-any-file: "src/stores/**"
+
+actions:
+  - changed-files:
+      - any-glob-to-any-file: "src/actions/**"
+
+utils:
+  - changed-files:
+      - any-glob-to-any-file: "src/utils/**"
+
+types:
+  - changed-files:
+      - any-glob-to-any-file: "src/types/**"
+
+styles:
+  - changed-files:
+      - any-glob-to-any-file: "src/styles/**"
+
+app:
+  - changed-files:
+      - any-glob-to-any-file: "src/app/**"
+
+calendar:
+  - changed-files:
+      - any-glob-to-any-file: "src/calendar/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.test.*"
+  - changed-files:
+      - any-glob-to-any-file: "**/*.spec.*"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: "package.json"
+  - changed-files:
+      - any-glob-to-any-file: "package-lock.json"
+
+configuration:
+  - changed-files:
+      - any-glob-to-any-file: "*.config.*"
+  - changed-files:
+      - any-glob-to-any-file: "tsconfig.json"
+  - changed-files:
+      - any-glob-to-any-file: "next.config.*"
+  - changed-files:
+      - any-glob-to-any-file: ".env*"
+  - changed-files:
+      - any-glob-to-any-file: "src/types/dotenv.d.ts"
+
+workflow:
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**"
+  - changed-files:
+      - any-glob-to-any-file: ".github/actions/**"
+  - changed-files:
+      - any-glob-to-any-file: "Dockerfile*"
+  - changed-files:
+      - any-glob-to-any-file: "docker-compose*.yml"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*.yml"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*.yaml"

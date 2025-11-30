@@ -1,0 +1,60 @@
+# dependencies
+/node_modules
+**/node_modules
+
+# next.js
+/.next/
+apps/ui/.next/
+apps/docs/.next/
+apps/docs/public/
+apps/homelab/.next/
+apps/homelab/public/
+
+# API build
+apps/api/dist/
+
+# Synology NAS metadata
+@eaDir/
+@eaDir
+SYNOINDEX_MEDIA_INFO
+SYNOINDEX_MEDIA_INFO/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# public files
+public/*
+!public/de.json
+!public/dashboard.png
+
+.vscode/
+.cursor/
+tsconfig.tsbuildinfo
+
+# Kubernetes Secrets (NIEMALS ins Git committen!)
+k8s/secrets.yaml
+k8s/secret.yml
+*.secret.yaml
+*.secret.yml
+
+# Turborepo
+.turbo
+
+# API public directory (contains generated data files)
+apps/api/public/
+out/
+
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+.env.production.local
+.env.development.local
+.env.test.local
