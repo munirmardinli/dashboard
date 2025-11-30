@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-alpine as api
+FROM node:20-alpine as api
 
 RUN apk add --no-cache wget ca-certificates
 
@@ -36,7 +36,7 @@ CMD ["nginx", "-g", "daemon off;"]
 # ============================================================================
 # Stage 3: Final Production Image (combined API + UI)
 # ============================================================================
-FROM node:22-alpine as production
+FROM node:20-alpine as production
 
 # Install nginx, supervisor and other dependencies
 RUN apk add --no-cache \
