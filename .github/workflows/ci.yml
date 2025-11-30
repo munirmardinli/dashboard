@@ -11,15 +11,9 @@ env:
   NPM_VERSION: "24"
   REGISTRY_URL: "https://npm.pkg.github.com"
   TRIVY_VERSION: "0.64.1"
-  REPO_NAME: ${{ github.event.repository.name }}
-  IMAGE_TAG: latest
   DOCKER_USERNAME: mardinlimunir
   DOCKER_IMAGE_NAME: mardinlimunir/${{ github.event.repository.name }}
   DOCKER_REGISTRY: docker.io
-  # Server Configuration
-  PORT: "4011"
-  TZ: "Europe/Berlin"
-  NEXT_PUBLIC_UI_URL: "https://dashboard.homelab-prod.synology.me"
 
 permissions:
   contents: write
@@ -115,23 +109,23 @@ jobs:
       - name: Production environment variables
         working-directory: apps/api
         run: |
-          echo "NODE_ENV=production" >> .env
-          echo "PORT=${{ env.PORT }}" >> .env
-          echo "TZ=${{ env.TZ }}" >> .env
-          echo "NEXT_PUBLIC_DEFAULT_LANGUAGE=de" >> .env
-          cat .env
+          cat <<EOF > .env
+          NODE_ENV=production
+          PORT=4011
+          TZ=Europe/Berlin
+          NEXT_PUBLIC_DEFAULT_LANGUAGE=de
+          EOF
       - name: Create .env.production for UI
         working-directory: apps/ui
         run: |
-          echo "NODE_ENV=production" >> .env.production
-          echo "TZ=${{ env.TZ }}" >> .env.production
-          echo "NEXT_PUBLIC_DEFAULT_LANGUAGE=de" >> .env.production
-          echo "NEXT_PUBLIC_DEFAULT_THEME_MODE=dark" >> .env.production
-          echo "NEXT_PUBLIC_ACTIVE_SOUND=true" >> .env.production
-          echo "TURBO_TELEMETRY_DISABLED=1" >> .env.production
-          echo "NEXT_TELEMETRY_DISABLED=1" >> .env.production
-          echo "NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}" >> .env.production
-          cat .env.production
+          cat <<EOF > .env.production
+          NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
+          NEXT_PUBLIC_DEFAULT_LANGUAGE=de
+          NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
+          NEXT_PUBLIC_ACTIVE_SOUND=true
+          NODE_ENV=production
+          TZ=Europe/Berlin
+          EOF
       - name: Build application with Turbo
         run: npm run build
       - name: Upload UI build artifact (out)
@@ -268,7 +262,7 @@ jobs:
         with:
           images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.IMAGE_TAG }}
+            type=raw,value=latest
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
