@@ -13,7 +13,8 @@ env:
   TRIVY_VERSION: "0.64.1"
   REPO_NAME: ${{ github.event.repository.name }}
   IMAGE_TAG: latest
-  DOCKER_IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+  DOCKER_USERNAME: mardinlimunir
+  DOCKER_IMAGE_NAME: ${{ env.DOCKER_USERNAME }}/${{ github.event.repository.name }}
   DOCKER_REGISTRY: docker.io
   # Server Configuration
   PORT: "4011"
@@ -188,6 +189,8 @@ jobs:
           # Secrets are provided at runtime, not baked into image
           AVD-DS-0031:ICLOUD_PASSWORD
           AVD-DS-0031:GEMINI_API_KEY
+          # Ignore NPM's internal glob vulnerability
+          CVE-2025-64756
           EOF
       - name: Install Trivy
         uses: aquasecurity/setup-trivy@v0.2.4
@@ -250,7 +253,7 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: mardinlimunir
+          username: ${{ env.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: install dependencies production
         working-directory: apps/api
