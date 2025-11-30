@@ -3,10 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "description": "Next.js UI für Dashboard-Management",
+  "browserslist": [
+    "chrome 111",
+    "edge 111",
+    "firefox 111",
+    "safari 16.4"
+  ],
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
-    "start": "npx serve@latest out",
+    "start": "npx serve@latest dist",
     "lint": "echo 'No linting configured'",
     "type-check": "tsc --noEmit"
   },
@@ -21,6 +27,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@next/bundle-analyzer": "16.0.6",
     "typescript": "^5"
   }
 }

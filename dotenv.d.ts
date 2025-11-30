@@ -16,6 +16,11 @@ declare namespace NodeJS {
 			*/
 		PORT: string;
 		/**
+			* Enable bundle analyzer
+			* @default false
+			*/
+		ANALYZE: string;
+		/**
 			* The directory where the assets are stored
 			* @example apps/api/public
 			*/

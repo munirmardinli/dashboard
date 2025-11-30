@@ -130,11 +130,11 @@ jobs:
           EOF
       - name: Build application with Turbo
         run: npm run build
-      - name: Upload UI build artifact (out)
+      - name: Upload UI build artifact (dist)
         uses: actions/upload-artifact@v5
         with:
-          name: ui-out
-          path: apps/ui/out
+          name: ui-dist
+          path: apps/ui/dist
           retention-days: 1
       - name: Upload API build artifact (dist)
         uses: actions/upload-artifact@v5
@@ -148,11 +148,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Download UI build artifact (out)
+      - name: Download UI build artifact (dist)
         uses: actions/download-artifact@v6
         with:
-          name: ui-out
-          path: apps/ui/out
+          name: ui-dist
+          path: apps/ui/dist
       - name: Download API build artifact (dist)
         uses: actions/download-artifact@v6
         with:
@@ -168,11 +168,11 @@ jobs:
         with:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
-      - name: Download UI build artifact (out)
+      - name: Download UI build artifact (dist)
         uses: actions/download-artifact@v6
         with:
-          name: ui-out
-          path: apps/ui/out
+          name: ui-dist
+          path: apps/ui/dist
       - name: Download API build artifact (dist)
         uses: actions/download-artifact@v6
         with:
@@ -236,11 +236,11 @@ jobs:
         with:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
-      - name: Download UI build artifact (out)
+      - name: Download UI build artifact (dist)
         uses: actions/download-artifact@v6
         with:
-          name: ui-out
-          path: apps/ui/out
+          name: ui-dist
+          path: apps/ui/dist
       - name: Download API build artifact (dist)
         uses: actions/download-artifact@v6
         with:

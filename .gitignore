@@ -12,6 +12,7 @@ apps/homelab/public/
 
 # API build
 apps/api/dist/
+apps/ui/dist/
 
 # Synology NAS metadata
 @eaDir/

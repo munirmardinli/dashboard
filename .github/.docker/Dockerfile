@@ -28,7 +28,7 @@ RUN apk update && apk add --no-cache wget ca-certificates
 
 RUN mkdir -p /etc/nginx/http.d
 
-COPY apps/ui/out /usr/share/nginx/html
+COPY apps/ui/dist /usr/share/nginx/html
 COPY apps/ui/default.conf /etc/nginx/http.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
