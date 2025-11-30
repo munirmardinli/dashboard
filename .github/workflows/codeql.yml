@@ -1,0 +1,65 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/ui/**"
+      - "apps/api/**"
+      - "package.json"
+      - "tsconfig.json"
+      - ".github/**"
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 0"
+
+env:
+  NPM_VERSION: "22"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript-typescript"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NPM_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+        continue-on-error: true
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          TURBO_TELEMETRY_DISABLED: 1
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{matrix.language}}"

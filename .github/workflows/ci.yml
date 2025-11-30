@@ -125,6 +125,8 @@ jobs:
           NEXT_PUBLIC_ACTIVE_SOUND=true
           NODE_ENV=production
           TZ=Europe/Berlin
+          NEXT_TELEMETRY_DISABLED=1
+          TURBO_TELEMETRY_DISABLED=1
           EOF
       - name: Build application with Turbo
         run: npm run build
