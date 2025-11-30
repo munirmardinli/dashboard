@@ -14,7 +14,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   IMAGE_TAG: latest
   DOCKER_IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
-  DOCKER_REGISTRY: ghcr.io
+  DOCKER_REGISTRY: docker.io
   # Server Configuration
   PORT: "4011"
   TZ: "Europe/Berlin"
@@ -215,10 +215,10 @@ jobs:
           --exit-code 1 \
           --ignorefile .trivyignore
       - name: Build Docker image
-        run: docker build -f .github/.docker/Dockerfile -t "https://dashboard.homelab-prod.synology.me" .
+        run: docker build -f .github/.docker/Dockerfile -t dashboard:latest .
       - name: Scan Docker image
         run: |
-          trivy image dashboard \
+          trivy image dashboard:latest \
           --scanners vuln \
           --severity HIGH,CRITICAL \
           --ignore-unfixed \
@@ -247,13 +247,12 @@ jobs:
           path: apps/api/dist
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.DOCKER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: install dependencies production 
+          username: mardinlimunir
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: install dependencies production
         working-directory: apps/api
         run: npm install --omit=dev
       - name: Extract metadata
