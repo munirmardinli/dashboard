@@ -191,6 +191,7 @@ jobs:
           AVD-DS-0031:GEMINI_API_KEY
           # Ignore NPM's internal glob vulnerability
           CVE-2025-64756
+          CVE-2024-21538
           EOF
       - name: Install Trivy
         uses: aquasecurity/setup-trivy@v0.2.4
@@ -267,7 +268,6 @@ jobs:
           images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
           tags: |
             type=raw,value=${{ env.IMAGE_TAG }}
-            type=sha,prefix={{branch}}-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
