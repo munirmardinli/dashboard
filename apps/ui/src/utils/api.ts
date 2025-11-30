@@ -1,22 +1,22 @@
-/**
-	* API Client für Backend-Kommunikation
-	*/
 
-// In Production: Wenn NEXT_PUBLIC_API_URL leer ist, verwende relative Pfade (werden über Nginx proxied)
-// In Dev: Verwende localhost:4011 oder die gesetzte URL
+
+
+
+
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4011');
 
-// GenericItem ist ein globaler Type aus globals.d.ts (BaseItem)
+
 
 async function fetchAPI<T>(
 	endpoint: string,
 	options?: RequestInit
 ): Promise<{ success: true; data: T } | { success: false; error: string }> {
 	try {
-		// Stelle sicher, dass endpoint mit / beginnt
+		
 		const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-		// Wenn API_URL leer ist (Production mit Nginx Proxy), verwende relative URL
+		
 		const url = API_URL
 			? `${API_URL.replace(/\/$/, '')}${normalizedEndpoint}`
 			: normalizedEndpoint;
@@ -54,21 +54,21 @@ async function fetchAPI<T>(
 	}
 }
 
-/**
-	* CRUD-Operationen für Daten
-	*/
+
+
+
 export const DataAPI = {
-	/**
-		* Alle Items eines Datentyps abrufen
-		*/
+	
+
+
 	async getItems<T extends BaseItem>(dataType: string): Promise<T[]> {
 		const result = await fetchAPI<T[]>(`/api/data/${dataType}`);
 		return result.success ? result.data : [];
 	},
 
-	/**
-		* Ein neues Item erstellen
-		*/
+	
+
+
 	async createItem<T extends BaseItem>(
 		dataType: string,
 		item: Partial<T>
@@ -80,9 +80,9 @@ export const DataAPI = {
 		return result.success ? result.data : null;
 	},
 
-	/**
-		* Ein Item aktualisieren
-		*/
+	
+
+
 	async updateItem<T extends BaseItem>(
 		dataType: string,
 		id: string,
@@ -95,9 +95,9 @@ export const DataAPI = {
 		return result.success ? result.data : null;
 	},
 
-	/**
-		* Ein Item archivieren (soft delete)
-		*/
+	
+
+
 	async archiveItem(dataType: string, id: string): Promise<boolean> {
 		const result = await fetchAPI<{ message: string }>(`/api/data/${dataType}/${id}`, {
 			method: "DELETE",
@@ -106,46 +106,46 @@ export const DataAPI = {
 	},
 };
 
-/**
-	* Config-Operationen
-	*/
+
+
+
 export const ConfigAPI = {
-	/**
-		* Übersetzungen abrufen
-		*/
+	
+
+
 	async getTranslations(language: string): Promise<Record<string, unknown>> {
 		const result = await fetchAPI<Record<string, unknown>>(`/api/config/translations/${language}`);
 		return result.success ? result.data : {};
 	},
 
-	/**
-		* Vollständige Konfiguration abrufen
-		*/
+	
+
+
 	async getFullConfig(): Promise<BasicConfig> {
 		const result = await fetchAPI<BasicConfig>(`/api/config`);
 		return result.success ? result.data : ({} as BasicConfig);
 	},
 
-	/**
-		* DataType-Konfiguration abrufen
-		*/
+	
+
+
 	async getDataTypeConfig(dataType: string): Promise<DataTypeConfig | null> {
 		const result = await fetchAPI<DataTypeConfig>(`/api/config/dataType/${dataType}`);
 		return result.success ? result.data : null;
 	},
 
-	/**
-		* Navigation-Konfiguration abrufen
-		*/
+	
+
+
 	async getNavigationConfig(): Promise<NavigationConfig | null> {
 		const result = await fetchAPI<NavigationConfig>(`/api/config/navigation`);
 		return result.success ? result.data : null;
 	},
 };
 
-/**
-	* Docs-Operationen
-	*/
+
+
+
 export const DocsAPI = {
 	async getAllDocs(): Promise<DocItem[]> {
 		const result = await fetchAPI<DocItem[]>(`/api/docs`);

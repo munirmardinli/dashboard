@@ -58,7 +58,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 	try {
 		handleCORS(req, res);
 
-		// OPTIONS Preflight Request für CORS
+		
 		if (req.method === "OPTIONS") {
 			res.writeHead(200, {
 				"Access-Control-Allow-Origin": "*",

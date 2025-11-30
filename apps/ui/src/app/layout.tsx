@@ -1,6 +1,5 @@
 "use client";
 import { ReactNode, useEffect } from "react";
-import { Navigation } from "@/app/default";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";

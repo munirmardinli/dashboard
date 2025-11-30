@@ -1,8 +1,3 @@
-/**
-	* ICS (iCalendar) Types für native ICS-Generierung
-	* RFC 5545 Standard
-	*/
-
 declare global {
 	interface ICSAlarm {
 		type: "audio" | "display" | "email";

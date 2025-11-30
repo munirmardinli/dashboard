@@ -65,7 +65,7 @@ export async function callGeminiAPI(
 
 		const data = (await response.json()) as GeminiAPIResponse;
 
-		// Prüfe auf API-Fehler
+		
 		if (data.error) {
 			return {
 				success: false,
@@ -74,7 +74,7 @@ export async function callGeminiAPI(
 		}
 
 
-		// Extrahiere Text aus der Antwort
+		
 		const candidates = data.candidates;
 
 		if (candidates && candidates.length > 0) {
@@ -83,18 +83,18 @@ export async function callGeminiAPI(
 				return { success: false, error: "No candidate found in response" };
 			}
 
-			// Prüfe auf finishReason (z.B. MAX_TOKENS, SAFETY, etc.)
+			
 			const finishReason = (firstCandidate as { finishReason?: string })?.finishReason;
 			const parts = firstCandidate.content?.parts;
 
-			// Versuche zuerst Text zu extrahieren, auch wenn finishReason MAX_TOKENS ist
+			
 			if (parts && parts.length > 0) {
 				const firstPart = parts[0];
 				if (firstPart) {
 					const text = firstPart.text;
 
 					if (text && typeof text === "string" && text.trim().length > 0) {
-						// Wenn Text vorhanden ist, auch bei MAX_TOKENS zurückgeben (mit Warnung)
+						
 						if (finishReason === "MAX_TOKENS") {
 							console.warn("⚠️  Warnung: Antwort wurde bei MAX_TOKENS abgeschnitten, aber Text wurde extrahiert.");
 						}
@@ -113,7 +113,7 @@ export async function callGeminiAPI(
 				}
 			}
 
-			// Wenn kein Text vorhanden ist, prüfe finishReason
+			
 			if (finishReason === "MAX_TOKENS") {
 				return {
 					success: false,
@@ -133,7 +133,7 @@ export async function callGeminiAPI(
 				};
 			}
 
-			// Wenn keine parts vorhanden sind
+			
 			if (!parts || parts.length === 0) {
 				return {
 					success: false,
@@ -142,7 +142,7 @@ export async function callGeminiAPI(
 			}
 		}
 
-		// Fallback: Versuche alternative Strukturen
+		
 		const errorDetails = {
 			hasCandidates: !!candidates,
 			candidatesLength: candidates?.length || 0,

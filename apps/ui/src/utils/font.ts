@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 
 export const FontCampany = localFont({
-	src: "../app/nextjsFont.ttf",
+	src: "../../public/nextjsFont.ttf",
 	display: "auto",
 });
