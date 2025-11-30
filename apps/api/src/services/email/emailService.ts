@@ -297,8 +297,12 @@ class EmailService {
 	}
 
 	private static stripHtml(html: string): string {
+		let prev;
+		do {
+			prev = html;
+			html = html.replace(/<[^>]*>/g, "");
+		} while (html !== prev);
 		return html
-			.replace(/<[^>]*>/g, "")
 			.replace(/&(nbsp|amp|lt|gt|quot|#039);/g, (_, m) =>
 				m === "nbsp" ? " " : m === "amp" ? "&" : m === "lt" ? "<" : m === "gt" ? ">" : m === "quot" ? '"' : "'"
 			)
