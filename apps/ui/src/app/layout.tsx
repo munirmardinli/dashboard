@@ -62,21 +62,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${theme.divider}; borderRadius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: ${theme.textSec}; }
-
-        .main-content {
-          flex-grow: 1;
-          padding: 24px;
-          width: 100%;
-          margin-left: 0;
-          min-height: 100vh;
-          transition: margin 0.2s;
-        }
-        @media (min-width: 1024px) {
-          .main-content {
-            width: calc(100% - 280px);
-            margin-left: 280px;
-          }
-        }
       `;
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };

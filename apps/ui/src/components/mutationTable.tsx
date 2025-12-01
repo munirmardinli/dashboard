@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, useTransition, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Save, X, Trash, Plus, Eye, EyeOff } from "lucide-react";
+import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check } from "lucide-react";
 
 import { ConfigAPI, DataAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
@@ -40,6 +40,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
+  const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>({});
   const isSavingRef = useRef(false);
   const [, startTransition] = useTransition();
@@ -508,12 +509,30 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
             style={outlinedInputStyle}
           />
           {field.type === 'password' && (
-            <button
-              onClick={() => setShowPassword(p => ({ ...p, [field.key]: !p[field.key] }))}
-              style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec }}
-            >
-              {showPassword[field.key] ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
+            <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '8px' }}>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  const val = formData[field.key];
+                  if (val) {
+                    navigator.clipboard.writeText(String(val));
+                    setCopiedFields(p => ({ ...p, [field.key]: true }));
+                    setSnack(t("ui.copiedToClipboard"), 'success');
+                    setTimeout(() => setCopiedFields(p => ({ ...p, [field.key]: false })), 2000);
+                  }
+                }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                title={t("ui.copyPassword")}
+              >
+                {copiedFields[field.key] ? <Check size={20} /> : <Copy size={20} />}
+              </button>
+              <button
+                onClick={(e) => { e.preventDefault(); setShowPassword(p => ({ ...p, [field.key]: !p[field.key] })); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+              >
+                {showPassword[field.key] ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           )}
         </div>
         {error ? (
@@ -528,9 +547,9 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   };
   const fields = isEdit ? config.update : config.create;
   return (
-    <div style={{ minHeight: '100vh', padding: isDesktop ? '24px' : '12px', background: theme.bg }}>
+    <div style={{ padding: isDesktop ? '24px' : '12px', background: theme.bg }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ marginBottom: isDesktop ? '24px' : '16px' }}>
+        <div style={{ marginBottom: isDesktop ? '24px' : '16px', padding: isDesktop ? '0 24px' : '0 16px' }}>
           <h1 style={{ fontSize: isDesktop ? '1.5rem' : '1.25rem', fontWeight: 400, color: theme.text, margin: 0 }}>
             {isEdit ? `${t("ui.editSuffix")} ${t(`pathNames.${dataType}`)}` : `${t("ui.createSuffix")} ${t(`pathNames.${dataType}`)}`}
           </h1>
