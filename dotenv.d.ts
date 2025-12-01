@@ -16,6 +16,21 @@ declare namespace NodeJS {
 			*/
 		PORT: string;
 		/**
+			* Telegram Bot Token
+			* @example 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ
+			*/
+		TELEGRAM_BOT_TOKEN: string;
+		/**
+			* Telegram Chat ID
+			* @example 123456789
+			*/
+		TELEGRAM_CHAT_ID: string;
+		/**
+			* Telegram Bot Token
+			* @example 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ
+			*/
+		TELEGRAM_BOT_TOKEN: string;
+		/**
 			* Enable bundle analyzer
 			* @default false
 			*/

@@ -3,7 +3,7 @@ import path from "node:path";
 import { cwd } from "node:process";
 
 import { scheduleJob } from "../../utils/scheduler.js";
-import { sendTemplate } from "../email/emailService.js";
+import { sendTelegramMessage } from "../telegram/telegramService.js";
 import { generateTodoReminderContent } from "../gemini/geminiService.js";
 import { DataService } from "../data.js";
 import { ReminderHelper } from "../../utils/reminder.js";
@@ -180,7 +180,6 @@ export class TodoReminderScheduler {
 		categoryName: string
 	): Promise<void> {
 		try {
-			const reminderLabel = ReminderHelper.getReminderLabel(reminderType);
 			const todoStart = new Date(todo["start"] as string);
 			const todoEnd = new Date(todo["end"] as string);
 
@@ -209,14 +208,9 @@ export class TodoReminderScheduler {
 			const title = `Erinnerung: ${todo["title"]} - ${categoryName}`;
 
 			const apiKey = process.env.GEMINI_API_KEY!;
-			const recipientEmail = process.env.ICLOUD_EMAIL!;
 
 			if (!apiKey) {
 				throw new Error("GEMINI_API_KEY environment variable is not set");
-			}
-
-			if (!recipientEmail) {
-				throw new Error("ICLOUD_EMAIL environment variable is not set");
 			}
 
 			const content = await generateTodoReminderContent({
@@ -232,15 +226,7 @@ export class TodoReminderScheduler {
 				tone: "friendly",
 			});
 
-			const result = await sendTemplate(
-				recipientEmail,
-				title,
-				content,
-				{
-					title,
-					showSentDate: true,
-				}
-			);
+			const result = await sendTelegramMessage(title, content);
 
 			if (!result.success) {
 				console.error(`❌ Fehler beim Senden des Todo-Reminders: ${result.error}`);

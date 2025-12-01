@@ -35,7 +35,9 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "src/**/*.d.ts",
-    "../../dotenv.d.ts"
+    "../../dotenv.d.ts",
+    "dist/types/**/*.ts",
+    "dist/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -400,12 +400,18 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                   "table",
                   "code",
                   "autoresize",
+                  "checklist",
+                  "autosave",
+                  "codesample",
+                  "directionality",
+                  "help"
                 ],
                 toolbar:
                   "undo redo | bold italic underline strikethrough | " +
-                  "subscript superscript | numlist bullist | " +
+                  "subscript superscript | numlist bullist checklist | " +
                   "alignleft aligncenter alignright alignjustify | " +
-                  "blockquote | link table | code",
+                  "blockquote | link table | codesample | " +
+                  "ltr rtl | code | help",
                 style_formats: [
                   { title: "Absatz", block: "p" },
                   { title: "Überschrift 1", block: "h1" },

@@ -1,6 +1,6 @@
 import type { CalendarService } from "../calendar/calendarService.js";
 import { CalendarBase } from "../calendar/calendarBase.js";
-import { sendTemplate } from "../email/emailService.js";
+import { sendTelegramMessage } from "../telegram/telegramService.js";
 import { generateReminderContent } from "../gemini/geminiService.js";
 import { ReminderHelper } from "../../utils/reminder.js";
 import { scheduleJob } from "../../utils/scheduler.js";
@@ -109,7 +109,6 @@ export class ReminderScheduler {
 
 	private async sendReminder(event: CalendarBase, category: string, reminderType: string): Promise<void> {
 		try {
-			const reminderLabel = ReminderHelper.getReminderLabel(reminderType);
 			const eventStart = new Date(event.start);
 			const eventEnd = new Date(event.end);
 
@@ -138,14 +137,9 @@ export class ReminderScheduler {
 			const title = `Erinnerung: ${event.title} - ${categoryName}`;
 
 			const apiKey = process.env.GEMINI_API_KEY;
-			const recipientEmail = process.env.ICLOUD_EMAIL;
 
 			if (!apiKey) {
 				throw new Error("GEMINI_API_KEY environment variable is not set");
-			}
-
-			if (!recipientEmail) {
-				throw new Error("ICLOUD_EMAIL environment variable is not set");
 			}
 
 			const content = await generateReminderContent({
@@ -160,15 +154,7 @@ export class ReminderScheduler {
 				tone: "friendly",
 			});
 
-			const result = await sendTemplate(
-				recipientEmail,
-				title,
-				content,
-				{
-					title,
-					showSentDate: true,
-				}
-			);
+			const result = await sendTelegramMessage(title, content);
 
 			if (!result.success) {
 				console.error(`❌ Fehler beim Senden des Reminders: ${result.error}`);

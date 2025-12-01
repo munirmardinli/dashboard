@@ -1,7 +1,6 @@
 import { dataRoutes } from "./data.js";
 import { calendarRoutes } from "./calendar.js";
 import { configRoutes } from "./config.js";
-import { emailRoutes } from "./email.js";
 import { geminiRoutes } from "./gemini.js";
 import { schedulerRoutes } from "./scheduler.js";
 
@@ -9,7 +8,6 @@ export const routes: Route[] = [
 	...dataRoutes,
 	...calendarRoutes,
 	...configRoutes,
-	...emailRoutes,
 	...geminiRoutes,
 	...schedulerRoutes,
 	{
