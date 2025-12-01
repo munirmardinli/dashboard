@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, useTransition, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check } from "lucide-react";
+import Link from "next/link";
+import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check, ExternalLink } from "lucide-react";
 
 import { ConfigAPI, DataAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
@@ -493,13 +494,49 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         </div>
       );
     }
-
+    if (field.type === "url") {
+      return (
+        <div key={field.key} style={containerStyle}>
+          <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text"
+              value={formData[field.key] ?? ""}
+              onChange={e => handleInputChange(field.key, e.target.value)}
+              onFocus={() => setFocusedFields(p => ({ ...p, [field.key]: true }))}
+              onBlur={() => setFocusedFields(p => ({ ...p, [field.key]: false }))}
+              placeholder={isFocused ? placeholder : ""}
+              style={{ ...outlinedInputStyle, paddingRight: '40px' }}
+            />
+            {formData[field.key] && (
+              <Link
+                href={formData[field.key]}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', color: theme.textSec }}
+                title={t("ui.openLink")}
+              >
+                <ExternalLink size={20} />
+              </Link>
+            )}
+          </div>
+          {error ? (
+            <p style={helperTextStyle}>{error}</p>
+          ) : (
+            (!formData[field.key] || String(formData[field.key]).length <= 0) && field.helperText && (
+              <p style={{ ...helperTextStyle, color: theme.textSec }}>{field.helperText}</p>
+            )
+          )}
+        </div>
+      );
+    }
 
     return (
       <div key={field.key} style={containerStyle}>
         <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
         <div style={{ position: 'relative' }}>
           <input
+
             type={field.type === 'password' && !showPassword[field.key] ? 'password' : (field.type === 'number' ? 'number' : 'text')}
             value={formData[field.key] ?? ""}
             onChange={e => handleInputChange(field.key, e.target.value)}
