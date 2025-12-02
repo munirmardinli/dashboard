@@ -26,11 +26,6 @@ declare namespace NodeJS {
 			*/
 		TELEGRAM_CHAT_ID: string;
 		/**
-			* Telegram Bot Token
-			* @example 1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ
-			*/
-		TELEGRAM_BOT_TOKEN: string;
-		/**
 			* Enable bundle analyzer
 			* @default false
 			*/
@@ -75,31 +70,6 @@ declare namespace NodeJS {
 			* @default dark
 			*/
 		NEXT_PUBLIC_DEFAULT_THEME_MODE: string;
-		/**
-			* iCloud Mail E-Mail-Adresse für SMTP-Versand
-			* @example deine-email@icloud.com
-			*/
-		ICLOUD_EMAIL: string;
-		/**
-			* iCloud Mail app-spezifisches Passwort für SMTP-Versand
-			* Wird erstellt unter https://appleid.apple.com/account/manage
-			*/
-		ICLOUD_PASSWORD: string;
-		/**
-			* iCloud Mail SMTP-Host
-			* @default smtp.mail.me.com
-			*/
-		ICLOUD_SMTP_HOST: string;
-		/**
-			* iCloud Mail SMTP-Port
-			* @default 587
-			*/
-		ICLOUD_SMTP_PORT: string;
-		/**
-			* iCloud Mail SMTP-Secure
-			* @default false
-			*/
-		ICLOUD_SMTP_SECURE: string;
 		/**
 			* Google Gemini API Key für KI-Textgenerierung
 			* @example AIzaSy...

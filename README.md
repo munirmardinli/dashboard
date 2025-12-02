@@ -183,11 +183,6 @@ NEXT_PUBLIC_CALENDAR_DATA_DIR=public/calendar
 NEXT_PUBLIC_CALENDAR_ICS_DIR=public/ics
 GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_MODEL=
-ICLOUD_EMAIL=your_email@icloud.com
-ICLOUD_PASSWORD=your_app_specific_password
-ICLOUD_SMTP_HOST=smtp.mail.me.com
-ICLOUD_SMTP_PORT=587
-ICLOUD_SMTP_SECURE=false
 ```
 
 ### Turborepo Configuration

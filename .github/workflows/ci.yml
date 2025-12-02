@@ -183,8 +183,6 @@ jobs:
           cat > .trivyignore << EOF
           # Ignore known false positives
           AVD-DS-0002
-          # Secrets are provided at runtime, not baked into image
-          AVD-DS-0031:ICLOUD_PASSWORD
           AVD-DS-0031:GEMINI_API_KEY
           # Ignore NPM's internal glob vulnerability
           CVE-2025-64756
