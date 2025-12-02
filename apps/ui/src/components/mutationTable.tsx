@@ -222,9 +222,9 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       const arrayData = JSON.parse(formData[field.key] as string || "[]");
       const arrayConfig = field.arrayConfig || { itemLabel: "", fields: [] };
       return (
-        <div key={field.key} style={{ gridColumn: 'span 12', marginTop: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={{ fontSize: '1rem', color: theme.text, fontWeight: 500 }}>{label}</label>
+        <div key={field.key} style={{ gridColumn: 'span 12', marginTop: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <label style={{ fontSize: '1.125rem', color: theme.text, fontWeight: 500 }}>{label}</label>
             <button
               type="button"
               onClick={() => {
@@ -233,33 +233,83 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               }}
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '8px 16px', borderRadius: '8px', border: 'none',
-                background: `${theme.primary}1a`, color: theme.primary,
-                cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500
+                padding: '10px 20px', borderRadius: '8px', border: 'none',
+                background: theme.primary, color: '#fff',
+                cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
               }}
             >
-              <Plus size={16} /> {t("ui.addSuffix")}
+              <Plus size={18} /> {t("ui.addSuffix")}
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fill, minmax(350px, 1fr))' : '1fr', gap: '16px' }}>
             {arrayData.map((item: any, idx: number) => (
-              <div key={idx} style={{ position: 'relative', padding: '16px', borderRadius: '8px', border: `1px solid ${theme.divider}`, background: theme.bg }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newData = [...arrayData];
-                    newData.splice(idx, 1);
-                    handleInputChange(field.key, JSON.stringify(newData));
-                  }}
-                  style={{
-                    position: 'absolute', top: '8px', right: '8px',
-                    background: 'none', border: 'none', color: theme.textSec,
-                    cursor: 'pointer', padding: '4px'
-                  }}
-                >
-                  <X size={16} />
-                </button>
-                <div style={{ display: 'grid', gap: '16px' }}>
+              <div key={idx} style={{
+                position: 'relative',
+                borderRadius: '12px',
+                border: `1px solid ${theme.divider}`,
+                background: theme.paper,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                overflow: 'hidden',
+                transition: 'all 0.2s ease',
+              }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{
+                  padding: '12px 16px',
+                  background: `${theme.primary}08`,
+                  borderBottom: `1px solid ${theme.divider}`,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 500, color: theme.text }}>
+                    {arrayConfig.itemLabel || t("ui.item")} #{idx + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newData = [...arrayData];
+                      newData.splice(idx, 1);
+                      handleInputChange(field.key, JSON.stringify(newData));
+                    }}
+                    style={{
+                      background: 'none', border: 'none',
+                      color: theme.textSec,
+                      cursor: 'pointer', padding: '4px',
+                      display: 'flex', alignItems: 'center',
+                      borderRadius: '4px',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#ef444410';
+                      e.currentTarget.style.color = '#ef4444';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'none';
+                      e.currentTarget.style.color = theme.textSec;
+                    }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div style={{ padding: '20px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                   {arrayConfig.fields.map(subField => {
                     const subLabel = getLabel(subField.key) || subField.label;
                     const subValue = item[subField.key];
@@ -267,23 +317,24 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                     const subIsFocused = focusedFields[`${field.key}-${idx}-${subField.key}`] || false;
 
                     return (
-                      <div key={subField.key} style={{ position: 'relative' }}>
+                      <div key={subField.key} style={{ position: 'relative', gridColumn: 'span 1' }}>
                         <label style={{
                           position: 'absolute', left: '14px',
                           top: (subIsFocused || subHasValue) ? '-9px' : '50%',
                           transform: (subIsFocused || subHasValue) ? 'translateY(0)' : 'translateY(-50%)',
                           fontSize: (subIsFocused || subHasValue) ? '0.75rem' : '1rem',
                           color: subIsFocused ? theme.primary : theme.textSec,
-                          background: (subIsFocused || subHasValue) ? theme.bg : 'transparent',
+                          background: (subIsFocused || subHasValue) ? theme.paper : 'transparent',
                           padding: '0 4px',
-                          transition: 'all 200ms',
+                          transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
                           pointerEvents: 'none',
-                          zIndex: 1
+                          zIndex: 1,
+                          fontWeight: 400,
                         }}>
                           {subLabel} {subField.required && <span style={{ color: '#d32f2f' }}>*</span>}
                         </label>
                         <input
-                          type={subField.type}
+                          type={subField.key === 'value' && !showPassword[`${field.key}-${idx}-value`] ? 'password' : subField.type}
                           value={subValue || ""}
                           onChange={e => {
                             const newData = [...arrayData];
@@ -292,12 +343,49 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                           }}
                           onFocus={() => setFocusedFields(p => ({ ...p, [`${field.key}-${idx}-${subField.key}`]: true }))}
                           onBlur={() => setFocusedFields(p => ({ ...p, [`${field.key}-${idx}-${subField.key}`]: false }))}
+                          placeholder={subIsFocused ? (subField.placeholder || '') : ''}
                           style={{
-                            width: '100%', padding: '12px 14px', borderRadius: '4px',
+                            width: '100%',
+                            padding: '14px',
+                            paddingRight: subField.key === 'value' ? '80px' : '14px',
+                            borderRadius: '4px',
                             border: `1px solid ${subIsFocused ? theme.primary : theme.divider}`,
-                            background: 'transparent', color: theme.text, outline: 'none'
+                            background: 'transparent',
+                            color: theme.text,
+                            outline: 'none',
+                            fontSize: '1rem',
+                            transition: 'border-color 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                            fontFamily: 'inherit',
                           }}
                         />
+                        {subField.key === 'value' && (
+                          <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '8px' }}>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const val = subValue;
+                                if (val) {
+                                  navigator.clipboard.writeText(String(val));
+                                  setCopiedFields(p => ({ ...p, [`${field.key}-${idx}-value`]: true }));
+                                  setSnack(t("ui.copiedToClipboard"), 'success');
+                                  setTimeout(() => setCopiedFields(p => ({ ...p, [`${field.key}-${idx}-value`]: false })), 2000);
+                                }
+                              }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[`${field.key}-${idx}-value`] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                              title={t("ui.copyPassword")}
+                            >
+                              {copiedFields[`${field.key}-${idx}-value`] ? <Check size={20} /> : <Copy size={20} />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); setShowPassword(p => ({ ...p, [`${field.key}-${idx}-value`]: !p[`${field.key}-${idx}-value`] })); }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                            >
+                              {showPassword[`${field.key}-${idx}-value`] ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -305,6 +393,19 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               </div>
             ))}
           </div>
+          {arrayData.length === 0 && (
+            <div style={{
+              padding: '40px 20px',
+              textAlign: 'center',
+              border: `2px dashed ${theme.divider}`,
+              borderRadius: '12px',
+              color: theme.textSec,
+            }}>
+              <p style={{ margin: 0, fontSize: '0.875rem' }}>
+                {t("ui.noFoundEvents")}
+              </p>
+            </div>
+          )}
         </div>
       );
     }
