@@ -638,19 +638,27 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       );
     }
 
+    const shouldShowCopyButton = formData[field.key] && (
+      ['tel', 'email', 'number'].includes(field.type) ||
+      (field.type === 'text' && field.copy === true)
+    );
+
     return (
       <div key={field.key} style={containerStyle}>
         <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
         <div style={{ position: 'relative' }}>
           <input
 
-            type={field.type === 'password' && !showPassword[field.key] ? 'password' : (field.type === 'number' ? 'number' : 'text')}
+            type={field.type === 'password' && !showPassword[field.key] ? 'password' : (field.type === 'number' ? 'number' : (field.type === 'email' ? 'email' : (field.type === 'tel' ? 'tel' : 'text')))}
             value={formData[field.key] ?? ""}
             onChange={e => handleInputChange(field.key, e.target.value)}
             onFocus={() => setFocusedFields(p => ({ ...p, [field.key]: true }))}
             onBlur={() => setFocusedFields(p => ({ ...p, [field.key]: false }))}
             placeholder={isFocused ? placeholder : ""}
-            style={outlinedInputStyle}
+            style={{
+              ...outlinedInputStyle,
+              paddingRight: (field.type === 'password' || shouldShowCopyButton) ? '50px' : '14px'
+            }}
           />
           {field.type === 'password' && (
             <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '8px' }}>
@@ -675,6 +683,27 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
               >
                 {showPassword[field.key] ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          )}
+          {shouldShowCopyButton && (
+            <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const val = formData[field.key];
+                  if (val) {
+                    navigator.clipboard.writeText(String(val));
+                    setCopiedFields(p => ({ ...p, [field.key]: true }));
+                    setSnack(t("ui.copiedToClipboard"), 'success');
+                    setTimeout(() => setCopiedFields(p => ({ ...p, [field.key]: false })), 2000);
+                  }
+                }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                title={t("ui.copyPassword")}
+              >
+                {copiedFields[field.key] ? <Check size={20} /> : <Copy size={20} />}
               </button>
             </div>
           )}

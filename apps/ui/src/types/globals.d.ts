@@ -374,6 +374,7 @@ declare global {
     max?: number;
     grid?: number;
     hidden?: boolean;
+    copy?: boolean;
   }
 
   /**
