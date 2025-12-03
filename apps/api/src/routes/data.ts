@@ -1,5 +1,6 @@
 import { sendJSON, sendError } from "../utils/http.js";
 import { DataService } from "../services/data.js";
+import { generateUUID } from "../utils/uuid.js";
 
 const dataService = new DataService();
 
@@ -31,7 +32,11 @@ export const dataRoutes: Route[] = [
 					sendError(res, 400, "Data type parameter is required");
 					return;
 				}
-				const newItem = await dataService.createItem(dataType, ctx.body as Record<string, unknown>);
+				const bodyData = ctx.body as Record<string, unknown>;
+				if (!bodyData["id"]) {
+					bodyData["id"] = generateUUID();
+				}
+				const newItem = await dataService.createItem(dataType, bodyData);
 				if (newItem) {
 					sendJSON(res, newItem, 201);
 				} else {

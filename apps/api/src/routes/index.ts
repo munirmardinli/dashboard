@@ -3,6 +3,7 @@ import { calendarRoutes } from "./calendar.js";
 import { configRoutes } from "./config.js";
 import { geminiRoutes } from "./gemini.js";
 import { schedulerRoutes } from "./scheduler.js";
+import { receiptRoutes } from "./receipt.js";
 
 export const routes: Route[] = [
 	...dataRoutes,
@@ -10,6 +11,7 @@ export const routes: Route[] = [
 	...configRoutes,
 	...geminiRoutes,
 	...schedulerRoutes,
+	...receiptRoutes,
 	{
 		method: "GET",
 		path: /^\/api\/health$/,
