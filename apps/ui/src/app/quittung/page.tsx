@@ -40,7 +40,7 @@ export default function QuittungPage() {
 
 	async function fetchExpenses() {
 		try {
-			const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4011";
+			const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 			const response = await fetch(`${apiUrl}/api/data/expense`);
 			if (response.ok) {
 				const data = await response.json();
