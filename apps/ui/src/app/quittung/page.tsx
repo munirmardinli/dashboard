@@ -204,7 +204,7 @@ export default function QuittungPage() {
 						<input
 							ref={fileInputRef}
 							type="file"
-							accept="image/*"
+							accept="image/jpeg,image/png,image/heic,image/heif"
 							onChange={handleImageSelect}
 							style={{ display: "none" }}
 							id="receipt-upload"
