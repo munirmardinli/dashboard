@@ -583,6 +583,25 @@ declare global {
     toggleSidebar: () => void;
     setActivePath: (path: string) => void;
   }
+
+  interface ExpenseItem {
+    key: string;
+    value: number;
+  }
+
+  interface ExpenseData {
+    id: string;
+    date: string;
+    store: string;
+    items: ExpenseItem[];
+    isArchive: boolean;
+  }
+
+  interface AnalyzedData {
+    store: string;
+    date: string;
+    items: ExpenseItem[];
+  }
 }
 
 

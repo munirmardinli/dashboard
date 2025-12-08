@@ -3,25 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Upload, Image as ImageIcon, Loader2, Check, X } from "lucide-react";
 
-interface ExpenseItem {
-	key: string;
-	value: number;
-}
-
-interface ExpenseData {
-	id: string;
-	date: string;
-	store: string;
-	items: ExpenseItem[];
-	isArchive: boolean;
-}
-
-interface AnalyzedData {
-	store: string;
-	date: string;
-	items: ExpenseItem[];
-}
-
 export default function QuittungPage() {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [imageFile, setImageFile] = useState<File | null>(null);
@@ -33,15 +14,14 @@ export default function QuittungPage() {
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
-	// Fetch existing expenses on mount
 	useEffect(() => {
 		fetchExpenses();
 	}, []);
 
+	const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4011');
 	async function fetchExpenses() {
 		try {
-			const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-			const response = await fetch(`${apiUrl}/api/data/expense`);
+			const response = await fetch(`${API_URL}/api/data/expense`);
 			if (response.ok) {
 				const data = await response.json();
 				setExpenses(data.filter((exp: ExpenseData) => !exp.isArchive));
@@ -74,8 +54,7 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4011";
-			const response = await fetch(`${apiUrl}/api/receipt/analyze`, {
+			const response = await fetch(`${API_URL}/api/receipt/analyze`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -105,8 +84,7 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4011";
-			const response = await fetch(`${apiUrl}/api/data/expense`, {
+			const response = await fetch(`${API_URL}/api/data/expense`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

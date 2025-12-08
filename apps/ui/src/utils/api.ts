@@ -13,10 +13,8 @@ async function fetchAPI<T>(
 	options?: RequestInit
 ): Promise<{ success: true; data: T } | { success: false; error: string }> {
 	try {
-		
-		const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-		
+		const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 		const url = API_URL
 			? `${API_URL.replace(/\/$/, '')}${normalizedEndpoint}`
 			: normalizedEndpoint;
@@ -54,20 +52,11 @@ async function fetchAPI<T>(
 	}
 }
 
-
-
-
 export const DataAPI = {
-	
-
-
 	async getItems<T extends BaseItem>(dataType: string): Promise<T[]> {
 		const result = await fetchAPI<T[]>(`/api/data/${dataType}`);
 		return result.success ? result.data : [];
 	},
-
-	
-
 
 	async createItem<T extends BaseItem>(
 		dataType: string,
@@ -80,9 +69,6 @@ export const DataAPI = {
 		return result.success ? result.data : null;
 	},
 
-	
-
-
 	async updateItem<T extends BaseItem>(
 		dataType: string,
 		id: string,
@@ -94,10 +80,6 @@ export const DataAPI = {
 		});
 		return result.success ? result.data : null;
 	},
-
-	
-
-
 	async archiveItem(dataType: string, id: string): Promise<boolean> {
 		const result = await fetchAPI<{ message: string }>(`/api/data/${dataType}/${id}`, {
 			method: "DELETE",
@@ -107,71 +89,24 @@ export const DataAPI = {
 };
 
 
-
-
 export const ConfigAPI = {
-	
-
-
 	async getTranslations(language: string): Promise<Record<string, unknown>> {
 		const result = await fetchAPI<Record<string, unknown>>(`/api/config/translations/${language}`);
 		return result.success ? result.data : {};
 	},
-
-	
-
 
 	async getFullConfig(): Promise<BasicConfig> {
 		const result = await fetchAPI<BasicConfig>(`/api/config`);
 		return result.success ? result.data : ({} as BasicConfig);
 	},
 
-	
-
-
 	async getDataTypeConfig(dataType: string): Promise<DataTypeConfig | null> {
 		const result = await fetchAPI<DataTypeConfig>(`/api/config/dataType/${dataType}`);
 		return result.success ? result.data : null;
 	},
 
-	
-
-
 	async getNavigationConfig(): Promise<NavigationConfig | null> {
 		const result = await fetchAPI<NavigationConfig>(`/api/config/navigation`);
 		return result.success ? result.data : null;
-	},
-};
-
-
-
-
-export const DocsAPI = {
-	async getAllDocs(): Promise<DocItem[]> {
-		const result = await fetchAPI<DocItem[]>(`/api/docs`);
-		return result.success ? result.data : [];
-	},
-
-	async createDoc(doc: Partial<DocItem>): Promise<DocItem | null> {
-		const result = await fetchAPI<DocItem>(`/api/docs`, {
-			method: "POST",
-			body: JSON.stringify(doc),
-		});
-		return result.success ? result.data : null;
-	},
-
-	async updateDoc(id: string, updates: Partial<DocItem>): Promise<DocItem | null> {
-		const result = await fetchAPI<DocItem>(`/api/docs/${id}`, {
-			method: "PUT",
-			body: JSON.stringify(updates),
-		});
-		return result.success ? result.data : null;
-	},
-
-	async archiveDoc(id: string): Promise<boolean> {
-		const result = await fetchAPI<{ message: string }>(`/api/docs/${id}`, {
-			method: "DELETE",
-		});
-		return result.success;
 	},
 };

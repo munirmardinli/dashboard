@@ -17,7 +17,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const language = useI18nStore((s) => s.language);
   const direction = useThemeStore((s) => s.direction);
   const theme = getTheme(mode);
-
   useEffect(() => {
     initializeThemeFromCookie();
     initializeLanguageFromCookie();
