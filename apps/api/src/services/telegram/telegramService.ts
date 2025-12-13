@@ -1,4 +1,5 @@
 import https from "node:https";
+import sanitizeHtml from "sanitize-html";
 
 class TelegramService {
 	private static async makeRequest(
@@ -82,19 +83,23 @@ class TelegramService {
 		title: string,
 		content: string
 	): Promise<TelegramResult> {
-		let formattedContent = content
+		// Allow only Telegram-supported HTML tags
+		let sanitizedContent = sanitizeHtml(content, {
+			allowedTags: ["b", "i", "u", "a", "code", "pre", "br"],
+			allowedAttributes: {
+				a: ["href"],
+			},
+			allowedSchemes: ["http", "https"],
+			// We want to keep line breaks for formatting
+			allowedSchemesByTag: {},
+		});
+		// Replace <br> tags with actual line breaks, if desired
+		let formattedContent = sanitizedContent
 			.replace(/<br\s*\/?>/gi, "\n")
-			.replace(/<\/p>/gi, "\n\n")
-			.replace(/<p[^>]*>/gi, "")
-			.replace(/<strong[^>]*>(.*?)<\/strong>/gi, "<b>$1</b>")
-			.replace(/<em[^>]*>(.*?)<\/em>/gi, "<i>$1</i>")
-			.replace(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/gi, "<b>$1</b>\n")
-			.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '<a href="$1">$2</a>')
-			.replace(/<[^>]+>/g, "")
 			.replace(/\n{3,}/g, "\n\n")
 			.trim();
 
-		const message = `<b>${title}</b>\n\n${formattedContent}`;
+		const message = `<b>${sanitizeHtml(title, { allowedTags: ["b"] })}</b>\n\n${formattedContent}`;
 
 		return this.sendMessage({
 			chat_id: chatId,
