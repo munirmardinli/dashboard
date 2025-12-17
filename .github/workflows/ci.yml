@@ -131,13 +131,13 @@ jobs:
       - name: Build application with Turbo
         run: npm run build
       - name: Upload UI build artifact (dist)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ui-dist
           path: apps/ui/dist
           retention-days: 1
       - name: Upload API build artifact (dist)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: api-dist
           path: apps/api/dist
