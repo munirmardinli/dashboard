@@ -149,12 +149,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Download UI build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
       - name: Download API build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
@@ -169,12 +169,12 @@ jobs:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
       - name: Download UI build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
       - name: Download API build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
@@ -235,12 +235,12 @@ jobs:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
       - name: Download UI build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
       - name: Download API build artifact (dist)
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
