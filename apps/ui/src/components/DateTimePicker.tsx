@@ -27,10 +27,9 @@ export const DateTimePicker: FC<DateTimePickerProps> = ({
 	const [selectedHour24, setSelectedHour24] = useState(12);
 	const [selectedMinute, setSelectedMinute] = useState(0);
 	const [selectedSecond, setSelectedSecond] = useState(0);
-	const [isAm, setIsAm] = useState(true);
+	const [, setIsAm] = useState(true);
 	const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 	const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-	const [showMonthYearPicker, setShowMonthYearPicker] = useState(false);
 	const pickerRef = useRef<HTMLDivElement>(null);
 	const [, startTransition] = useTransition();
 
@@ -150,13 +149,55 @@ export const DateTimePicker: FC<DateTimePickerProps> = ({
 					border: `1px solid ${theme.divider}`, width: '320px', backdropFilter: 'blur(20px)'
 				}}>
 					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-						<button onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.text }}><ChevronLeft size={20} /></button>
-						<span style={{ fontWeight: 600, color: theme.text }}>{new Date(currentYear, currentMonth).toLocaleString(language, { month: 'long', year: 'numeric' })}</span>
-						<button onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.text }}><ChevronRight size={20} /></button>
+						<button
+							onClick={() => {
+								startTransition(() => {
+									if (currentMonth === 0) {
+										setCurrentMonth(11);
+										setCurrentYear(y => y - 1);
+									} else {
+										setCurrentMonth(m => m - 1);
+									}
+								});
+							}}
+							style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.text, padding: '4px', borderRadius: '4px', transition: 'all 0.2s' }}
+							onMouseEnter={(e) => { e.currentTarget.style.background = `${theme.primary}15`; }}
+							onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+							title={t("datetimePicker.previousMonth")}
+						>
+							<ChevronLeft size={20} />
+						</button>
+						<span style={{ fontWeight: 600, color: theme.text, fontSize: '1rem' }}>{new Date(currentYear, currentMonth).toLocaleString(language, { month: 'long', year: 'numeric' })}</span>
+						<button
+							onClick={() => {
+								startTransition(() => {
+									if (currentMonth === 11) {
+										setCurrentMonth(0);
+										setCurrentYear(y => y + 1);
+									} else {
+										setCurrentMonth(m => m + 1);
+									}
+								});
+							}}
+							style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.text, padding: '4px', borderRadius: '4px', transition: 'all 0.2s' }}
+							onMouseEnter={(e) => { e.currentTarget.style.background = `${theme.primary}15`; }}
+							onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+							title={t("datetimePicker.nextMonth")}
+						>
+							<ChevronRight size={20} />
+						</button>
 					</div>
 
 					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
-						{['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(d => <div key={d} style={{ textAlign: 'center', fontSize: '0.75rem', color: theme.textSec }}>{d}</div>)}
+						{[
+							t("datetimePicker.weekdays.monday"),
+							t("datetimePicker.weekdays.tuesday"),
+							t("datetimePicker.weekdays.wednesday"),
+							t("datetimePicker.weekdays.thursday"),
+							t("datetimePicker.weekdays.friday"),
+							t("datetimePicker.weekdays.saturday"),
+							t("datetimePicker.weekdays.sunday")
+						].map((d, idx) => <div key={idx} style={{ textAlign: 'center', fontSize: '0.75rem', color: theme.textSec, fontWeight: 500 }}>{d}</div>)}
 						{calendarDays.map((day, i) => (
 							<button
 								key={i} disabled={day === null}
