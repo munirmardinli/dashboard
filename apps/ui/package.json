@@ -27,7 +27,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@next/bundle-analyzer": "16.0.10",
+    "@next/bundle-analyzer": "16.1.0",
     "typescript": "^5"
   }
 }
