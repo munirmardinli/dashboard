@@ -38,7 +38,9 @@
     "build": "turbo build",
     "start": "turbo start",
     "lint": "turbo lint",
-    "type-check": "turbo type-check"
+    "type-check": "turbo type-check",
+    "prehomelab": "cd packages/homelab && chmod +x bash/index.sh ",
+    "homelab": "cd packages/homelab && ./bash/index.sh"
   },
   "devDependencies": {
     "turbo": "2.7.2",

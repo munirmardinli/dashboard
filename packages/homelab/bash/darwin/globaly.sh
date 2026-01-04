@@ -60,12 +60,17 @@ ok "Git global configuration completed."
 
 CURSOR_SETTINGS_DIR="$HOME/Library/Application Support/Cursor/User"
 CURSOR_SETTINGS_FILE="$CURSOR_SETTINGS_DIR/settings.json"
-SOURCE_SETTINGS=".vscode/settings.json"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+SOURCE_SETTINGS="$REPO_ROOT/.vscode/settings.json"
 
 info "Transferring Cursor Editor Settings..."
 
 mkdir -p "$CURSOR_SETTINGS_DIR"
 
-cp "$SOURCE_SETTINGS" "$CURSOR_SETTINGS_FILE"
-
-ok "Cursor settings.json updated successfully."
+if [ -f "$SOURCE_SETTINGS" ]; then
+  cp "$SOURCE_SETTINGS" "$CURSOR_SETTINGS_FILE"
+  ok "Cursor settings.json updated successfully."
+else
+  warn "Source settings file not found: $SOURCE_SETTINGS"
+  warn "Skipping Cursor settings transfer."
+fi

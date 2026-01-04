@@ -4,14 +4,23 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$BASH_DIR/utils/utils.sh"
 
-ENV_FILE=".env"
+# Berechne Projekt-Root (4 Ebenen nach oben: synology -> bash -> homelab -> packages -> root)
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+
+# Suche .env zuerst im aktuellen Verzeichnis, dann im Projekt-Root
+ENV_FILE=""
+if [ -f "$SCRIPT_DIR/.env" ]; then
+  ENV_FILE="$SCRIPT_DIR/.env"
+elif [ -f "$PROJECT_ROOT/.env" ]; then
+  ENV_FILE="$PROJECT_ROOT/.env"
+fi
 
 ### 📌 Load .env if available
-if [ -f "$ENV_FILE" ]; then
-  info "Loading configuration from .env ..."
+if [ -n "$ENV_FILE" ]; then
+  info "Loading configuration from $ENV_FILE ..."
   export $(grep -v '^#' "$ENV_FILE" | xargs)
 else
-  warn ".env not found — using fallback values or input."
+  warn ".env not found in $SCRIPT_DIR or $PROJECT_ROOT — using fallback values or input."
 fi
 
 ### 📌 Defaults + Environment Override

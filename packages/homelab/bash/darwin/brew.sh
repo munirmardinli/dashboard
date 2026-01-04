@@ -62,7 +62,6 @@ packages=(
   zsh-autosuggestions
   zsh-completions
   bat
-  neovim
   eza
   zsh
   fzf
@@ -75,11 +74,10 @@ casks=(
   font-fira-code-nerd-font
   font-jetbrains-mono-nerd-font
   font-meslo-lg-nerd-font
-  google-chrome
   cursor
   chatgpt-atlas
   antigravity
-  alacritty
+  parallels
 )
 
 install_items() {
@@ -163,5 +161,9 @@ for app in "${(@k)masApps}"; do
     attempt_install "$id"
   fi
 done
+
+info "Caching Brew..."
+brew cleanup --prune=all
+brew autoremove
 
 ok "MAS: Installation completed (no updates performed)."
