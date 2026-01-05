@@ -2,7 +2,7 @@
   "name": "dashboard-docs",
   "description": "Documentation tools and utilities for Munir Mardinli's projects",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.1",
   "license": "MIT",
   "homepage": "https://github.com/munirmardinli-dev/docs",
   "repository": {
@@ -33,7 +33,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "lucide-react": "^0.553.0",
+    "lucide-react": "^0.556.0",
     "katex": "0.16.22",
     "next": "15.5.9",
     "nextra": "4.5.0",

@@ -1,6 +1,6 @@
 {
   "name": "dashboard-ui",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Next.js UI für Dashboard-Management",
   "browserslist": [
@@ -10,8 +10,8 @@
     "safari 16.4"
   ],
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "npx serve@latest dist",
     "lint": "echo 'No linting configured'",
     "type-check": "tsc --noEmit"
