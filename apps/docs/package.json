@@ -65,7 +65,7 @@
     "@react-pdf/renderer": "^4.2.2",
     "lucide-react": "^0.553.0",
     "katex": "0.16.22",
-    "next": "15.5.3",
+    "next": "15.5.9",
     "nextra": "4.5.0",
     "nextra-theme-docs": "4.5.0",
     "react": "19.1.1",
