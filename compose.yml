@@ -3,7 +3,7 @@ services:
   dashboard:
     build:
       context: .
-      dockerfile: .github/.docker/Dockerfile.Dev
+      dockerfile: .github/.docker/Dockerfile
       target: production
       args:
         NODE_TAG: ${NODE_TAG:-22-alpine}
@@ -11,21 +11,16 @@ services:
     container_name: dashboard-dev
     restart: unless-stopped
     ports:
-      - "${PORT_UI:-4012}:80"
+      - "${PORT_UI:-4011}:80"
     volumes:
       - ./apps/api/public:/home/node/app/dist/assets
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - NEXT_PUBLIC_TINY_MCE_API_KEY=${NEXT_PUBLIC_TINY_MCE_API_KEY}
+      - NEXT_PUBLIC_API_URL=
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
-      - NEXT_PUBLIC_CALENDAR_DATA_DIR=${NEXT_PUBLIC_CALENDAR_DATA_DIR:-/dist/assets/calendar}
-      - NEXT_PUBLIC_CALENDAR_ICS_DIR=${NEXT_PUBLIC_CALENDAR_ICS_DIR:-/dist/assets/ics}
-      - NEXT_PUBLIC_ASSETS_DIR=${NEXT_PUBLIC_ASSETS_DIR:-/dist/assets}
-      - TZ=${TZ:-Europe/Berlin}
-      - NEXT_PUBLIC_DEFAULT_LANGUAGE=${NEXT_PUBLIC_DEFAULT_LANGUAGE:-de}
-      - NEXT_PUBLIC_DEFAULT_THEME_MODE=${NEXT_PUBLIC_DEFAULT_THEME_MODE:-dark}
-      - NEXT_PUBLIC_ACTIVE_SOUND=${NEXT_PUBLIC_ACTIVE_SOUND:-true}
-      - PORT=${PORT:-4011}
-      - LOG_LEVEL=${LOG_LEVEL:-info}
     networks:
       - dockerization
 

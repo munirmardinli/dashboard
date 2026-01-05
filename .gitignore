@@ -9,6 +9,8 @@ apps/docs/.next/
 apps/docs/public/
 apps/homelab/.next/
 apps/homelab/public/
+apps/portfolio/out/
+apps/portfolio/.next/
 
 # API build
 apps/api/dist/

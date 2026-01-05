@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine as api
+FROM node:22-alpine as api
 
 RUN apk add --no-cache wget ca-certificates
 
@@ -29,6 +29,9 @@ RUN apk update && apk add --no-cache wget ca-certificates
 RUN mkdir -p /etc/nginx/http.d
 
 COPY apps/ui/dist /usr/share/nginx/html
+
+RUN mkdir -p /usr/share/nginx/html/portfolio
+COPY apps/portfolio/out /usr/share/nginx/html/portfolio
 COPY apps/ui/default.conf /etc/nginx/http.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
@@ -36,9 +39,8 @@ CMD ["nginx", "-g", "daemon off;"]
 # ============================================================================
 # Stage 3: Final Production Image (combined API + UI)
 # ============================================================================
-FROM node:20-alpine as production
+FROM node:22-alpine as production
 
-# Install nginx, supervisor and other dependencies
 RUN apk add --no-cache \
     nginx \
     wget \
@@ -46,7 +48,6 @@ RUN apk add --no-cache \
     supervisor \
     && rm -rf /var/cache/apk/*
 
-# Create directory structure and nginx directory
 RUN mkdir -p \
     /home/node/app \
     /home/node/app/dist \
@@ -62,18 +63,14 @@ WORKDIR /home/node/app
 
 COPY --from=api --chown=node:node /home/node/app /home/node/app
 
-# Copy UI files from ui stage (directory is automatically created)
 COPY --from=ui --chown=nginx:nginx /usr/share/nginx/html /usr/share/nginx/html
 COPY --from=ui --chown=root:root /etc/nginx/http.d/default.conf /etc/nginx/http.d/default.conf
 
-# Set correct permissions after copying UI files
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
 COPY --chown=root:root .github/.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Environment Variables - All defined in production stage only
-# NEXT_PUBLIC_API_URL wird nicht gesetzt, damit relative Pfade (/api) verwendet werden (werden über Nginx proxied)
 ENV NODE_ENV=production \
     PORT=4011 \
     TZ=Europe/Berlin \
@@ -86,6 +83,7 @@ ENV NODE_ENV=production \
     GEMINI_MODEL=gemini-2.5-flash \
     HTML_DIR=/usr/share/nginx/html \
     ACCESS_LOG=/var/log/nginx/access.log \
+    LOG_LEVEL=info \
     ERROR_LOG=/var/log/nginx/error.log
 
 VOLUME /home/node/app/dist/assets

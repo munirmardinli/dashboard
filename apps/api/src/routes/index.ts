@@ -4,6 +4,8 @@ import { configRoutes } from "./config.js";
 import { geminiRoutes } from "./gemini.js";
 import { schedulerRoutes } from "./scheduler.js";
 import { receiptRoutes } from "./receipt.js";
+import { portfolioRoutes } from "./portfolio.js";
+import { blogRoutes } from "./blog.js";
 
 export const routes: Route[] = [
 	...dataRoutes,
@@ -12,6 +14,8 @@ export const routes: Route[] = [
 	...geminiRoutes,
 	...schedulerRoutes,
 	...receiptRoutes,
+	...portfolioRoutes,
+	...blogRoutes,
 	{
 		method: "GET",
 		path: /^\/api\/health$/,
