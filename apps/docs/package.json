@@ -33,7 +33,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "lucide-react": "^0.556.0",
+    "lucide-react": "^0.562.0",
     "katex": "0.16.22",
     "next": "16.1.1",
     "nextra": "4.5.0",
