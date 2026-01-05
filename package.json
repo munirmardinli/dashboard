@@ -43,7 +43,7 @@
     "homelab": "cd packages/homelab && ./bash/index.sh"
   },
   "devDependencies": {
-    "turbo": "2.7.2",
+    "turbo": "2.7.3",
     "typescript": "^5"
   },
   "engines": {
