@@ -47,10 +47,6 @@ fi
 # --- Homebrew Update & Install Packages + Casks -----------------------------
 ###############################################################################
 
-info "Updating Homebrew..."
-brew update
-brew upgrade
-
 packages=(
   wget
   node
@@ -161,9 +157,5 @@ for app in "${(@k)masApps}"; do
     attempt_install "$id"
   fi
 done
-
-info "Caching Brew..."
-brew cleanup --prune=all
-brew autoremove
 
 ok "MAS: Installation completed (no updates performed)."

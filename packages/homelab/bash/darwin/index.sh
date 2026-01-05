@@ -28,6 +28,7 @@ info "────────────────────────�
 run "$BASE/brew.sh"
 run "$BASE/config.sh"
 run "$BASE/globaly.sh"
+run "$BASE/caching.sh"
 
 info "──────────────────────────────────────"
 ok   "   MUNIR - Setup completed successfully! 🎉"
