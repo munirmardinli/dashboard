@@ -28,7 +28,7 @@
       ],
       "package.json": [
         "./package.json"
-      ],
+      ]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
