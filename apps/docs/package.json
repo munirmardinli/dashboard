@@ -1,0 +1,81 @@
+{
+  "name": "dashboard-docs",
+  "description": "Documentation tools and utilities for Munir Mardinli's projects",
+  "private": true,
+  "version": "0.0.8",
+  "license": "MIT",
+  "homepage": "https://github.com/munirmardinli-dev/docs",
+  "sponsor": {
+    "url": "https://linktr.ee/munirmardinli",
+    "type": "individual",
+    "name": "Munir Mardinli"
+  },
+  "publisher": "Munir Mardinli",
+  "keywords": [
+    "documentation",
+    "docs",
+    "cli",
+    "tools",
+    "utilities",
+    "developer-tools"
+  ],
+  "bugs": {
+    "url": "https://github.com/munirmardinli-dev/docs/issues",
+    "email": "Munir@Mardinli.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/munirmardinli-dev/docs.git",
+    "directory": "Munir Mardinli"
+  },
+  "preview": {
+    "uiUrl": "https://docs.munirmardinli.de",
+    "headerTitel": "Docs",
+    "repoUrl": "https://github.com/munirmardinli-dev/docs"
+  },
+  "author": {
+    "name": "Munir Mardinli",
+    "email": "Munir@Mardinli.de",
+    "url": "https://linktr.ee/munirmardinli"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://linktr.ee/munirmardinli"
+  },
+  "readmeFilename": "README.md",
+  "contributors": [
+    {
+      "name": "Munir Mardinli",
+      "email": "Munir@Mardinli.de",
+      "url": "https://linktr.ee/munirmardinli"
+    }
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind",
+    "lint": "echo 'No linting configured'",
+		"type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.2.2",
+    "lucide-react": "^0.553.0",
+    "katex": "0.16.22",
+    "next": "15.5.3",
+    "nextra": "4.5.0",
+    "nextra-theme-docs": "4.5.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.5.2",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "pagefind": "^1.4.0",
+    "typescript": "5.9.2"
+  }
+}

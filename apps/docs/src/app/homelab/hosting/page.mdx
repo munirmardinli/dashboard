@@ -1,0 +1,211 @@
+---
+title: 🔧 Core
+date:
+  created: 2025-07-19
+sidebarTitle: Core
+#icon: BrushIcon
+description: >
+  Complete Docker Compose setup for Cloudflare Tunnel, Pi-hole DNS, and Nginx Proxy Manager.
+  Includes essential networking stack including DNS resolution, reverse proxy, and cloud tunneling.
+asIndexPage: true
+---
+
+# 🔧 Core Infrastructure Services
+
+Essential networking stack including DNS resolution, reverse proxy, and cloud tunneling.
+
+## 🛠️ Service Configuration
+
+- Logging (`default-logging`)
+- Labels (`default-labels`)
+- Resource limits (`resource-limits`)
+
+### Core Services
+
+```yaml copy showLineNumbers filename="hosting.yml"
+---
+x-logging: &default-logging
+  driver: loki
+  options: &default-logging-options
+    loki-url: https://loki.${SYNOLOGY_BASIC_URL}/loki/api/v1/push
+    loki-retries: 5
+    loki-batch-size: 400
+    loki-batch-wait: 2s
+    loki-timeout: 10s
+    loki-max-backoff: 5s
+    loki-min-backoff: 1s
+    loki-tenant-id: default
+
+x-labels: &default-labels
+  com.centurylinklabs.watchtower.enable: true
+  recreat.container: true
+  container.label.group: hosting
+
+x-limits: &resource-limits
+  mem_limit: '256m'
+  mem_reservation: '64m'
+  cpu_shares: '512'
+  restart: always
+  networks:
+    dockerization:
+
+services:
+  cloudflared:
+    container_name: cloudflared
+    hostname: cloudflared
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN:?CLOUDFLARE_TOKEN required}
+    healthcheck:
+      test: ['CMD', 'cloudflared', '--version']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    <<: *resource-limits
+    logging:
+      <<: *default-logging
+      options:
+        <<: *default-logging-options
+        loki-external-labels: job=cloudflared
+    environment:
+      UID: ${UID_NAS_ADMIN:-1026}
+      GID: ${GID_NAS_ADMIN:-100}
+      TUNNEL_METRICS: ${TUNNEL_METRICS:-0.0.0.0:8080}
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    labels:
+      <<: *default-labels
+      monitoring: cloudflared
+
+  pihole:
+    container_name: pihole
+    hostname: pihole
+    image: pihole/pihole
+    cap_add:
+      - NET_ADMIN
+    security_opt:
+      - no-new-privileges=false
+    deploy:
+      resources:
+        limits:
+          memory: 512MB
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ['CMD', 'dig', '@127.0.0.1', '-p53', 'pi.hole']
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      <<: *default-logging
+      options:
+        <<: *default-logging-options
+        loki-external-labels: job=pihole
+    environment:
+      UID: ${UID_NAS_ADMIN:-1026}
+      GID: ${GID_NAS_ADMIN:-100}
+      FTLCONF_LOCAL_IPV4: ${FTLCONF_LOCAL_IPV4:-0.0.0.0}
+      FTLCONF_LOCAL_IPV6: ${FTLCONF_LOCAL_IPV6:-::}
+      PIHOLE_UID: ${PIHOLE_UID:-1000}
+      PIHOLE_GID: ${PIHOLE_GID:-1000}
+      DNSMASQ_USER: ${DNSMASQ_USER:-pihole}
+      FTLCONF_dns_listeningMode: ${FTLCONF_dns_listeningMode:-all}
+      FTLCONF_webserver_port: ${FTLCONF_webserver_port:-80}
+      FTLCONF_webserver_api_password: ${PI_HOLE_PASSWORD:?Password is Missing}
+      WEBTHEME: ${WEBTHEME:-dark}
+      FTLCONF_dns_upstreams: ${FTLCONF_dns_upstreams:-1.1.1.1;1.0.0.1;8.8.8.8;8.8.4.4}
+      FTLCONF_QUERY_LOGGING: ${FTLCONF_QUERY_LOGGING:-true}
+      FTLCONF_MAXDBDAYS: ${FTLCONF_MAXDBDAYS:-30}
+      FTLCONF_PRIVACYLEVEL: ${FTLCONF_PRIVACYLEVEL:-0}
+      VIRTUAL_HOST: pihole.${SYNOLOGY_BASIC_URL}
+    ports:
+      - target: 53
+        published: 53
+        protocol: tcp
+        mode: host
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 80
+        published: 81
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: ${MOUNT_PATH_DOCKER_ROOT}/config/dnsmasq.d
+        target: /etc/dnsmasq.d
+      - type: bind
+        source: ${MOUNT_PATH_DOCKER_ROOT}/pihole
+        target: /etc/pihole
+      - type: bind
+        source: ${MOUNT_PATH_DOCKER_ROOT}/logs/pihole
+        target: /var/log/pihole
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    labels:
+      <<: *default-labels
+      monitoring: pihole
+
+networks:
+  dockerization:
+    external: true
+```
+
+## 🔐 Required Environment Variables
+
+| Variable                 | Description                     | Required       |
+| ------------------------ | ------------------------------- | -------------- |
+| `CLOUDFLARE_TOKEN`       | Cloudflare Tunnel token         | ✅             |
+| `PI_HOLE_PASSWORD`       | Pi-hole admin password          | ✅             |
+| `INITIAL_ADMIN_PASSWORD` | NPM admin password              | ✅             |
+| `MOUNT_PATH_DOCKER_ROOT` | Storage path                    | ✅             |
+| `SYNOLOGY_BASIC_URL`     | Base domain for services        | ✅             |
+| `UID_NAS_ADMIN`          | User ID for volume permissions  | ⚠️ Recommended |
+| `GID_NAS_ADMIN`          | Group ID for volume permissions | ⚠️ Recommended |
+
+<Callout type="warning" title="Security Notice">
+	Be stored in `.env` files - Have restricted permissions (`chmod 600`) - Never
+	be committed to version control - Be rotated periodically
+</Callout>
+
+## 🚀 Deployment
+
+1. Create `.env` file with required variables
+2. _Initialize volumes_
+
+```bash copy showLineNumbers
+mkdir -p ${MOUNT_PATH_DOCKER_ROOT}/{config/dnsmasq.d,pihole,logs/pihole}
+chown -R ${UID_NAS_ADMIN:-1026}:${GID_NAS_ADMIN:-100} ${MOUNT_PATH_DOCKER_ROOT}
+```
+
+3. **Start services**
+
+```bash copy showLineNumbers
+docker-compose -f hosting.yml up -d
+```
+
+### 🔄 Maintenance
+
+- **Backups**
+  - Regularly backup volume directories
+- **Updates**
+
+```bash copy showLineNumbers
+docker-compose -f hosting.yml pull
+docker-compose -f hosting.yml up -d
+```
+
+### 📄 Logs
+
+```bash copy showLineNumbers
+docker-compose -f hosting.yml logs -f
+```

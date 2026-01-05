@@ -1,0 +1,216 @@
+---
+title: ❗ Container Management
+date:
+  created: 2025-07-19
+description: >
+  Complete Docker Compose setup for Watchtower, Autoheal, Dashy, Roundcube, and Guacamole.
+  Includes container monitoring, auto-healing, and production-ready configuration
+  with health checks, logging, and monitoring integration.
+sidebarTitle: Container Management
+asIndexPage: true
+---
+
+<br />
+
+# ❗ Container Management Tools
+
+
+Production-grade container monitoring, auto-healing and dashboard solutions.
+
+## 🛠️ Service Configuration
+
+- Logging (`default-logging`)
+- Labels (`default-labels`)
+- Resource limits (`resource-limits`)
+
+### Core Services
+
+```yaml copy showLineNumbers filename="management.yml"
+---
+x-logging: &default-logging
+  driver: loki
+  options: &default-logging-options
+    loki-url: https://loki.${SYNOLOGY_BASIC_URL}/loki/api/v1/push
+    loki-retries: 5
+    loki-batch-size: 400
+    loki-batch-wait: 2s
+    loki-timeout: 10s
+    loki-max-backoff: 5s
+    loki-min-backoff: 1s
+    loki-tenant-id: default
+
+x-labels: &default-labels
+  com.centurylinklabs.watchtower.enable: true
+  recreat.container: true
+  container.label.group: management
+
+x-limits: &resource-limits
+  mem_limit: 256m
+  mem_reservation: 64m
+  cpu_shares: "512"
+  restart: always
+  networks:
+    dockerization:
+
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    hostname: watchtower
+    <<: *resource-limits
+    logging:
+      <<: *default-logging
+      options:
+        <<: *default-logging-options
+        loki-external-labels: job=watchtower
+    environment:
+      UID: ${UID_NAS_ADMIN:-1026} 
+      GID: ${GID_NAS_ADMIN:-100}
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_LABEL_ENABLE: true
+      WATCHTOWER_DEBUG: true
+      WATCHTOWER_ROLLING_RESTART: true
+      WATCHTOWER_INCLUDE_STOPPED: true
+      NO_COLOR: 1
+      WATCHTOWER_NO_SETUP_MESSAGE: true
+      WATCHTOWER_TIMEOUT: 30s
+      WATCHTOWER_NO_RESTART: false
+      WATCHTOWER_POLL_INTERVAL: 30
+      WATCHTOWER_HTTP_API_UPDATE: true
+      WATCHTOWER_HTTP_API_METRICS: true
+      WATCHTOWER_HTTP_API_PERIODIC_POLLS: true
+      DOCKER_TLS_VERIFY: true
+      WATCHTOWER_LOG_LEVEL: info
+      DOCKER_API_VERSION: 1.41
+      WATCHTOWER_REMOVE_VOLUMES: false
+      WATCHTOWER_TRACE: true
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_HTTP_API_TOKEN:? Token is missing}
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+      - type: bind
+        source: /root/.docker/config.json
+        target: /root/.docker/config.json
+        read_only: true
+    labels:
+      <<: *default-labels
+      monitoring: watchtower
+
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    hostname: autoheal
+    <<: *resource-limits
+    logging:
+      <<: *default-logging
+      options:
+        <<: *default-logging-options
+        loki-external-labels: job=autoheal
+    environment:
+      UID: ${UID_NAS_ADMIN:-1026}
+      GID: ${GID_NAS_ADMIN:-100}
+      AUTOHEAL_INTERVAL: 60s
+      AUTOHEAL_CONTAINER_LABEL: recreat.container
+      DOCKER_HOST: unix:///var/run/docker.sock
+      WEBHOOK_URL: https://gotify.${SYNOLOGY_BASIC_URL}/message?token=${WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN}
+      AUTOHEAL_ONLY_MONITOR_RUNNING: false
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    labels:
+      <<: *default-labels
+      monitoring: autoheal
+
+  dashy:
+    container_name: dashy
+    hostname: dashy
+    image: lissy93/dashy:latest
+    <<: *resource-limits
+    logging:
+      <<: *default-logging
+      options:
+        <<: *default-logging-options
+        loki-external-labels: job=dashy
+    environment:
+      NODE_ENV: production
+    ports:
+      - target: 8080
+        published: 90
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: ${MOUNT_PATH_DOCKER_ROOT}/compose/config/dashy.yml
+        target: /app/user-data/conf.yml
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+    labels:
+      <<: *default-labels
+      monitoring: dashy
+
+networks:
+  dockerization:
+    external: true
+
+```
+
+## 🔐 Required Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `UID_NAS_ADMIN` | User ID for volume permissions | ⚠️ Recommended |
+| `GID_NAS_ADMIN` | Group ID for volume permissions | ⚠️ Recommended |
+| `WATCHTOWER_HTTP_API_TOKEN` | Watchtower API token | ✅ |
+| `MOUNT_PATH_DOCKER_ROOT` | Base storage path | ✅ |
+| `SYNOLOGY_BASIC_URL` | Base domain for services | ✅ |
+| `DASHY_PORT` | Dashy web interface port | ⚠️ Recommended |
+
+<Callout type="warning" title="Security Notice">
+- Be stored in `.env` files
+- Have restricted permissions (`chmod 600`)
+- Never be committed to version control
+- Be rotated periodically
+</Callout>
+
+## 🚀 Deployment
+
+1. Create `.env` file with required variables
+2. *Initialize volumes*
+```bash copy showLineNumbers
+mkdir -p ${MOUNT_PATH_DOCKER_ROOT}/{compose/config}
+chown -R ${UID_NAS_ADMIN:-1026}:${GID_NAS_ADMIN:-100} ${MOUNT_PATH_DOCKER_ROOT}
+```
+3. **Start services**
+```bash copy showLineNumbers
+docker-compose -f management.yml up -d
+```
+
+### 🔄 Maintenance
+
+```bash copy showLineNumbers
+docker-compose -f management.yml pull && docker-compose -f management.yml up -d
+```
+### 📄 Logs
+
+```bash copy showLineNumbers
+docker-compose -f management.yml logs -f
+```

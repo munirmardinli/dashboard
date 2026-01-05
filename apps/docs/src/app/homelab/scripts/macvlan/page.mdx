@@ -1,0 +1,92 @@
+---
+title: 🌐 Docker Macvlan
+date:
+  created: 2025-07-19
+description: >
+  Interactive script to create Docker macvlan networks with IPv4 and optional IPv6 support.
+sidebarTitle: Docker Macvlan
+asIndexPage: true
+---
+
+# 🌐 Docker Macvlan
+
+This script interactively creates a Docker macvlan network, supporting both IPv4 and IPv6 configurations. It prompts the user for network details and executes the appropriate `docker network create` command.
+
+## 🛠️ Service Configuration
+
+- Interactive prompts for network name and IPv4 prefix
+- Automatically constructs IPv4 subnet and gateway
+- Supports both IPv4-only and dual-stack (IPv4 + IPv6) networks
+- Uses `eth0` as the default parent interface and bridge mode
+
+### Process
+
+```sh copy showLineNumbers filename="macvlan.sh"
+#!/bin/bash
+
+read -p "Enter the Docker network name: " NETWORK_NAME
+read -p "Enter the first three parts of the IPv4 address (e.g. 10.100.0): " IP_PREFIX
+
+SUBNET_IPV4="${IP_PREFIX}.0/24"
+GATEWAY_IPV4="${IP_PREFIX}.254"
+
+echo "Select network type:"
+echo "1) IPv4 and IPv6"
+echo "2) IPv4 only"
+read -p "Selection (1 or 2): " NET_TYPE
+
+if [ "$NET_TYPE" = "1" ]; then
+    IPV6_PREFIX="fd00::"
+    SUBNET_IPV6="${IPV6_PREFIX}/64"
+    docker network create -d macvlan \
+      --subnet=$SUBNET_IPV4 \
+      --gateway=$GATEWAY_IPV4 \
+      --subnet=$SUBNET_IPV6 \
+      --ipv6 \
+      -o parent=eth0 \
+      -o macvlan_mode=bridge \
+      $NETWORK_NAME
+elif [ "$NET_TYPE" = "2" ]; then
+    docker network create -d macvlan \
+      --subnet=$SUBNET_IPV4 \
+      --gateway=$GATEWAY_IPV4 \
+      -o parent=eth0 \
+      -o macvlan_mode=bridge \
+      $NETWORK_NAME
+else
+    echo "Invalid selection. Please restart the script."
+    exit 1
+fi
+```
+
+## 🔐 Important Notes
+
+- Requires Docker to be installed and running
+- Must be run with sufficient privileges to create Docker networks
+- Only `eth0` is supported as the parent interface (edit the script to change)
+- The script uses bridge mode for macvlan
+
+## 🚀 Usage
+
+```bash copy showLineNumbers
+sh assets/scripts/macvlan.sh
+```
+
+- Run the script and follow the interactive prompts
+
+## 🔄 Maintenance & Updates
+
+### To list macvlan networks
+
+```bash copy showLineNumbers
+docker network ls | grep macvlan
+```
+### To remove a macvlan network
+
+```bash copy showLineNumbers
+docker network rm <network_name>
+```
+
+## 🔗 References
+
+- [Docker Macvlan Networks](https://docs.docker.com/network/macvlan/) 

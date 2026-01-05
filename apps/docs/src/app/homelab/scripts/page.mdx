@@ -1,0 +1,41 @@
+---
+title: 'Homelab'
+description: 'Homelab'
+author: 'Munir Mardinli'
+date: '2025-09-11'
+sidebarTitle: 'Homelab'
+asIndexPage: true
+---
+
+import { Cards } from 'nextra/components';
+import {
+	Coffee,
+	Key,
+	Shield,
+	Network,
+	HardDrive,
+	Terminal,
+	Code,
+} from 'lucide-react';
+
+<Cards>
+	<Cards.Card icon={<Coffee />} title="Brew" href="/homelab/scripts/brew" />
+	<Cards.Card icon={<Key />} title="Dotenv" href="/homelab/scripts/dotenv" />
+	<Cards.Card
+		icon={<Shield />}
+		title="Hetzner Certificate"
+		href="/homelab/scripts/hetznerCert"
+	/>
+	<Cards.Card
+		icon={<Network />}
+		title="Macvlan"
+		href="/homelab/scripts/macvlan"
+	/>
+	<Cards.Card icon={<HardDrive />} title="NAS" href="/homelab/scripts/nas" />
+	<Cards.Card
+		icon={<Terminal />}
+		title="Powerlevel10k"
+		href="/homelab/scripts/powerLevel10"
+	/>
+	<Cards.Card icon={<Code />} title="Venv" href="/homelab/scripts/venv" />
+</Cards>

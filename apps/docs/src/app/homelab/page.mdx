@@ -1,0 +1,39 @@
+---
+title: 'Homelab'
+description: 'Homelab'
+author: 'Munir Mardinli'
+date: '2025-09-11'
+sidebarTitle: 'Homelab'
+asIndexPage: true
+---
+
+import { Cards } from 'nextra/components';
+import {
+	Shield,
+	Code,
+	Globe,
+	Cloud,
+	Terminal,
+	Settings,
+} from 'lucide-react';
+
+<Cards>
+	<Cards.Card
+		icon={<Shield />}
+		title="Authentik"
+		href="/homelab/authentik"
+	/>
+	<Cards.Card
+		icon={<Code />}
+		title="Development"
+		href="/homelab/development"
+	/>
+	<Cards.Card icon={<Globe />} title="Global" href="/homelab/global" />
+	<Cards.Card icon={<Cloud />} title="Hosting" href="/homelab/hosting" />
+	<Cards.Card icon={<Terminal />} title="Scripts" href="/homelab/scripts" />
+	<Cards.Card
+		icon={<Settings />}
+		title="Management"
+		href="/homelab/management"
+	/>
+</Cards>
