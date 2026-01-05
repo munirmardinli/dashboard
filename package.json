@@ -2,7 +2,7 @@
   "name": "dashboard-root",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm@11.6.3",
+  "packageManager": "npm@11.7.0",
   "description": "Full-stack Management Dashboard for todos, finances, and contacts. Built with Next.js 15, React 19, TypeScript, and modern glassmorphism design.",
   "keywords": [
     "dashboard",
