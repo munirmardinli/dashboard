@@ -5,24 +5,6 @@
   "version": "0.0.8",
   "license": "MIT",
   "homepage": "https://github.com/munirmardinli-dev/docs",
-  "sponsor": {
-    "url": "https://linktr.ee/munirmardinli",
-    "type": "individual",
-    "name": "Munir Mardinli"
-  },
-  "publisher": "Munir Mardinli",
-  "keywords": [
-    "documentation",
-    "docs",
-    "cli",
-    "tools",
-    "utilities",
-    "developer-tools"
-  ],
-  "bugs": {
-    "url": "https://github.com/munirmardinli-dev/docs/issues",
-    "email": "Munir@Mardinli.de"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/munirmardinli-dev/docs.git",
@@ -38,31 +20,19 @@
     "email": "Munir@Mardinli.de",
     "url": "https://linktr.ee/munirmardinli"
   },
-  "funding": {
-    "type": "individual",
-    "url": "https://linktr.ee/munirmardinli"
-  },
   "readmeFilename": "README.md",
-  "contributors": [
-    {
-      "name": "Munir Mardinli",
-      "email": "Munir@Mardinli.de",
-      "url": "https://linktr.ee/munirmardinli"
-    }
-  ],
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
     "dev": "next dev --turbopack --port 3002",
     "build": "next build",
-    "start": "next start",
     "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind",
+    "start": "npx serve@latest out",
     "lint": "echo 'No linting configured'",
-		"type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@react-pdf/renderer": "^4.2.2",
     "lucide-react": "^0.553.0",
     "katex": "0.16.22",
     "next": "15.5.3",
