@@ -137,10 +137,7 @@ jobs:
         run: |
           cat <<EOF > .env.production
           NEXT_PUBLIC_API_URL=
-          NEXT_PUBLIC_BASE_URL=/portfolio
-          NEXT_PUBLIC_DEFAULT_LANGUAGE=de
           NODE_ENV=production
-          TZ=Europe/Berlin
           NEXT_TELEMETRY_DISABLED=1
           TURBO_TELEMETRY_DISABLED=1
           EOF
