@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
 			exclude: ['error', 'warn'],
 		},
 	},
+	basePath: process.env.NODE_ENV === 'production' ? '/docs' : '',
 	images: { unoptimized: true },
 	turbopack: {
 		resolveAlias: {

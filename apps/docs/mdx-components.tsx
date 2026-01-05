@@ -1,9 +1,7 @@
 import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs';
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';
-import PlotlyGraph from '@/components/plotlyGraph';
 import { Callout } from 'nextra/components'
-import CVSettings from '@/components/cvSettings';
 
 const themeComponents = getThemeComponents();
 
@@ -26,8 +24,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 				fill
 			/>
 		),
-		PlotlyGraph,
 		Callout,
-		CVSettings,
 	};
 }

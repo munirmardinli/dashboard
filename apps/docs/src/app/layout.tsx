@@ -4,7 +4,6 @@ import { Layout, Navbar } from 'nextra-theme-docs';
 import { getPageMap } from 'nextra/page-map';
 import { Head } from 'nextra/components/head';
 import { Search } from 'nextra/components/search';
-import { GoogleTagManager, GoogleTagManagerNoScript } from '@/utils/googleTag';
 import FontManager from '@/utils/font';
 
 import '@/app/_metadata';
@@ -28,10 +27,8 @@ export default async function RootLayout({
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<meta name="robots" content="index, follow" />
 				<meta name="theme-color" content="#000000" />
-				<GoogleTagManager />
 			</Head>
 			<body className="antialiased tracking-tight">
-				<GoogleTagManagerNoScript />
 				<Layout
 					sidebar={{ autoCollapse: true }}
 					navbar={

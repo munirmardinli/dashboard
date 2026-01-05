@@ -16,7 +16,7 @@
     "repoUrl": "https://github.com/munirmardinli-dev/docs"
   },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev --webpack --port 3001",
     "build": "next build --webpack",
     "start": "npx serve@latest out",
     "lint": "echo 'No linting configured'",
