@@ -141,6 +141,15 @@ jobs:
           NEXT_TELEMETRY_DISABLED=1
           TURBO_TELEMETRY_DISABLED=1
           EOF
+      - name: Create .env.production for Docs
+        working-directory: apps/docs
+        run: |
+          cat <<EOF > .env.production
+          NEXT_PUBLIC_API_URL=
+          NODE_ENV=production
+          NEXT_TELEMETRY_DISABLED=1
+          TURBO_TELEMETRY_DISABLED=1
+          EOF
       - name: Build application with Turbo
         run: npm run build
       - name: Upload UI build artifact (dist)
@@ -160,6 +169,12 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
+          retention-days: 1
+      - name: Upload Docs build artifact (out)
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs-out
+          path: apps/docs/out
           retention-days: 1
 
   build:
@@ -207,6 +222,11 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
+      - name: Download Docs build artifact (out)
+        uses: actions/download-artifact@v7
+        with:
+          name: docs-out
+          path: apps/docs/out
       - name: Create Trivy ignore file
         run: |
           cat > .trivyignore << EOF
@@ -278,6 +298,11 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
+      - name: Download Docs build artifact (out)
+        uses: actions/download-artifact@v7
+        with:
+          name: docs-out
+          path: apps/docs/out
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Setup Testcontainers Cloud Client
