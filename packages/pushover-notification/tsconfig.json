@@ -1,0 +1,39 @@
+{
+ "compilerOptions": {
+  "rootDirs": ["src"],
+  "outDir": "lib/src",
+  "lib": ["es2022", "dom"],
+  "target": "es2022",
+  "module": "nodenext",
+  "moduleResolution": "nodenext",
+  "noImplicitAny": true,
+  "strict": true,
+  "esModuleInterop": true,
+  "verbatimModuleSyntax": true,
+  "forceConsistentCasingInFileNames": true,
+  "noFallthroughCasesInSwitch": true,
+  "noUncheckedIndexedAccess": true,
+  "noPropertyAccessFromIndexSignature": true,
+  "skipLibCheck": true,
+  "useUnknownInCatchVariables": true,
+  "strictNullChecks": true,
+  "strictFunctionTypes": true,
+  "allowArbitraryExtensions": true,
+  "allowSyntheticDefaultImports": true,
+  "declarationMap": false,
+  "pretty": true,
+  "newLine": "lf",
+  "erasableSyntaxOnly": true,
+  "noEmit": false,
+  "removeComments": true,
+  "declaration": true,
+  "declarationDir": "lib/src",
+  "types": ["node"],
+  "typeRoots": ["./node_modules/@types", "./src"],
+  "paths": {
+   "pushover-types": ["./src/types.d.ts"]
+  }
+ },
+ "include": ["src/*.ts", "src/types.d.ts", "../../dotenv.d.ts"],
+ "exclude": ["node_modules"]
+}

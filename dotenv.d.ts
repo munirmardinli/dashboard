@@ -80,5 +80,22 @@ declare namespace NodeJS {
 			* @default gemini-2.5-flash
 			*/
 		GEMINI_MODEL: string;
+		/**
+		* Pushover application API token.
+		* @format [a-zA-Z0-9]{30} (30 alphanumeric characters)
+		* @see {@link https://pushover.net/api#registration | Pushover App Registration}
+		*/
+		PUSHOVER_API_TOKEN: string;
+		/**
+		* Pushover application user key.
+		* @format [a-zA-Z0-9]{30} (30 alphanumeric characters)
+		* @see {@link https://pushover.net/api#registration | Pushover App Registration}
+		*/
+		PUSHOVER_USER_KEY: string;
+		/**
+		* Path to the assets directory.
+		* @default "assets"
+		*/
+		ASSETS_DIR: string;
 	}
 }

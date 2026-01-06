@@ -3,20 +3,16 @@
 **/node_modules
 
 # next.js
-/.next/
-apps/ui/.next/
-apps/docs/.next/
-apps/docs/public/
-apps/homelab/.next/
-apps/homelab/public/
-apps/portfolio/out/
-apps/portfolio/.next/
-apps/dashy/out/
-apps/dashy/.next/
 
-# API build
-apps/api/dist/
-apps/ui/dist/
+apps/**/.next/
+apps/**/out/
+apps/**/dist/
+apps/**/node_modules/
+apps/**/tsconfig.tsbuildinfo
+# Pushover Notification
+**/lib
+/assets
+**/assets
 
 # Synology NAS metadata
 @eaDir/
@@ -36,8 +32,6 @@ Thumbs.db
 
 # public files
 public/*
-!public/de.json
-!public/dashboard.png
 
 .cursor/
 tsconfig.tsbuildinfo
@@ -53,7 +47,6 @@ k8s/secret.yml
 
 # API public directory (contains generated data files)
 apps/api/public/
-out/
 
 .env
 .env.local
@@ -66,3 +59,5 @@ out/
 
 **/*.log
 **/*.txt
+
+**/next-env.d.ts

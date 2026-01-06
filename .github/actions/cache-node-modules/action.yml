@@ -23,6 +23,7 @@ runs:
           apps/docs/node_modules
           apps/dashy/node_modules
           .npm
+          .npmrc
         key: ${{ inputs.cache-key }}
         restore-keys: |
           ${{ runner.os }}-node-
