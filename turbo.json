@@ -13,7 +13,8 @@
 				".next/**",
 				"!.next/cache/**",
 				"dist/**",
-				"out/**"
+				"out/**",
+				"lib/**"
 			]
 		},
 		"dev": {
@@ -32,6 +33,9 @@
 				"^build"
 			],
 			"outputs": []
+		},
+		"homelab": {
+			"cache": false
 		}
 	}
 }

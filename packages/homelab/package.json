@@ -1,0 +1,15 @@
+{
+ "name": "@munirmardinli/homelab",
+ "version": "0.0.1",
+ "license": "MIT",
+ "private": false,
+ "scripts": {
+  "build": "mkdir -p lib && touch lib/.build && echo 'No build script configured'",
+  "start": "echo 'No start script configured'",
+  "dev": "echo 'No dev script configured'",
+  "lint": "echo 'No lint script configured'",
+  "type-check": "echo 'No type-check script configured'",
+  "prehomelab": "chmod +x src/index.sh",
+  "homelab": "./src/index.sh"
+ }
+}
