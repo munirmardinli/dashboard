@@ -22,7 +22,7 @@ runs:
           apps/portfolio/node_modules
           apps/docs/node_modules
           apps/dashy/node_modules
-          packages/homelab/node_modules
+          packages/pushover-notification/node_modules
           .npm
           .npmrc
         key: ${{ inputs.cache-key }}
