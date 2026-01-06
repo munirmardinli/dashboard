@@ -602,6 +602,61 @@ declare global {
     date: string;
     items: ExpenseItem[];
   }
+
+  interface DashyItem {
+    name: string;
+    url: string;
+    icon?: string;
+    iconUrl?: string;
+    isArchive?: boolean;
+    updatedAt?: string;
+  }
+  
+  interface DashyItemWithMeta extends DashyItem {
+    id: string;
+    sectionId: string;
+    sectionTitle: string;
+    itemIndex: number;
+    createdAt: string;
+    updatedAt: string;
+    isArchive: boolean;
+  }
+  
+  interface DashySection {
+    id: string;
+    title: string;
+    icon: string;
+    items: DashyItem[];
+  }
+  
+  interface DashyData {
+    title: string;
+    user: {
+      name: string;
+      greeting: string;
+    };
+    header: {
+      searchPlaceholder: string;
+      design: {
+        current: string;
+        options: string[];
+      };
+      layout: string[];
+      itemSize: string[];
+    };
+    footer: {
+      text: string;
+    };
+    widgets: Array<{
+      id: string;
+      title: string;
+      icon: string;
+      type: string;
+      gridColumns: number;
+      data: Record<string, unknown>;
+    }>;
+    sections: DashySection[];
+  }
 }
 
 

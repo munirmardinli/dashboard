@@ -18,7 +18,7 @@ export default function QuittungPage() {
 		fetchExpenses();
 	}, []);
 
-	const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4011');
+	const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4012');
 	async function fetchExpenses() {
 		try {
 			const response = await fetch(`${API_URL}/api/data/expense`);

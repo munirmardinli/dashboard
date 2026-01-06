@@ -1,8 +1,8 @@
 import { FC, useState, useEffect, useRef, useMemo, useCallback, useTransition } from "react";
 import { notFound, useRouter } from "next/navigation";
-import { Clock, Plus, Search, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from "lucide-react";
+import { Clock, Plus, Search, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 
-import { DataAPI, ConfigAPI } from "@/utils/api";
+import { DataAPI, ConfigAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useI18nStore } from "@/stores/i18nStore";
@@ -62,8 +62,13 @@ export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) 
   useEffect(() => {
     startTransition(async () => {
       try {
-        if (!configCacheRef.current.items.has(dataType)) configCacheRef.current.items.set(dataType, await DataAPI.getItems<GenericJsonItem>(dataType));
-        setAllItems((configCacheRef.current.items.get(dataType) || []).filter(i => !i.isArchive));
+        if (dataType === 'dashy') {
+          const items = await DashyAPI.getAllItems();
+          setAllItems(items.filter(i => !i.isArchive) as unknown as GenericJsonItem[]);
+        } else {
+          if (!configCacheRef.current.items.has(dataType)) configCacheRef.current.items.set(dataType, await DataAPI.getItems<GenericJsonItem>(dataType));
+          setAllItems((configCacheRef.current.items.get(dataType) || []).filter(i => !i.isArchive));
+        }
       } catch { setError('load-failed'); setSnack(`${t("ui.failedToLoad")} ${dataType}`, 'error'); notFound(); }
     });
   }, [dataType, setSnack, t]);
@@ -127,7 +132,16 @@ export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) 
   const endItem = Math.min(currentPage * itemsPerPage, filteredItems.length);
 
   const formatNum = (num: number) => num.toLocaleString(getLocale()).replace(/_/g, '-');
-  const handleEdit = (id: string) => startTransition(() => router.push(`/q?view=${dataType}&id=${id}`));
+  const handleEdit = (id: string) => {
+    if (dataType === 'dashy') {
+      const item = allItems.find(i => i.id === id) as DashyItemWithMeta | undefined;
+      if (item) {
+        startTransition(() => router.push(`/q?view=${dataType}&id=${id}&sectionId=${item.sectionId}&itemIndex=${item.itemIndex}`));
+      }
+    } else {
+      startTransition(() => router.push(`/q?view=${dataType}&id=${id}`));
+    }
+  };
 
   const getViewFieldLabel = useCallback((fieldKey: string) => {
     const field = (translations.dataTypes?.[dataType]?.view as DisplayField[])?.find(f => f.key === fieldKey);
@@ -160,6 +174,27 @@ export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) 
       </span>
     );
     if (field.type === 'chip') return <span style={{ padding: '6px 12px', borderRadius: '20px', background: '#e5e7eb', fontSize: isDesktop ? '0.9rem' : '0.8rem', color: '#374151' }}>{String(value)}</span>;
+    if (field.type === 'url') {
+      return (
+        <a
+          href={String(value)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: theme.primary,
+            textDecoration: 'none',
+            fontSize: isDesktop ? '0.9rem' : '0.8rem',
+          }}
+        >
+          {String(value)}
+          <ExternalLink size={14} />
+        </a>
+      );
+    }
     return <span style={{ fontSize: isDesktop ? '1rem' : '0.875rem', color: theme.text }}>{String(value)}</span>;
   };
 
@@ -238,9 +273,9 @@ export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) 
                 >
                   {actualDisplayFields.map((field) => (
                     <td key={field.key} style={{ padding: '20px 24px', color: theme.text, fontSize: '1rem' }}>
-                      {field.key === 'title' ? (
+                      {(field.key === 'title' || field.key === 'name') ? (
                         <span style={{ textDecoration: item.isArchive ? "line-through" : "none", fontWeight: 600, fontSize: '1.1rem', color: theme.text }}>
-                          {String((item as any)[field.key] || '')}
+                          {String((item as Record<string, unknown>)[field.key] || '')}
                         </span>
                       ) : renderCellContent(item, field)}
                     </td>

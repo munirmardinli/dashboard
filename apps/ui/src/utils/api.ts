@@ -1,12 +1,4 @@
-
-
-
-
-
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4011');
-
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4012');
 
 async function fetchAPI<T>(
 	endpoint: string,
@@ -108,5 +100,59 @@ export const ConfigAPI = {
 	async getNavigationConfig(): Promise<NavigationConfig | null> {
 		const result = await fetchAPI<NavigationConfig>(`/api/config/navigation`);
 		return result.success ? result.data : null;
+	},
+};
+
+
+
+export const DashyAPI = {
+	async getDashyData(): Promise<DashyData | null> {
+		const result = await fetchAPI<DashyData>(`/api/dashy`);
+		return result.success ? result.data : null;
+	},
+
+	async getAllItems(): Promise<DashyItemWithMeta[]> {
+		const data = await this.getDashyData();
+		if (!data) return [];
+
+		const items: DashyItemWithMeta[] = [];
+		data.sections.forEach((section) => {
+			section.items.forEach((item, index) => {
+				items.push({
+					...item,
+					id: `${section.id}-${index}`,
+					sectionId: section.id,
+					sectionTitle: section.title,
+					itemIndex: index,
+					createdAt: new Date().toISOString(),
+					updatedAt: item.updatedAt || new Date().toISOString(),
+					isArchive: item.isArchive || false,
+				});
+			});
+		});
+		return items;
+	},
+
+	async createItem(sectionId: string, item: DashyItem): Promise<DashyItem | null> {
+		const result = await fetchAPI<DashyItem>(`/api/dashy/sections/${sectionId}/items`, {
+			method: 'POST',
+			body: JSON.stringify(item),
+		});
+		return result.success ? result.data : null;
+	},
+
+	async updateItem(sectionId: string, itemIndex: number, item: Partial<DashyItem>): Promise<DashyItem | null> {
+		const result = await fetchAPI<DashyItem>(`/api/dashy/sections/${sectionId}/items/${itemIndex}`, {
+			method: 'PUT',
+			body: JSON.stringify(item),
+		});
+		return result.success ? result.data : null;
+	},
+
+	async deleteItem(sectionId: string, itemIndex: number): Promise<boolean> {
+		const result = await fetchAPI<{ success: boolean }>(`/api/dashy/sections/${sectionId}/items/${itemIndex}`, {
+			method: 'DELETE',
+		});
+		return result.success && result.data.success;
 	},
 };

@@ -159,7 +159,7 @@ export default function Home() {
 
   const filteredSections = data?.sections?.filter(section =>
     section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    section.items.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    section.items.some(item => !item.isArchive && item.name.toLowerCase().includes(searchQuery.toLowerCase()))
   ) || [];
 
   return (
@@ -716,7 +716,7 @@ export default function Home() {
                         gridTemplateColumns: 'repeat(3, 1fr)',
                         gap: '12px'
                       }}>
-                        {section.items.map((item, idx) => (
+                        {section.items.filter(item => !item.isArchive).map((item, idx) => (
                           <a
                             key={idx}
                             href={item.url}
@@ -812,7 +812,7 @@ export default function Home() {
                           </a>
                         ))}
                       </div>
-                      {section.items.length === 0 && (
+                      {section.items.filter(item => !item.isArchive).length === 0 && (
                         <div style={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>Keine Einträge</div>
                       )}
                     </div>

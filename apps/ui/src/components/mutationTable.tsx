@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check, ExternalLink } from "lucide-react";
 
-import { ConfigAPI, DataAPI } from "@/utils/api";
+import { ConfigAPI, DataAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -27,14 +27,19 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
 
   const actualSlug = slug || 'create';
   const idFromParams = searchParams.get('id');
+  const sectionIdFromParams = searchParams.get('sectionId');
+  const itemIndexFromParams = searchParams.get('itemIndex');
   const actualId = idFromParams || (actualSlug === 'create' ? 'create' : actualSlug);
 
   const [items, setItems] = useState<GenericJsonItem[]>([]);
+  const [dashyData, setDashyData] = useState<DashyData | null>(null);
   const [, setFullConfig] = useState<BasicConfig | null>(null);
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [isEdit, setIsEdit] = useState(false);
   const [todoId, setTodoId] = useState<string | null>(null);
+  const [dashySectionId, setDashySectionId] = useState<string>('');
+  const [dashyItemIndex, setDashyItemIndex] = useState<number>(-1);
   const [isInitialized, setIsInitialized] = useState(false);
   const [itemNotFound, setItemNotFound] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string | null>>({});
@@ -54,10 +59,17 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       setLoading(true, t("ui.initializing"));
       try {
         startTransition(async () => {
-          const [cfg, dtCfg] = await Promise.all([ConfigAPI.getFullConfig(), ConfigAPI.getDataTypeConfig(dataType)]);
-          if (cfg) setFullConfig(cfg);
-          if (dtCfg) setConfig(dtCfg);
-          if (dataType) setItems(await DataAPI.getItems<GenericJsonItem>(dataType) || []);
+          if (dataType === 'dashy') {
+            const data = await DashyAPI.getDashyData();
+            if (data) setDashyData(data);
+            const dtCfg = await ConfigAPI.getDataTypeConfig(dataType);
+            if (dtCfg) setConfig(dtCfg);
+          } else {
+            const [cfg, dtCfg] = await Promise.all([ConfigAPI.getFullConfig(), ConfigAPI.getDataTypeConfig(dataType)]);
+            if (cfg) setFullConfig(cfg);
+            if (dtCfg) setConfig(dtCfg);
+            if (dataType) setItems(await DataAPI.getItems<GenericJsonItem>(dataType) || []);
+          }
           setIsInitialized(true);
         });
       } catch { setSnack(t("ui.failedToLoad"), 'error'); } finally { setLoading(false); }
@@ -69,11 +81,11 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
 
   const getInitialFormData = useCallback((isEditMode = false) => {
     if (!config) return {};
-    const data: Record<string, any> = {};
+    const data: Record<string, string> = {};
     (isEditMode ? config.update : config.create).forEach(f => {
       if (f.type === "date") data[f.key] = new Date().toISOString().split("T")[0];
       else if (f.type === "time") data[f.key] = "10:00";
-      else if (f.type === "number") data[f.key] = isEditMode ? 1 : "";
+      else if (f.type === "number") data[f.key] = isEditMode ? "1" : "";
       else if (f.type === "select") data[f.key] = isEditMode ? f.options?.[0]?.value || "" : "";
       else if (f.key === "items") data[f.key] = "[]";
       else data[f.key] = "";
@@ -84,21 +96,64 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   useEffect(() => {
     if (!isInitialized) return;
     if (!config && dataType) { setItemNotFound(true); return; }
-    if (actualId === "create") { setIsEdit(false); setItemNotFound(false); setFormData(getInitialFormData(false)); }
-    else if (items.length > 0) {
-      const item = items.find(t => t.id === actualId);
-      if (item) {
-        setIsEdit(true); setTodoId(item.id!);
-        const editData: Record<string, any> = {};
-        config?.update.forEach(f => {
-          const val = (item as any)[f.key];
-          if (f.key === "items" && Array.isArray(val)) editData[f.key] = JSON.stringify(val, null, 2);
-          else editData[f.key] = val ?? "";
-        });
-        setFormData(editData); setItemNotFound(false);
+
+    if (dataType === 'dashy') {
+      if (actualId === "create") {
+        setIsEdit(false);
+        setItemNotFound(false);
+        const initialData = getInitialFormData(false);
+        if (sectionIdFromParams) {
+          initialData.sectionId = sectionIdFromParams;
+          setDashySectionId(sectionIdFromParams);
+        } else if (dashyData && dashyData.sections.length > 0) {
+          initialData.sectionId = dashyData.sections[0].id;
+          setDashySectionId(dashyData.sections[0].id);
+        }
+        setFormData(initialData);
+      } else if (sectionIdFromParams && itemIndexFromParams && dashyData) {
+        const section = dashyData.sections.find((s: DashySection) => s.id === sectionIdFromParams);
+        if (section) {
+          const index = parseInt(itemIndexFromParams, 10);
+          if (index >= 0 && index < section.items.length) {
+            setIsEdit(true);
+            setDashySectionId(sectionIdFromParams);
+            setDashyItemIndex(index);
+            const item = section.items[index];
+            const editData: Record<string, string> = {
+              sectionId: sectionIdFromParams,
+              name: item.name || '',
+              url: item.url || '',
+              iconUrl: item.iconUrl || '',
+              icon: item.icon || '',
+            };
+            setFormData(editData);
+            setItemNotFound(false);
+          } else {
+            setItemNotFound(true);
+          }
+        } else {
+          setItemNotFound(true);
+        }
+      } else {
+        setItemNotFound(true);
+      }
+    } else {
+      if (actualId === "create") { setIsEdit(false); setItemNotFound(false); setFormData(getInitialFormData(false)); }
+      else if (items.length > 0) {
+        const item = items.find(t => t.id === actualId);
+        if (item) {
+          setIsEdit(true); setTodoId(item.id!);
+          const editData: Record<string, string> = {};
+          config?.update.forEach(f => {
+            const val = (item as Record<string, unknown>)[f.key];
+            if (f.key === "items" && Array.isArray(val)) editData[f.key] = JSON.stringify(val, null, 2);
+            else editData[f.key] = String(val ?? "");
+          });
+          setFormData(editData); setItemNotFound(false);
+        } else setItemNotFound(true);
       } else setItemNotFound(true);
-    } else setItemNotFound(true);
-  }, [actualId, items, dataType, isInitialized, config, getInitialFormData]);
+    }
+  }, [actualId, items, dataType, isInitialized, config, getInitialFormData, sectionIdFromParams, itemIndexFromParams, dashyData]);
 
   useEffect(() => {
     if (!config) { setIsFormValid(false); return; }
@@ -110,13 +165,17 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       else if (f.type === "array") { try { const p = JSON.parse(val || '[]'); if (!Array.isArray(p) || p.length === 0) valid = false; } catch { valid = false; } }
       else if (String(val ?? '').trim().length === 0) valid = false;
     });
+    if (dataType === 'dashy' && !formData.sectionId) valid = false;
     setIsFormValid(valid);
-  }, [formData, config, isEdit]);
+  }, [formData, config, isEdit, dataType]);
 
-  const handleInputChange = useCallback((field: string, value: any) => {
+  const handleInputChange = useCallback((field: string, value: string) => {
     setFormData(p => ({ ...p, [field]: value }));
     setFormErrors(p => ({ ...p, [field]: null }));
-  }, []);
+    if (field === 'sectionId' && dataType === 'dashy') {
+      setDashySectionId(value);
+    }
+  }, [dataType]);
 
   const getLabel = useCallback((key: string, mode: 'create' | 'update' = isEdit ? 'update' : 'create') => {
     return (translations.dataTypes?.[dataType]?.[mode] as FormField[])?.find(f => f.key === key)?.label || '';
@@ -126,45 +185,82 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     if (isSavingRef.current) return;
     isSavingRef.current = true; setIsSaving(true);
     try {
-      const processed = { ...formData };
-      (isEdit ? config!.update : config!.create).forEach(f => {
-        if (f.type === "number" && processed[f.key]) processed[f.key] = Number(processed[f.key]);
-        if (f.key === "items" && processed[f.key]) processed[f.key] = JSON.parse(processed[f.key]);
-      });
+      if (dataType === 'dashy') {
+        const sectionId = formData.sectionId || dashySectionId;
+        if (!sectionId) {
+          setSnack("Bitte wählen Sie eine Section aus", 'error');
+          isSavingRef.current = false;
+          setIsSaving(false);
+          return;
+        }
+        const item: DashyItem = {
+          name: formData.name,
+          url: formData.url,
+        };
+        if (formData.iconUrl) item.iconUrl = formData.iconUrl;
+        if (formData.icon) item.icon = formData.icon;
 
-      if (isEdit && todoId) {
-        const updated = { ...items.find(i => i.id === todoId)!, ...processed, updatedAt: new Date().toISOString() };
-        startTransition(() => {
-          setOptimisticItems(updated);
-        });
-        await DataAPI.updateItem(dataType, todoId, updated);
-        try { useSoundStore.getState().playEvent("update"); } catch { }
+        if (isEdit && dashyItemIndex >= 0) {
+          await DashyAPI.updateItem(sectionId, dashyItemIndex, item);
+          try { useSoundStore.getState().playEvent("update"); } catch { }
+        } else {
+          await DashyAPI.createItem(sectionId, item);
+          try { useSoundStore.getState().playEvent("create"); } catch { }
+        }
+        setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
+        router.push(`/q?view=${dataType}`);
       } else {
-        const newItem = { ...processed, id: crypto.randomUUID(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), isArchive: false };
-        startTransition(() => {
-          setOptimisticItems(newItem);
+        const processed: Record<string, unknown> = { ...formData };
+        (isEdit ? config!.update : config!.create).forEach(f => {
+          if (f.type === "number" && processed[f.key]) processed[f.key] = Number(processed[f.key]);
+          if (f.key === "items" && processed[f.key]) processed[f.key] = JSON.parse(String(processed[f.key]));
         });
-        await DataAPI.createItem(dataType, newItem);
-        try { useSoundStore.getState().playEvent("create"); } catch { }
+
+        if (isEdit && todoId) {
+          const updated = { ...items.find(i => i.id === todoId)!, ...processed, updatedAt: new Date().toISOString() };
+          startTransition(() => {
+            setOptimisticItems(updated);
+          });
+          await DataAPI.updateItem(dataType, todoId, updated);
+          try { useSoundStore.getState().playEvent("update"); } catch { }
+        } else {
+          const newItem = { ...processed, id: crypto.randomUUID(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), isArchive: false };
+          startTransition(() => {
+            setOptimisticItems(newItem);
+          });
+          await DataAPI.createItem(dataType, newItem);
+          try { useSoundStore.getState().playEvent("create"); } catch { }
+        }
+        setItems(await DataAPI.getItems(dataType));
+        setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
+        router.push(`/q?view=${dataType}`);
       }
-      setItems(await DataAPI.getItems(dataType));
-      setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
-      router.push(`/q?view=${dataType}`);
     } catch (e) { setSnack(String(e), 'error'); } finally { isSavingRef.current = false; setIsSaving(false); }
   };
   handleSaveRef.current = handleSave;
   const handleDelete = async () => {
-    if (!isEdit || !todoId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
-    try {
-      await DataAPI.archiveItem(dataType, todoId);
-      setItems(await DataAPI.getItems(dataType));
-      setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
-      try { useSoundStore.getState().playEvent("delete"); } catch { }
-      router.push(`/q?view=${dataType}`);
-    } catch (e) { setSnack(String(e), 'error'); }
+    if (dataType === 'dashy') {
+      if (!isEdit || dashyItemIndex < 0 || !dashySectionId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
+      try {
+        await DashyAPI.deleteItem(dashySectionId, dashyItemIndex);
+        setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
+        try { useSoundStore.getState().playEvent("delete"); } catch { }
+        router.push(`/q?view=${dataType}`);
+      } catch (e) { setSnack(String(e), 'error'); }
+    } else {
+      if (!isEdit || !todoId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
+      try {
+        await DataAPI.archiveItem(dataType, todoId);
+        setItems(await DataAPI.getItems(dataType));
+        setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
+        try { useSoundStore.getState().playEvent("delete"); } catch { }
+        router.push(`/q?view=${dataType}`);
+      } catch (e) { setSnack(String(e), 'error'); }
+    }
   };
 
   if (!isInitialized || isLoading || !config || itemNotFound) return null;
+  if (dataType === 'dashy' && !dashyData) return null;
   const renderField = (field: FormField) => {
     if (field.hidden) return null;
     const label = getLabel(field.key) || field.label;
@@ -175,7 +271,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       typeof value === 'boolean' ||
       typeof value === 'number' ||
       (typeof value === 'string' && (field.type === 'select' || value.trim().length > 0))
-    );
+    ) || (dataType === 'dashy' && field.key === 'sectionId' && dashySectionId);
     const isFocused = focusedFields[field.key] || false;
     const gridSize = isDesktop ? (field.grid || 12) : 12;
     const showHelperText = !error && (!formData[field.key] || String(formData[field.key]).length <= 0) && field.helperText;
@@ -435,6 +531,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     }
 
     if (field.type === "select") {
+      const isSectionIdField = dataType === 'dashy' && field.key === 'sectionId';
       return (
         <div key={field.key} style={containerStyle}>
           <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
@@ -445,8 +542,13 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               onFocus={() => setFocusedFields(p => ({ ...p, [field.key]: true }))}
               onBlur={() => setFocusedFields(p => ({ ...p, [field.key]: false }))}
               style={{ ...outlinedInputStyle, appearance: 'none', cursor: 'pointer', paddingRight: '40px' }}
+              disabled={isSectionIdField && isEdit}
             >
-              {field.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              {isSectionIdField && dashyData ? (
+                dashyData.sections.map(s => <option key={s.id} value={s.id}>{s.title}</option>)
+              ) : (
+                field.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)
+              )}
             </select>
             <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: theme.textSec }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" /></svg>

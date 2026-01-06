@@ -39,6 +39,7 @@ const titleMap: Record<string, string> = {
 	schoolJournal: "Schulbegleitung",
 	privatContact: "Privat Kontakte",
 	workContact: "Arbeit Kontakte",
+	dashy: "Dashy",
 };
 
 function QueryPageContent() {

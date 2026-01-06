@@ -163,7 +163,7 @@ apps/api/
 #### UI Application (`.env.local`)
 ```bash
 # API Base URL
-NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:4012
 NEXT_PUBLIC_TINY_MCE_API_KEY=your_tiny_mce_api_key_here
 NEXT_PUBLIC_DEFAULT_LANGUAGE=de
 NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
@@ -174,7 +174,7 @@ TZ=Europe/Berlin
 #### API Server (`.env`)
 ```bash
 # Server configuration
-PORT=4000
+PORT=4012
 NODE_ENV=development
 TZ=Europe/Berlin
 NEXT_PUBLIC_ASSETS_DIR=public

@@ -2,7 +2,7 @@ declare namespace NodeJS {
 	interface ProcessEnv {
 		/**
 			* The base URL of the API server (public, accessible in client components)
-			* @default http://localhost:4011
+			* @default http://localhost:4012
 			*/
 		NEXT_PUBLIC_API_URL: string;
 		/**

@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4011');
+const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4012');
 
 async function fetchAPI<T>(
 	endpoint: string,
@@ -61,6 +61,8 @@ export interface DashySection {
 		url: string;
 		icon?: string;
 		iconUrl?: string;
+		isArchive?: boolean;
+		updatedAt?: string;
 	}>;
 }
 
@@ -90,5 +92,25 @@ export const DashyAPI = {
 	async getDashyData(): Promise<DashyData | null> {
 		const result = await fetchAPI<DashyData>(`/api/dashy`);
 		return result.success ? result.data : null;
+	},
+	async createItem(sectionId: string, item: { name: string; url: string; icon?: string; iconUrl?: string }): Promise<{ name: string; url: string; icon?: string; iconUrl?: string } | null> {
+		const result = await fetchAPI<{ name: string; url: string; icon?: string; iconUrl?: string }>(`/api/dashy/sections/${sectionId}/items`, {
+			method: 'POST',
+			body: JSON.stringify(item),
+		});
+		return result.success ? result.data : null;
+	},
+	async updateItem(sectionId: string, itemIndex: number, item: { name: string; url: string; icon?: string; iconUrl?: string }): Promise<{ name: string; url: string; icon?: string; iconUrl?: string } | null> {
+		const result = await fetchAPI<{ name: string; url: string; icon?: string; iconUrl?: string }>(`/api/dashy/sections/${sectionId}/items/${itemIndex}`, {
+			method: 'PUT',
+			body: JSON.stringify(item),
+		});
+		return result.success ? result.data : null;
+	},
+	async deleteItem(sectionId: string, itemIndex: number): Promise<boolean> {
+		const result = await fetchAPI<{ success: boolean }>(`/api/dashy/sections/${sectionId}/items/${itemIndex}`, {
+			method: 'DELETE',
+		});
+		return result.success && result.data.success;
 	},
 };
