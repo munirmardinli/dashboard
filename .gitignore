@@ -11,6 +11,8 @@ apps/homelab/.next/
 apps/homelab/public/
 apps/portfolio/out/
 apps/portfolio/.next/
+apps/dashy/out/
+apps/dashy/.next/
 
 # API build
 apps/api/dist/
