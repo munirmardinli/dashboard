@@ -161,6 +161,7 @@ jobs:
         run: |
           cat <<EOF > .env.production
           NODE_ENV=production
+          NEXT_PUBLIC_API_URL=
           NEXT_TELEMETRY_DISABLED=1
           TURBO_TELEMETRY_DISABLED=1
           EOF
