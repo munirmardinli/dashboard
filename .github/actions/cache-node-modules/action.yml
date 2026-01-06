@@ -26,4 +26,3 @@ runs:
         key: ${{ inputs.cache-key }}
         restore-keys: |
           ${{ runner.os }}-node-
-      shell: bash
