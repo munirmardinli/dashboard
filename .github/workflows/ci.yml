@@ -34,19 +34,9 @@ jobs:
           cache: npm
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v5
+        uses: ./.github/actions/cache-node-modules
         with:
-          path: |
-            node_modules
-            apps/api/node_modules
-            apps/ui/node_modules
-            apps/portfolio/node_modules
-            apps/docs/node_modules
-            apps/dashy/node_modules
-            .npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache-key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
@@ -61,19 +51,9 @@ jobs:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
       - name: Restore node modules from cache
-        uses: actions/cache@v5
+        uses: ./.github/actions/cache-node-modules
         with:
-          path: |
-            node_modules
-            apps/api/node_modules
-            apps/ui/node_modules
-            apps/portfolio/node_modules
-            apps/docs/node_modules
-            apps/dashy/node_modules
-            .npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache-key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
       - name: Cache Turbo
         uses: actions/cache@v5
         with:
@@ -95,19 +75,9 @@ jobs:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
       - name: Restore node modules from cache
-        uses: actions/cache@v5
+        uses: ./.github/actions/cache-node-modules
         with:
-          path: |
-            node_modules
-            apps/api/node_modules
-            apps/ui/node_modules
-            apps/portfolio/node_modules
-            apps/docs/node_modules
-            apps/dashy/node_modules
-            .npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache-key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
       - name: Cache Turbo
         uses: actions/cache@v5
         with:
@@ -167,31 +137,31 @@ jobs:
           EOF
       - name: Build application with Turbo
         run: npm run build
-      - name: Upload UI build artifact (dist)
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
           name: ui-dist
           path: apps/ui/dist
           retention-days: 1
-      - name: Upload API build artifact (dist)
+      - name: Upload API build artifact
         uses: actions/upload-artifact@v6
         with:
           name: api-dist
           path: apps/api/dist
           retention-days: 1
-      - name: Upload Portfolio build artifact (out)
+      - name: Upload Portfolio build artifact
         uses: actions/upload-artifact@v6
         with:
           name: portfolio-out
           path: apps/portfolio/out
           retention-days: 1
-      - name: Upload Docs build artifact (out)
+      - name: Upload Docs build artifact
         uses: actions/upload-artifact@v6
         with:
           name: docs-out
           path: apps/docs/out
           retention-days: 1
-      - name: Upload Dashy build artifact (out)
+      - name: Upload Dashy build artifact
         uses: actions/upload-artifact@v6
         with:
           name: dashy-out
@@ -203,22 +173,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Download UI build artifact (dist)
+      - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
-      - name: Download API build artifact (dist)
+      - name: Download API build artifact
         uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
-      - name: Download Portfolio build artifact (out)
+      - name: Download Portfolio build artifact
         uses: actions/download-artifact@v7
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Dashy build artifact (out)
+      - name: Download Dashy build artifact
         uses: actions/download-artifact@v7
         with:
           name: dashy-out
@@ -233,27 +203,27 @@ jobs:
         with:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
-      - name: Download UI build artifact (dist)
+      - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
-      - name: Download API build artifact (dist)
+      - name: Download API build artifact
         uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
-      - name: Download Portfolio build artifact (out)
+      - name: Download Portfolio build artifact
         uses: actions/download-artifact@v7
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Docs build artifact (out)
+      - name: Download Docs build artifact
         uses: actions/download-artifact@v7
         with:
           name: docs-out
           path: apps/docs/out
-      - name: Download Dashy build artifact (out)
+      - name: Download Dashy build artifact
         uses: actions/download-artifact@v7
         with:
           name: dashy-out
@@ -314,27 +284,27 @@ jobs:
         with:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
-      - name: Download UI build artifact (dist)
+      - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/dist
-      - name: Download API build artifact (dist)
+      - name: Download API build artifact
         uses: actions/download-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
-      - name: Download Portfolio build artifact (out)
+      - name: Download Portfolio build artifact
         uses: actions/download-artifact@v7
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Docs build artifact (out)
+      - name: Download Docs build artifact
         uses: actions/download-artifact@v7
         with:
           name: docs-out
           path: apps/docs/out
-      - name: Download Dashy build artifact (out)
+      - name: Download Dashy build artifact
         uses: actions/download-artifact@v7
         with:
           name: dashy-out

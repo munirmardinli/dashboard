@@ -1,0 +1,29 @@
+name: "Cache Node Modules"
+description: "Cache node_modules directories for all apps"
+inputs:
+  cache-key:
+    description: "Cache key"
+    required: true
+outputs:
+  cache-hit:
+    description: "Whether the cache was hit"
+    value: ${{ steps.cache.outputs.cache-hit }}
+runs:
+  using: composite
+  steps:
+    - name: Cache node modules
+      id: cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          node_modules
+          apps/api/node_modules
+          apps/ui/node_modules
+          apps/portfolio/node_modules
+          apps/docs/node_modules
+          apps/dashy/node_modules
+          .npm
+        key: ${{ inputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+      shell: bash
