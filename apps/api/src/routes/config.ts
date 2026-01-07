@@ -1,24 +1,18 @@
 import { sendJSON, sendError } from "../utils/http.js";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
+import { GitHubService } from "../services/github.js";
+
+const github = new GitHubService();
 
 async function getConfigData() {
-	const projectRoot = cwd();
-	const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-	const defaultLang = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE;
-
-	if (!assetsDir) {
-		throw new Error("NEXT_PUBLIC_ASSETS_DIR environment variable is not set");
-	}
+	const defaultLang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"];
 
 	if (!defaultLang) {
 		throw new Error("NEXT_PUBLIC_DEFAULT_LANGUAGE environment variable is not set");
 	}
 
-	const configPath = path.join(projectRoot, assetsDir, `${defaultLang}.json`);
-	const configData = await fs.readFile(configPath, "utf8");
-	return JSON.parse(configData);
+	const configPath = `${defaultLang}.json`;
+	const { content } = await github.getFile(configPath);
+	return JSON.parse(content);
 }
 
 export const configRoutes: Route[] = [
@@ -40,16 +34,9 @@ export const configRoutes: Route[] = [
 		handler: async (_req, res, ctx) => {
 			try {
 				const { language } = ctx.params;
-				const projectRoot = cwd();
-				const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-
-				if (!assetsDir) {
-					throw new Error("NEXT_PUBLIC_ASSETS_DIR environment variable is not set");
-				}
-
-				const translationPath = path.join(projectRoot, assetsDir, `${language}.json`);
-				const translationData = await fs.readFile(translationPath, "utf8");
-				const translations = JSON.parse(translationData);
+				const translationPath = `${language}.json`;
+				const { content } = await github.getFile(translationPath);
+				const translations = JSON.parse(content);
 				sendJSON(res, translations);
 			} catch (error) {
 				sendError(res, 500, error instanceof Error ? error.message : "Failed to get translations");

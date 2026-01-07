@@ -177,10 +177,7 @@ TZ=Europe/Berlin
 PORT=4012
 NODE_ENV=development
 TZ=Europe/Berlin
-NEXT_PUBLIC_ASSETS_DIR=public
 NEXT_PUBLIC_DEFAULT_LANGUAGE=de
-NEXT_PUBLIC_CALENDAR_DATA_DIR=public/calendar
-NEXT_PUBLIC_CALENDAR_ICS_DIR=public/ics
 GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_MODEL=
 ```

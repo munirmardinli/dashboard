@@ -1,7 +1,9 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
 import { sendError, sendImage } from "../utils/http.js";
+import { GitHubService } from "../services/github.js";
+import path from "node:path";
+
+const github = new GitHubService();
+const PORTFOLIO_DIR = "portfolio";
 
 function getContentType(filename: string): string {
 	const ext = path.extname(filename).toLowerCase();
@@ -33,21 +35,13 @@ export const imageRoutes: Route[] = [
 					return;
 				}
 
-				const projectRoot = cwd();
-				const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR || "dist/assets";
-				const normalizedAssetsDir = assetsDir.startsWith("/") ? assetsDir.slice(1) : assetsDir;
-				const filePath = path.join(projectRoot, normalizedAssetsDir, "portfolio", filename);
-
 				try {
-					await fs.access(filePath);
-				} catch {
+					const { content: buffer } = await github.getRawFile(`${PORTFOLIO_DIR}/${filename}`);
+					const contentType = getContentType(filename);
+					sendImage(res, buffer, contentType);
+				} catch (error) {
 					sendError(res, 404, "Image not found");
-					return;
 				}
-
-				const imageBuffer = await fs.readFile(filePath);
-				const contentType = getContentType(filename);
-				sendImage(res, imageBuffer, contentType);
 			} catch (error) {
 				sendError(res, 500, error instanceof Error ? error.message : "Failed to get image");
 			}

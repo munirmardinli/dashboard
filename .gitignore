@@ -61,3 +61,5 @@ apps/api/public/
 **/*.txt
 
 **/next-env.d.ts
+
+publicxx

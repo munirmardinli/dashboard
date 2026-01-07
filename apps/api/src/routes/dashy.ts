@@ -1,29 +1,24 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
 import { sendJSON, sendError } from "../utils/http.js";
+import { GitHubService } from "../services/github.js";
+
+const github = new GitHubService();
+const DASHY_FILE_PATH = "dashy/index.json";
 
 async function getDashyData(): Promise<DashyData> {
-	const projectRoot = cwd();
-	const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-	const filePath = path.join(projectRoot, assetsDir, "dashy", "index.json");
 	try {
-		const fileData = await fs.readFile(filePath, "utf8");
-		return JSON.parse(fileData) as DashyData;
+		const { content } = await github.getFile(DASHY_FILE_PATH);
+		return JSON.parse(content) as DashyData;
 	} catch (err: unknown) {
-		const fileErr = err as NodeJS.ErrnoException;
-		if (fileErr?.code === "ENOENT") {
-			throw new Error("Dashy data file not found");
-		}
 		throw err;
 	}
 }
 
 async function saveDashyData(data: DashyData): Promise<void> {
-	const projectRoot = cwd();
-	const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-	const filePath = path.join(projectRoot, assetsDir, "dashy", "index.json");
-	await fs.writeFile(filePath, JSON.stringify(data, null, "\t"), "utf8");
+	await github.updateFile(
+		DASHY_FILE_PATH,
+		JSON.stringify(data, null, "\t"),
+		"Update dashy data"
+	);
 }
 
 export const dashyRoutes: Route[] = [

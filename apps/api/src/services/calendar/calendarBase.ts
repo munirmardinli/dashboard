@@ -1,19 +1,15 @@
-import { readdirSync } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
+import { GitHubService } from "../github.js";
+
+const github = new GitHubService();
 
 export class CalendarBase<T = unknown> {
 	[calendarName: string]: T | string | number | null | undefined | CalendarBase;
 
 	private static _categories: string[] | null = null;
 	private static _categoryDisplayNames: Record<string, string> | null = null;
-	
-	private static get _dataDir(): string {
-		const dataDir = process.env.NEXT_PUBLIC_CALENDAR_DATA_DIR;
-		if (!dataDir) {
-			throw new Error("NEXT_PUBLIC_CALENDAR_DATA_DIR environment variable is not set");
-		}
-		return path.join(cwd(), dataDir);
+
+	private static get _calendarDir(): string {
+		return "calendar";
 	}
 
 	title: string;
@@ -42,14 +38,14 @@ export class CalendarBase<T = unknown> {
 		this.location = location;
 	}
 
-	private static loadCategoriesFromDataDir(dataDir: string = this._dataDir): string[] {
+	private static async loadCategoriesFromGitHub(): Promise<string[]> {
 		try {
-			const files = readdirSync(dataDir);
-			return files
-				.filter((file) => file.endsWith(".json"))
-				.map((file) => file.replace(".json", ""));
+			const items = await github.getDirectoryContents(this._calendarDir);
+			return items
+				.filter((item) => item.type === "file" && item.name.endsWith(".json"))
+				.map((item) => item.name.replace(".json", ""));
 		} catch (error) {
-			console.error("Error loading categories from data/ directory:", error);
+			console.error("Error loading categories from GitHub:", error);
 			return [];
 		}
 	}
@@ -67,9 +63,9 @@ export class CalendarBase<T = unknown> {
 		return name.replace(/^./, (str) => str.toUpperCase()).trim();
 	}
 
-	private static initializeCategories(dataDir: string = this._dataDir): void {
+	private static async initializeCategories(): Promise<void> {
 		if (CalendarBase._categories === null) {
-			CalendarBase._categories = CalendarBase.loadCategoriesFromDataDir(dataDir);
+			CalendarBase._categories = await CalendarBase.loadCategoriesFromGitHub();
 		}
 
 		if (CalendarBase._categoryDisplayNames === null) {
@@ -82,39 +78,39 @@ export class CalendarBase<T = unknown> {
 		}
 	}
 
-	static getAllCategories(dataDir: string = this._dataDir): string[] {
-		CalendarBase.initializeCategories(dataDir);
+	static async getAllCategories(): Promise<string[]> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categories || [];
 	}
 
-	static get categories() {
-		CalendarBase.initializeCategories();
+	static async getCategories(): Promise<Record<string, string>> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categoryDisplayNames || {};
 	}
 
-	static get categoryKeys(): string[] {
-		CalendarBase.initializeCategories();
+	static async getCategoryKeys(): Promise<string[]> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categories || [];
 	}
 
-	static get categoryDisplayNames() {
-		CalendarBase.initializeCategories();
+	static async getCategoryDisplayNames(): Promise<Record<string, string>> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categoryDisplayNames || {};
 	}
 
-	static getCategoryDisplayName(category: string, dataDir: string = this._dataDir): string {
-		CalendarBase.initializeCategories(dataDir);
+	static async getCategoryDisplayName(category: string): Promise<string> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categoryDisplayNames?.[category] || CalendarBase.generateDisplayName(category);
 	}
 
-	static isValidCategory(category: string, dataDir: string = this._dataDir): boolean {
-		CalendarBase.initializeCategories(dataDir);
+	static async isValidCategory(category: string): Promise<boolean> {
+		await CalendarBase.initializeCategories();
 		return CalendarBase._categories?.includes(category) || false;
 	}
 
-	static refreshCategories(dataDir: string = this._dataDir): void {
+	static async refreshCategories(): Promise<void> {
 		CalendarBase._categories = null;
 		CalendarBase._categoryDisplayNames = null;
-		CalendarBase.initializeCategories(dataDir);
+		await CalendarBase.initializeCategories();
 	}
 }

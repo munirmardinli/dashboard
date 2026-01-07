@@ -9,11 +9,11 @@ export class Scheduler {
 		this.calendarService = calendarService;
 	}
 
-	start(): void {
-		this.calendarService.generateAllICS();
-		this.job = scheduleJob("*/30 * * * * *", () => {
+	async start(): Promise<void> {
+		await this.calendarService.generateAllICS();
+		this.job = scheduleJob("*/30 * * * * *", async () => {
 			this.calendarService.clearCache();
-			this.calendarService.generateAllICS();
+			await this.calendarService.generateAllICS();
 		});
 	}
 
@@ -24,9 +24,9 @@ export class Scheduler {
 		}
 	}
 
-	updateNow(): void {
+	async updateNow(): Promise<void> {
 		console.log("🔄 Immediate ICS update...");
-		this.calendarService.generateAllICS();
+		await this.calendarService.generateAllICS();
 		console.log("✅ Immediate update completed");
 	}
 }

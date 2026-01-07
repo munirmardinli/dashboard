@@ -11,7 +11,7 @@ services:
     container_name: dashboard-dev
     restart: unless-stopped
     ports:
-      - "${PORT_UI:-4011}:80"
+      - "${PORT_UI:-4012}:80"
     volumes:
       - ./apps/api/public:/home/node/app/dist/assets
     environment:

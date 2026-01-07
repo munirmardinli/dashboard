@@ -75,14 +75,11 @@ RUN chown -R nginx:nginx /usr/share/nginx/html && \
 COPY --chown=root:root .github/.docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ENV NODE_ENV=production \
-    PORT=4011 \
+    PORT=4012 \
     TZ=Europe/Berlin \
-    NEXT_PUBLIC_ASSETS_DIR=/dist/assets \
     NEXT_PUBLIC_DEFAULT_LANGUAGE=de \
     NEXT_PUBLIC_DEFAULT_THEME_MODE=dark \
     NEXT_PUBLIC_ACTIVE_SOUND=true \
-    NEXT_PUBLIC_CALENDAR_DATA_DIR=/dist/assets/calendar \
-    NEXT_PUBLIC_CALENDAR_ICS_DIR=/dist/assets/ics \
     GEMINI_MODEL=gemini-2.5-flash \
     HTML_DIR=/usr/share/nginx/html \
     ACCESS_LOG=/var/log/nginx/access.log \
@@ -92,7 +89,7 @@ ENV NODE_ENV=production \
 VOLUME /home/node/app/dist/assets
 
 
-EXPOSE 80 4011
+EXPOSE 80 4012
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 

@@ -90,7 +90,7 @@ jobs:
         run: |
           cat <<EOF > .env
           NODE_ENV=production
-          PORT=4011
+          PORT=4012
           TZ=Europe/Berlin
           NEXT_PUBLIC_DEFAULT_LANGUAGE=de
           EOF

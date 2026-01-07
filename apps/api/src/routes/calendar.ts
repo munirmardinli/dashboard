@@ -21,7 +21,7 @@ export const calendarRoutes: Route[] = [
 				}
 
 				const calendarService = CalendarService.getInstance();
-				const icsContent = calendarService.generateICS(calendarName);
+				const icsContent = await calendarService.generateICS(calendarName);
 				sendICS(res, icsContent);
 			} catch (error) {
 				sendError(res, 500, error instanceof Error ? error.message : "Failed to generate ICS");

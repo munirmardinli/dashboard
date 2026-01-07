@@ -12,7 +12,7 @@ declare namespace NodeJS {
 		NEXT_PUBLIC_TINY_MCE_API_KEY: string;
 		/**
 			* The port where the API server runs
-			* @example 4011
+			* @example 4012
 			*/
 		PORT: string;
 		/**
@@ -30,21 +30,6 @@ declare namespace NodeJS {
 			* @default false
 			*/
 		ANALYZE: string;
-		/**
-			* The directory where the assets are stored
-			* @example apps/api/public
-			*/
-		NEXT_PUBLIC_ASSETS_DIR: string;
-		/**
-			* The directory where the calendar data is stored
-			* @example apps/api/public/calendar
-			*/
-		NEXT_PUBLIC_CALENDAR_DATA_DIR: string;
-		/**
-			* The directory where the calendar ICS files are stored
-			* @example apps/api/public/ics
-			*/
-		NEXT_PUBLIC_CALENDAR_ICS_DIR: string;
 		/**
 			* The environment mode
 			* @example development
@@ -97,5 +82,25 @@ declare namespace NodeJS {
 		* @default "assets"
 		*/
 		ASSETS_DIR: string;
+		/**
+		* The GitHub token
+		* @example 1234567890
+		*/
+		GITHUB_TOKEN: string;
+		/**
+		* The GitHub owner
+		* @example 1234567890
+		*/
+		GITHUB_OWNER: string;
+		/**
+		* The GitHub repository
+		* @example 1234567890
+		*/
+		GITHUB_REPO: string;
+		/**
+		* The GitHub branch
+		* @example 1234567890
+		*/
+		GITHUB_BRANCH: string;
 	}
 }

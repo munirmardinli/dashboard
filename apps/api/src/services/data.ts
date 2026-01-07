@@ -1,69 +1,47 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
+import { GitHubService } from "./github.js";
+
+const github = new GitHubService();
 
 function ensureArray<T>(value: unknown): T[] {
 	return Array.isArray(value) ? (value as T[]) : [];
 }
 
 async function getConfigData() {
-	const projectRoot = cwd();
-	const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-	const defaultLang = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE;
-	
-	if (!assetsDir) {
-		throw new Error("NEXT_PUBLIC_ASSETS_DIR environment variable is not set");
-	}
-	
+	const defaultLang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"];
+
 	if (!defaultLang) {
 		throw new Error("NEXT_PUBLIC_DEFAULT_LANGUAGE environment variable is not set");
 	}
-	
-	const configPath = path.join(projectRoot, assetsDir, `${defaultLang}.json`);
-	const configData = await fs.readFile(configPath, "utf8");
-	return JSON.parse(configData);
+
+	const configPath = `${defaultLang}.json`;
+	const { content } = await github.getFile(configPath);
+	return JSON.parse(content);
 }
 
 export class DataService {
 	async getItems<T extends GenericItem>(dataType: string): Promise<T[]> {
-		const projectRoot = cwd();
 		const config = await getConfigData();
 		const dtCfg = config.dataTypes?.[dataType];
 		if (!dtCfg?.filePath) return [];
 
-		const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-		if (!assetsDir) {
-			throw new Error("NEXT_PUBLIC_ASSETS_DIR environment variable is not set");
-		}
-		const filePath = path.join(projectRoot, assetsDir, dtCfg.filePath);
+		const filePath = dtCfg.filePath;
 
 		try {
-			const fileData = await fs.readFile(filePath, "utf8");
-			return ensureArray<T>(JSON.parse(fileData));
+			const { content } = await github.getFile(filePath);
+			return ensureArray<T>(JSON.parse(content));
 		} catch (err: unknown) {
-			const anyErr = err as NodeJS.ErrnoException;
-			if (anyErr?.code === "ENOENT") {
-				await fs.mkdir(path.dirname(filePath), { recursive: true });
-				await fs.writeFile(filePath, JSON.stringify([], null, 2));
-				return [];
-			}
-			throw err;
+			// If file doesn't exist, we might want to return empty array or handle error
+			return [];
 		}
 	}
 
 	async saveAllItems<T extends GenericItem>(dataType: string, items: T[]): Promise<boolean> {
-		const projectRoot = cwd();
 		const config = await getConfigData();
 		const dtCfg = config.dataTypes?.[dataType];
 		if (!dtCfg?.filePath) return false;
 
-		const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-		if (!assetsDir) {
-			throw new Error("NEXT_PUBLIC_ASSETS_DIR environment variable is not set");
-		}
-		const filePath = path.join(projectRoot, assetsDir, dtCfg.filePath);
-		await fs.mkdir(path.dirname(filePath), { recursive: true });
-		await fs.writeFile(filePath, JSON.stringify(items, null, 2));
+		const filePath = dtCfg.filePath;
+		await github.updateFile(filePath, JSON.stringify(items, null, 2), `Update ${dataType}`);
 		return true;
 	}
 

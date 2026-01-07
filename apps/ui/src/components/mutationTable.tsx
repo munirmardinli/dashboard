@@ -224,7 +224,13 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           await DataAPI.updateItem(dataType, todoId, updated);
           try { useSoundStore.getState().playEvent("update"); } catch { }
         } else {
-          const newItem = { ...processed, id: crypto.randomUUID(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), isArchive: false };
+          const newItem = {
+            ...processed,
+            id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `item-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isArchive: false
+          };
           startTransition(() => {
             setOptimisticItems(newItem);
           });

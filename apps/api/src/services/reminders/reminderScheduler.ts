@@ -39,7 +39,7 @@ export class ReminderScheduler {
 		isCheckingReminders = true;
 
 		try {
-			const calendarData = this.calendarService.loadCalendarData();
+			const calendarData = await this.calendarService.loadCalendarData();
 			const now = new Date();
 			const nowTime = now.getTime();
 			const tolerance = 60 * 1000;

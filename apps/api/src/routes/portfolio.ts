@@ -1,20 +1,15 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { cwd } from "node:process";
 import { sendJSON, sendError, sendImage } from "../utils/http.js";
+import { GitHubService } from "../services/github.js";
+import path from "node:path";
+
+const github = new GitHubService();
+const PORTFOLIO_DIR = "portfolio";
 
 async function getPortfolioData() {
-	const projectRoot = cwd();
-	const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR;
-	const filePath = path.join(projectRoot, assetsDir, "portfolio", "index.json");
 	try {
-		const fileData = await fs.readFile(filePath, "utf8");
-		return JSON.parse(fileData);
+		const { content } = await github.getFile(`${PORTFOLIO_DIR}/index.json`);
+		return JSON.parse(content);
 	} catch (err: unknown) {
-		const anyErr = err as NodeJS.ErrnoException;
-		if (anyErr?.code === "ENOENT") {
-			throw new Error("Portfolio data file not found");
-		}
 		throw err;
 	}
 }
@@ -61,21 +56,13 @@ export const portfolioRoutes: Route[] = [
 					return;
 				}
 
-				const projectRoot = cwd();
-				const assetsDir = process.env.NEXT_PUBLIC_ASSETS_DIR || "dist/assets";
-				const normalizedAssetsDir = assetsDir.startsWith("/") ? assetsDir.slice(1) : assetsDir;
-				const filePath = path.join(projectRoot, normalizedAssetsDir, "portfolio", filename);
-
 				try {
-					await fs.access(filePath);
-				} catch {
+					const { content: buffer } = await github.getRawFile(`${PORTFOLIO_DIR}/${filename}`);
+					const contentType = getContentType(filename);
+					sendImage(res, buffer, contentType);
+				} catch (error) {
 					sendError(res, 404, "Image not found");
-					return;
 				}
-
-				const imageBuffer = await fs.readFile(filePath);
-				const contentType = getContentType(filename);
-				sendImage(res, imageBuffer, contentType);
 			} catch (error) {
 				sendError(res, 500, error instanceof Error ? error.message : "Failed to get image");
 			}
