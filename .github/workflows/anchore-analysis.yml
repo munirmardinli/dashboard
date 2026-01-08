@@ -9,7 +9,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '17 7 * * 5'
+    - cron: "17 7 * * 5"
 
 permissions:
   security-events: write
@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Setup environment files
-        uses: ./.github/actions/setup-env/action.yml
+        uses: ./.github/actions/setup-env
       - name: Build production
         run: npm run build
       - name: Build the Docker image

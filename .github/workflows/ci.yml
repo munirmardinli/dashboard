@@ -86,7 +86,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
       - name: Setup environment files
-        uses: ./.github/actions/setup-env/action.yml
+        uses: ./.github/actions/setup-env
       - name: Build application with Turbo
         run: npm run build
       - name: Upload build artifacts
