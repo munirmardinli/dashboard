@@ -21,6 +21,10 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v6
+      - name: Install dependencies
+        run: npm ci
+      - name: Build production
+        run: npm run build
       - name: Build the Docker image
         run: docker build . --file .github/.docker/Dockerfile --tag localbuild/testimage:latest
       - name: Run the Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
