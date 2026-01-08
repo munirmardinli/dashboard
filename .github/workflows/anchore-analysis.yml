@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Setup environment files
-        uses: ./.github/actions/setup-env
+        uses: ./.github/actions/setup-env/action.yml
       - name: Build production
         run: npm run build
       - name: Build the Docker image
