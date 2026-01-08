@@ -23,6 +23,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Install dependencies
         run: npm ci
+      - name: Setup environment files
+        uses: ./.github/actions/setup-env
       - name: Build production
         run: npm run build
       - name: Build the Docker image

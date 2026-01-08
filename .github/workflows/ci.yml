@@ -85,56 +85,8 @@ jobs:
           key: ${{ runner.os }}-turbo-${{ hashFiles('**/package.json', '**/turbo.json', '**/tsconfig.json') }}
           restore-keys: |
             ${{ runner.os }}-turbo-
-      - name: Production environment variables
-        working-directory: apps/api
-        run: |
-          cat <<EOF > .env
-          NODE_ENV=production
-          PORT=4012
-          TZ=Europe/Berlin
-          NEXT_PUBLIC_DEFAULT_LANGUAGE=de
-          EOF
-      - name: Create .env.production for UI
-        working-directory: apps/ui
-        run: |
-          cat <<EOF > .env.production
-          NEXT_PUBLIC_API_URL=
-          NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
-          NEXT_PUBLIC_DEFAULT_LANGUAGE=de
-          NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
-          NEXT_PUBLIC_ACTIVE_SOUND=true
-          NODE_ENV=production
-          TZ=Europe/Berlin
-          NEXT_TELEMETRY_DISABLED=1
-          TURBO_TELEMETRY_DISABLED=1
-          EOF
-      - name: Create .env.production for Portfolio
-        working-directory: apps/portfolio
-        run: |
-          cat <<EOF > .env.production
-          NEXT_PUBLIC_API_URL=
-          NODE_ENV=production
-          NEXT_TELEMETRY_DISABLED=1
-          TURBO_TELEMETRY_DISABLED=1
-          EOF
-      - name: Create .env.production for Docs
-        working-directory: apps/docs
-        run: |
-          cat <<EOF > .env.production
-          NEXT_PUBLIC_API_URL=
-          NODE_ENV=production
-          NEXT_TELEMETRY_DISABLED=1
-          TURBO_TELEMETRY_DISABLED=1
-          EOF
-      - name: Create .env.production for Dashy
-        working-directory: apps/dashy
-        run: |
-          cat <<EOF > .env.production
-          NODE_ENV=production
-          NEXT_PUBLIC_API_URL=
-          NEXT_TELEMETRY_DISABLED=1
-          TURBO_TELEMETRY_DISABLED=1
-          EOF
+      - name: Setup environment files
+        uses: ./.github/actions/setup-env
       - name: Build application with Turbo
         run: npm run build
       - name: Upload build artifacts

@@ -1,0 +1,60 @@
+name: "Setup Environment Files"
+description: "Creates all environment files for production"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create environment files
+      shell: bash
+      run: |
+        # API
+        mkdir -p apps/api
+        cat <<EOF > apps/api/.env
+        NODE_ENV=production
+        PORT=4012
+        TZ=Europe/Berlin
+        NEXT_PUBLIC_DEFAULT_LANGUAGE=de
+        EOF
+
+        # UI
+        mkdir -p apps/ui
+        cat <<EOF > apps/ui/.env.production
+        NEXT_PUBLIC_API_URL=
+        NEXT_PUBLIC_DEFAULT_LANGUAGE=de
+        NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
+        NEXT_PUBLIC_ACTIVE_SOUND=true
+        NODE_ENV=production
+        TZ=Europe/Berlin
+        NEXT_TELEMETRY_DISABLED=1
+        TURBO_TELEMETRY_DISABLED=1
+        NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
+        EOF
+
+        # Portfolio
+        mkdir -p apps/portfolio
+        cat <<EOF > apps/portfolio/.env.production
+        NEXT_PUBLIC_API_URL=
+        NODE_ENV=production
+        NEXT_TELEMETRY_DISABLED=1
+        TURBO_TELEMETRY_DISABLED=1
+        EOF
+
+        # Docs
+        mkdir -p apps/docs
+        cat <<EOF > apps/docs/.env.production
+        NEXT_PUBLIC_API_URL=
+        NODE_ENV=production
+        NEXT_TELEMETRY_DISABLED=1
+        TURBO_TELEMETRY_DISABLED=1
+        EOF
+
+        # Dashy
+        mkdir -p apps/dashy
+        cat <<EOF > apps/dashy/.env.production
+        NODE_ENV=production
+        NEXT_PUBLIC_API_URL=
+        NEXT_TELEMETRY_DISABLED=1
+        TURBO_TELEMETRY_DISABLED=1
+        EOF
+
+        echo "✅ All environment files created"
