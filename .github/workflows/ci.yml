@@ -91,6 +91,9 @@ jobs:
           tiny-mce-api-key: ${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
       - name: Build application with Turbo
         run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          TURBO_TELEMETRY_DISABLED: 1
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
