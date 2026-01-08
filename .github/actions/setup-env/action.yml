@@ -1,5 +1,10 @@
 name: "Setup Environment Files"
 description: "Creates all environment files for production"
+inputs:
+  tiny-mce-api-key:
+    description: "TinyMCE API Key"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -27,7 +32,7 @@ runs:
         TZ=Europe/Berlin
         NEXT_TELEMETRY_DISABLED=1
         TURBO_TELEMETRY_DISABLED=1
-        NEXT_PUBLIC_TINY_MCE_API_KEY=${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
+        NEXT_PUBLIC_TINY_MCE_API_KEY=${{ inputs.tiny-mce-api-key }}
         EOF
 
         # Portfolio
