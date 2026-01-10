@@ -1,7 +1,11 @@
-# Chocolatey Installation and Setup Script
+# Package Installation Script
+# Installs packages using Chocolatey
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$UtilsPath = Join-Path $ScriptDir ".." "utils" "windows" "log.ps1"
+$ParentDir = Join-Path $ScriptDir ".."
+$UtilsDir = Join-Path $ParentDir "utils"
+$UtilsWindowsDir = Join-Path $UtilsDir "windows"
+$UtilsPath = Join-Path $UtilsWindowsDir "log.ps1"
 
 # Load logging utilities
 if (Test-Path $UtilsPath) {
@@ -11,43 +15,40 @@ if (Test-Path $UtilsPath) {
     exit 1
 }
 
-Write-Info "Checking Chocolatey installation..."
+# List of packages to install
+$packagesToInstall = @(
+    "git",
+    "nodejs"
+)
 
-# Check if Chocolatey is already installed
-$chocoInstalled = $false
-try {
-    $chocoVersion = choco --version 2>$null
-    if ($chocoVersion) {
-        $chocoInstalled = $true
-        Write-Ok "Chocolatey is already installed (Version: $chocoVersion)"
-    }
-} catch {
-    $chocoInstalled = $false
-}
+Write-Section "Installing packages with Chocolatey"
 
-if (-not $chocoInstalled) {
-    Write-Info "Chocolatey is not installed. Installing Chocolatey..."
-    
-    # Set execution policy for current process
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    
-    # Install Chocolatey
+# Get all installed packages once for checking
+$allInstalledPackages = choco list --local-only 2>&1 | Out-String
+
+foreach ($package in $packagesToInstall) {
+    Write-Info "Installing $package..."
     try {
-        Write-Info "Downloading and installing Chocolatey..."
-        Invoke-RunSafe -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" -Description "Installing Chocolatey"
-        Write-Ok "Chocolatey installed successfully"
+        # Check if package is already installed (check for both "package" and "package.install")
+        $alreadyInstalled = ($allInstalledPackages -match "^$package\s+\d+") -or ($allInstalledPackages -match "^$package\.install\s+\d+")
+        
+        if ($alreadyInstalled) {
+            Write-Info "$package is already installed, skipping..."
+            Write-Ok "$package is available"
+        } else {
+            # Install the package
+            choco install $package -y
+            if ($LASTEXITCODE -eq 0) {
+                Write-Ok "$package installed successfully"
+                # Refresh the installed packages list
+                $allInstalledPackages = choco list --local-only 2>&1 | Out-String
+            } else {
+                Write-Warn "$package installation returned exit code $LASTEXITCODE"
+            }
+        }
     } catch {
-        Write-Error "Failed to install Chocolatey: $($_.Exception.Message)"
-        exit 1
+        Write-Error "Failed to install $package : $($_.Exception.Message)"
     }
-} else {
-    Write-Info "Chocolatey is already installed, skipping installation."
 }
 
-# Refresh environment variables to make choco available
-Write-Info "Refreshing environment variables..."
-$env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
-Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-refreshenv
-
-Write-Ok "Chocolatey setup completed successfully"
+Write-Ok "Package installation completed"

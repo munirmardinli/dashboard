@@ -17,42 +17,42 @@ function Write-Log {
     Add-Content -Path $Script:LogFile -Value $logMessage
 }
 
-function Write-Ok {
+# Define functions directly in global scope
+function global:Write-Ok {
     param([string]$Message)
-    Write-Host "✔ $Message" -ForegroundColor Green
+    Write-Host "[OK] $Message" -ForegroundColor Green
     Write-Log -Message $Message -Level "OK"
 }
 
-function Write-Info {
+function global:Write-Info {
     param([string]$Message)
-    Write-Host "ℹ $Message" -ForegroundColor Blue
+    Write-Host "[INFO] $Message" -ForegroundColor Blue
     Write-Log -Message $Message -Level "INFO"
 }
 
-function Write-Warn {
+function global:Write-Warn {
     param([string]$Message)
-    Write-Host "⚠ $Message" -ForegroundColor Yellow
+    Write-Host "[WARN] $Message" -ForegroundColor Yellow
     Write-Log -Message $Message -Level "WARN"
 }
 
-function Write-Error {
+function global:Write-Error {
     param([string]$Message)
-    Write-Host "❌ $Message" -ForegroundColor Red
+    Write-Host "[ERROR] $Message" -ForegroundColor Red
     Write-Log -Message $Message -Level "ERROR"
 }
 
-function Write-Section {
+function global:Write-Section {
     param([string]$Title)
     Write-Host ""
-    Write-Host "──────────────────────────────────────────────" -ForegroundColor Cyan
-    Write-Host "  $Title" -ForegroundColor Cyan -NoNewline
-    Write-Host ""
-    Write-Host "──────────────────────────────────────────────" -ForegroundColor Cyan
+    Write-Host "==============================================" -ForegroundColor Cyan
+    Write-Host "  $Title" -ForegroundColor Cyan
+    Write-Host "==============================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Log -Message $Title -Level "SECTION"
 }
 
-function Invoke-RunSafe {
+function global:Invoke-RunSafe {
     param(
         [string]$Command,
         [string]$Description = ""
