@@ -17,8 +17,7 @@ if (Test-Path $UtilsPath) {
 
 # List of packages to install
 $packagesToInstall = @(
-    "git",
-    "nodejs"
+    "steam"
 )
 
 Write-Section "Installing packages with Chocolatey"
