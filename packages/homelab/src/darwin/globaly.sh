@@ -1,22 +1,22 @@
 #!/bin/zsh
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [ -f "$SCRIPT_DIR/utils/utils.sh" ]; then
-  source "$SCRIPT_DIR/utils/utils.sh"
-  UTILS_DIR="$SCRIPT_DIR/utils"
+if [ -f "$SCRIPT_DIR/utils/unix/utils.sh" ]; then
+  source "$SCRIPT_DIR/utils/unix/utils.sh"
+  UTILS_DIR="$SCRIPT_DIR/utils/unix"
 else
-  source "$(cd "$SCRIPT_DIR/.." && pwd)/utils/utils.sh"
-  UTILS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/utils"
+  source "$(cd "$SCRIPT_DIR/.." && pwd)/utils/unix/utils.sh"
+  UTILS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/utils/unix"
 fi
 
 # Load validation functions
-if [ -f "$UTILS_DIR/validation.sh" ]; then
-  source "$UTILS_DIR/validation.sh"
+if [ -f "$UTILS_DIR/unix/validation.sh" ]; then
+  source "$UTILS_DIR/unix/validation.sh"
 fi
 
 # Load .env file
-if [ -f "$UTILS_DIR/env.sh" ]; then
-  source "$UTILS_DIR/env.sh"
+if [ -f "$UTILS_DIR/unix/env.sh" ]; then
+  source "$UTILS_DIR/unix/env.sh"
   load_env "$SCRIPT_DIR"
 fi
 

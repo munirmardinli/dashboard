@@ -6,7 +6,7 @@ set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$BASH_DIR/utils/utils.sh"
+source "$BASH_DIR/utils/unix/utils.sh"
 
 REMOTE_SCRIPT_PATH="${1:-}"
 DEFAULT_REMOTE_SCRIPT="$SCRIPT_DIR/cli.sh"

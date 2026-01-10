@@ -1,10 +1,10 @@
 #!/bin/zsh
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [ -f "$SCRIPT_DIR/utils/utils.sh" ]; then
-  source "$SCRIPT_DIR/utils/utils.sh"
+if [ -f "$SCRIPT_DIR/utils/unix/utils.sh" ]; then
+  source "$SCRIPT_DIR/utils/unix/utils.sh"
 else
-  source "$(cd "$SCRIPT_DIR/.." && pwd)/utils/utils.sh"
+  source "$(cd "$SCRIPT_DIR/.." && pwd)/utils/unix/utils.sh"
 fi
 
 ###############################################################################

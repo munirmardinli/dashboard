@@ -6,7 +6,7 @@ set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$BASH_DIR/utils/utils.sh"
+source "$BASH_DIR/utils/unix/utils.sh"
 
 SECRET_FILE="$SCRIPT_DIR/secret.txt"
 TARGET_KEY_PATH="${SYNOLOGY_SSH_KEY_PATH:-$HOME/.ssh/id_ed25519_synology}"

@@ -2,10 +2,10 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-source "$BASH_DIR/utils/utils.sh"
+source "$BASH_DIR/utils/unix/utils.sh"
 
-if [ -f "$BASH_DIR/utils/env.sh" ]; then
-  source "$BASH_DIR/utils/env.sh"
+if [ -f "$BASH_DIR/utils/unix/env.sh" ]; then
+  source "$BASH_DIR/utils/unix/env.sh"
   load_env "$SCRIPT_DIR"
 fi
 
