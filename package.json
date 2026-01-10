@@ -40,9 +40,14 @@
     "start": "turbo start",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
-    "homelab": "turbo homelab"
+    "prehomelab": "npm install",
+    "homelab": "run-script-os",
+    "homelab:darwin": "npm run homelab:darwin --workspace=@munirmardinli/homelab",
+    "homelab:linux": "npm run homelab:linux --workspace=@munirmardinli/homelab",
+    "homelab:win32": "npm run homelab:windows --workspace=@munirmardinli/homelab"
   },
   "devDependencies": {
+    "run-script-os": "1.1.6",
     "turbo": "2.7.3",
     "typescript": "^5"
   },

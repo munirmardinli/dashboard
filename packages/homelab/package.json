@@ -9,7 +9,9 @@
   "dev": "echo 'No dev script configured'",
   "lint": "echo 'No lint script configured'",
   "type-check": "echo 'No type-check script configured'",
-  "prehomelab": "chmod +x src/index.sh",
-  "homelab": "./src/index.sh"
+  "homelab:darwin": "chmod +x src/darwin/index.sh && ./src/darwin/index.sh",
+  "homelab:linux": "chmod +x src/darwin/index.sh && ./src/darwin/index.sh",
+  "windows": "powershell.exe -ExecutionPolicy Bypass -File src/windows/index.ps1",
+  "homelab:windows": "powershell.exe -ExecutionPolicy Bypass -File src/windows/index.ps1"
  }
 }
