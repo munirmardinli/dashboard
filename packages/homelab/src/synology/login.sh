@@ -4,31 +4,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BASH_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$BASH_DIR/utils/utils.sh"
 
-# Berechne Projekt-Root (4 Ebenen nach oben: synology -> bash -> homelab -> packages -> root)
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
-
-# Suche .env zuerst im aktuellen Verzeichnis, dann im Projekt-Root
-ENV_FILE=""
-if [ -f "$SCRIPT_DIR/.env" ]; then
-  ENV_FILE="$SCRIPT_DIR/.env"
-elif [ -f "$PROJECT_ROOT/.env" ]; then
-  ENV_FILE="$PROJECT_ROOT/.env"
+if [ -f "$BASH_DIR/utils/env.sh" ]; then
+  source "$BASH_DIR/utils/env.sh"
+  load_env "$SCRIPT_DIR"
 fi
 
-### 📌 Load .env if available
-if [ -n "$ENV_FILE" ]; then
-  info "Loading configuration from $ENV_FILE ..."
-  export $(grep -v '^#' "$ENV_FILE" | xargs)
-else
-  warn ".env not found in $SCRIPT_DIR or $PROJECT_ROOT — using fallback values or input."
-fi
-
-### 📌 Defaults + Environment Override
 SYNO_USER="${SYNO_USER}"
 SYNO_HOST="${SYNO_HOST}"
 SYNO_PORT="${SYNO_PORT}"
 
-### 📌 Load password or prompt for input (skip if SSH-Key Modus aktiv)
 PROMPT_FOR_PASSWORD="true"
 if [ -n "${SYNOLOGY_USE_SSH_KEY:-}" ]; then
   PROMPT_FOR_PASSWORD="false"

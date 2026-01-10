@@ -51,7 +51,6 @@ packages=(
   wget
   node
   git
-  mas
   sshpass
   powerlevel10k
   zsh-syntax-highlighting
@@ -71,7 +70,6 @@ casks=(
   font-jetbrains-mono-nerd-font
   font-meslo-lg-nerd-font
   cursor
-  chatgpt-atlas
   antigravity
   parallels
 )
@@ -96,66 +94,3 @@ info "Installing Brew Casks..."
 install_items "--cask" $casks
 
 ok "Brew list completed."
-
-###############################################################################
-# --- MAS: mas Installation, Login Check & Install masApps -------------------
-###############################################################################
-
-if [ "$OS" != "Darwin" ]; then
-  warn "MAS is only available on macOS – Skipping MAS section."
-  exit 0
-fi
-
-info "Checking mas installation..."
-if ! command -v mas >/dev/null 2>&1; then
-  warn "mas not installed – installing via Brew..."
-  brew install mas
-fi
-
-info "Checking App Store login..."
-if mas list 2>&1 | grep -q "not signed in"; then
-  err "Not signed in to App Store!"
-  exit 1
-fi
-ok "App Store Login OK."
-
-declare -A masApps=(
-  ["Goodnotes"]=1444383602
-  ["HP Smart"]=1474276998
-  ["Pages"]=409201541
-  ["Presentify"]=1507246666
-  ["PrettyJSON"]=1445328303
-  ["Windows App"]=1295203466
-  ["Xcode"]=497799835
-  ["WhatsApp"]=310633997
-)
-
-attempt_install() {
-  local id="$1"
-  local tries=0
-
-  until [ $tries -ge 3 ]; do
-    mas install "$id" && return 0
-    tries=$((tries+1))
-    warn "Installation error (ID: $id), attempt $tries/3..."
-    sleep 2
-  done
-
-  err "Installation of ID $id failed."
-  return 1
-}
-
-info "Checking installed apps..."
-
-for app in "${(@k)masApps}"; do
-  id="${masApps[$app]}"
-
-  if mas list | grep -q "$id"; then
-    ok "$app is already installed."
-  else
-    info "Installing $app..."
-    attempt_install "$id"
-  fi
-done
-
-ok "MAS: Installation completed (no updates performed)."

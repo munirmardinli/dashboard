@@ -84,7 +84,7 @@
     "cursor.cpp.enablePartialAccepts": true,
     "editor.codeActions.triggerOnFocusChange": true,
     "git.inputValidationLength": 30,
-    "workbench.statusBar.visible": false,
+    "workbench.statusBar.visible": true,
     "terminal.integrated.env.windows": {
         "LANG": "de_DE.UTF-8",
         "LC_ALL": "de_DE.UTF-8"
