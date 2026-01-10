@@ -21,10 +21,6 @@ run() {
   fi
 }
 
-# -------------------------------------------------------
-# Run Darwin and Synology sequentially, remove Windows
-# -------------------------------------------------------
-
 info "Running macOS Setup..."
 run "$BASE/darwin/index.sh"
 

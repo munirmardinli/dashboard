@@ -9,12 +9,10 @@ else
   UTILS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/utils/unix"
 fi
 
-# Load validation functions
 if [ -f "$UTILS_DIR/unix/validation.sh" ]; then
   source "$UTILS_DIR/unix/validation.sh"
 fi
 
-# Load .env file
 if [ -f "$UTILS_DIR/unix/env.sh" ]; then
   source "$UTILS_DIR/unix/env.sh"
   load_env "$SCRIPT_DIR"
@@ -22,7 +20,6 @@ fi
 
 GITCONFIG="$HOME/.gitconfig"
 
-# Try to get user/email from .env first, then from gitconfig
 if [ -z "$GIT_USER" ] || [ -z "$GIT_EMAIL" ]; then
   if [ -f "$GITCONFIG" ]; then
     if [ -z "$GIT_USER" ]; then
@@ -35,7 +32,6 @@ if [ -z "$GIT_USER" ] || [ -z "$GIT_EMAIL" ]; then
 fi
 
 if [ -n "$GIT_USER" ] && [ -n "$GIT_EMAIL" ]; then
-  # Validate email if validation function is available
   if command -v is_valid_email >/dev/null 2>&1; then
     if ! is_valid_email "$GIT_EMAIL"; then
       warn "Invalid email format: $GIT_EMAIL"
@@ -47,20 +43,16 @@ fi
 if [ -n "$GIT_USER" ] && [ -n "$GIT_EMAIL" ]; then
   info "Using Git user: $GIT_USER ($GIT_EMAIL)"
 else
-  # Always try to prompt for input if values are missing
   warn "Git User or Email not found. Please enter."
   
-  # Prompt for username
   echo -n "Please enter your Git username: "
   read GIT_USER
   
-  # Use ask_email if available, otherwise regular read with validation
   if command -v ask_email >/dev/null 2>&1; then
     GIT_EMAIL=$(ask_email)
   else
     echo -n "Please enter your Git email address: "
     read GIT_EMAIL
-    # Validate email if validation function is available
     if command -v is_valid_email >/dev/null 2>&1; then
       while ! is_valid_email "$GIT_EMAIL"; do
         warn "Invalid email format. Please try again."

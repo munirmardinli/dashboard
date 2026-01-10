@@ -45,7 +45,6 @@ export class PushoverService {
    console.warn("Pushover credentials missing - service disabled");
   }
 
-  // Default notification sounds
   this.sounds = {
    pushover: "Pushover (default)",
    bike: "Bike",
@@ -80,7 +79,6 @@ export class PushoverService {
   }
  }
 
- /* Core Pushover functionality */
  private setDefaults(
   payload: PushoverTypes.MessagePayload,
  ): PushoverTypes.MessagePayload {
@@ -346,7 +344,6 @@ export class PushoverService {
   req.end();
  }
 
- /* Notification Store functionality */
  private ensureDataFileExists(): void {
   try {
    const dataDir = path.dirname(this.dataFile);
@@ -501,7 +498,6 @@ export class PushoverService {
   this.saveNotifications();
  }
 
- /* Express Controller Methods */
  public handleCreateNotification(req: Request, res: Response): void {
   try {
    const { title, message, recipient } = req.body;

@@ -97,4 +97,13 @@ if (Test-Path $ChocoScript) {
     exit 1
 }
 
+$HostsScript = Join-Path $ScriptDir "hosts.ps1"
+if (Test-Path $HostsScript) {
+    Write-Info "Starting hosts.ps1 ..."
+    & $HostsScript
+} else {
+    Write-Error "Hosts script not found: $HostsScript"
+    exit 1
+}
+
 Write-Section "MUNIR - Setup completed successfully!"

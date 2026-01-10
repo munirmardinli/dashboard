@@ -74,8 +74,6 @@ export class GitHubService {
 			const existing = await this.getFile(path);
 			sha = existing.sha;
 		} catch (e) {
-			// File might not exist yet, which is fine for some cases, 
-			// but GitHub update API needs SHA if it exists.
 		}
 
 		const body = {

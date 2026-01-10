@@ -22,7 +22,7 @@ export class CalendarService {
 	}
 
 	private get _icsDir(): string {
-		return path.join(cwd(), "public", "ics"); // Still use public/ics for serving, but it's ignored by git
+		return path.join(cwd(), "public", "ics");
 	}
 
 	constructor() {
