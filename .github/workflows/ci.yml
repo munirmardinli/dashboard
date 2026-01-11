@@ -112,12 +112,6 @@ jobs:
           name: portfolio-out
           path: apps/portfolio/out
           retention-days: 1
-      - name: Upload Docs build artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: docs-out
-          path: apps/docs/out
-          retention-days: 1
 
   build:
     needs: build-prod
@@ -164,11 +158,6 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Docs build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: docs-out
-          path: apps/docs/out
       - name: Create Trivy ignore file
         run: |
           cat > .trivyignore << EOF
@@ -240,11 +229,6 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Docs build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: docs-out
-          path: apps/docs/out
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Setup Testcontainers Cloud Client

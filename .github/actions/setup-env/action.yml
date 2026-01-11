@@ -44,13 +44,4 @@ runs:
         TURBO_TELEMETRY_DISABLED=1
         EOF
 
-        # Docs
-        mkdir -p apps/docs
-        cat <<EOF > apps/docs/.env.production
-        NEXT_PUBLIC_API_URL=
-        NODE_ENV=production
-        NEXT_TELEMETRY_DISABLED=1
-        TURBO_TELEMETRY_DISABLED=1
-        EOF
-
         echo "✅ All environment files created"
