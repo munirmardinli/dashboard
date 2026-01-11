@@ -24,7 +24,7 @@ CMD ["node", "dist/src/index.js"]
 FROM nginx:alpine as ui
 
 RUN mkdir -p /etc/nginx/http.d \
-    /usr/share/nginx/html/portfolio \
+    /usr/share/nginx/html/portfolio
 
 RUN rm -rf /etc/nginx/conf.d/*
 RUN apk update && apk add --no-cache wget ca-certificates
