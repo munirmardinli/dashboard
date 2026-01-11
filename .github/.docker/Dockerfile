@@ -35,7 +35,6 @@ COPY apps/ui/dist /usr/share/nginx/html
 COPY apps/portfolio/out /usr/share/nginx/html/portfolio
 COPY apps/docs/out /usr/share/nginx/html/docs
 COPY apps/ui/default.conf /etc/nginx/http.d/default.conf
-COPY apps/dashy/out /usr/share/nginx/html/dashy
 
 CMD ["nginx", "-g", "daemon off;"]
 

@@ -21,7 +21,6 @@ runs:
           apps/ui/node_modules
           apps/portfolio/node_modules
           apps/docs/node_modules
-          apps/dashy/node_modules
           packages/pushover-notification/node_modules
           .npm
           .npmrc

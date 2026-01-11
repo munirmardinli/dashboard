@@ -118,12 +118,6 @@ jobs:
           name: docs-out
           path: apps/docs/out
           retention-days: 1
-      - name: Upload Dashy build artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: dashy-out
-          path: apps/dashy/out
-          retention-days: 1
 
   build:
     needs: build-prod
@@ -145,11 +139,6 @@ jobs:
         with:
           name: portfolio-out
           path: apps/portfolio/out
-      - name: Download Dashy build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: dashy-out
-          path: apps/dashy/out
   trivy-scans-prod:
     runs-on: ubuntu-latest
     needs: build
@@ -180,11 +169,6 @@ jobs:
         with:
           name: docs-out
           path: apps/docs/out
-      - name: Download Dashy build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: dashy-out
-          path: apps/dashy/out
       - name: Create Trivy ignore file
         run: |
           cat > .trivyignore << EOF
@@ -261,11 +245,6 @@ jobs:
         with:
           name: docs-out
           path: apps/docs/out
-      - name: Download Dashy build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: dashy-out
-          path: apps/dashy/out
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Setup Testcontainers Cloud Client
