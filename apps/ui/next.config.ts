@@ -31,11 +31,6 @@ const nextConfig: NextConfig = {
 	images: {
 		unoptimized: true,
 	},
-	experimental: {
-		optimizePackageImports: ['icon-library'],
-		globalNotFound: true
-	},
-	distDir: 'dist',
 	turbopack: {
 		resolveAlias: {
 			'next-mdx-import-source-file': './mdx-components.tsx',

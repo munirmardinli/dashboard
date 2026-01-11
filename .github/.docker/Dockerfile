@@ -6,7 +6,6 @@ RUN apk add --no-cache wget ca-certificates
 
 RUN mkdir -p \
     /home/node/app/node_modules \
-    /home/node/app/dist/assets \
     && chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
@@ -15,7 +14,6 @@ COPY --chown=node:node apps/api/package.json /home/node/app/package.json
 COPY --chown=node:node apps/api/node_modules /home/node/app/node_modules
 COPY --chown=node:node apps/api/dist /home/node/app/dist
 
-VOLUME /home/node/app/dist/assets
 
 USER node
 
@@ -29,7 +27,7 @@ RUN mkdir -p /etc/nginx/http.d \
 RUN rm -rf /etc/nginx/conf.d/*
 RUN apk update && apk add --no-cache wget ca-certificates
 
-COPY apps/ui/dist /usr/share/nginx/html
+COPY apps/ui/out /usr/share/nginx/html
 
 COPY apps/portfolio/out /usr/share/nginx/html/portfolio
 COPY apps/ui/default.conf /etc/nginx/http.d/default.conf
@@ -82,9 +80,6 @@ ENV NODE_ENV=production \
     ACCESS_LOG=/var/log/nginx/access.log \
     LOG_LEVEL=info \
     ERROR_LOG=/var/log/nginx/error.log
-
-VOLUME /home/node/app/dist/assets
-
 
 EXPOSE 80 4012
 

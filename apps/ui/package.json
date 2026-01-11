@@ -16,8 +16,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack 2>&1 | grep -vE '(Warning.*localstorage-file|warn.*Failed to get the last modified timestamp|Use.*node --trace-warnings)' || true",
-    "postbuild": "pagefind --site .next/server/app --output-path dist/_pagefind",
-    "start": "npx serve@latest dist",
+    "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind && cp out/_not-found/index.html out/404.html 2>/dev/null || true",
+    "start": "npx serve@latest out",
     "lint": "echo 'No linting configured'",
     "type-check": "tsc --noEmit"
   },
