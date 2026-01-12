@@ -1,29 +1,40 @@
 ---
+x-labels: &default-labels
+  com.centurylinklabs.watchtower.enable: true
+  container.label.group: management
+
+x-limits: &resource-limits
+  mem_limit: "256m"
+  mem_reservation: "64m"
+  cpu_shares: "512"
+  restart: always
+  networks:
+    frontend:
+
 services:
   dashboard:
-    build:
-      context: .
-      dockerfile: .github/.docker/Dockerfile
-      target: production
-      args:
-        NODE_TAG: ${NODE_TAG:-22-alpine}
-        NGINX_TAG: ${NGINX_TAG:-alpine}
-    container_name: dashboard-dev
-    restart: unless-stopped
+    image: docker.io/mardinlimunir/dashboard:latest
+    container_name: dashboard
+    hostname: dashboard
+    <<: *resource-limits
     ports:
-      - "${PORT_UI:-4012}:80"
-    volumes:
-      - ./apps/api/public:/home/node/app/dist/assets
+      - target: 80
+        published: 4012
+        protocol: tcp
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-      - NEXT_PUBLIC_TINY_MCE_API_KEY=${NEXT_PUBLIC_TINY_MCE_API_KEY}
-      - NEXT_PUBLIC_API_URL=
-      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
-    networks:
-      - dockerization
+      GEMINI_API_KEY: ${GEMINI_API_KEY?:Gemini API key is required}
+      GEMINI_MODEL: ${GEMINI_MODEL?:Gemini model is required}
+      NEXT_PUBLIC_TINY_MCE_API_KEY: ${NEXT_PUBLIC_TINY_MCE_API_KEY?:Tiny MCE API key is required}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN?:Telegram bot token is required}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID?:Telegram chat ID is required}
+      GITHUB_REPO: ${GITHUB_REPO?:GitHub repository is required}
+      GITHUB_TOKEN: ${GITHUB_TOKEN?:GitHub token is required}
+      GITHUB_BRANCH: ${GITHUB_BRANCH?:GitHub branch is required}
+      GITHUB_OWNER: ${GITHUB_OWNER?:GitHub Owner is required}
+    labels:
+      <<: *default-labels
+      monitoring: dashboard
 
 networks:
-  dockerization:
-    driver: bridge
+  frontend:
+    external: true
