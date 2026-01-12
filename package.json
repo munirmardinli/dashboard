@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "run-script-os": "1.1.6",
-    "turbo": "2.7.3",
+    "turbo": "2.7.4",
     "typescript": "^5"
   },
   "engines": {
