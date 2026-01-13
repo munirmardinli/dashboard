@@ -258,8 +258,9 @@ jobs:
           context: .
           file: .github/.docker/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}:buildcache,mode=max
           platforms: linux/amd64,linux/arm64
+          no-cache: true
+          tags: |
+            mardinlimunir/dashboard:latest
+            mardinlimunir/dashboard:arm64
+          labels: ${{ steps.meta.outputs.labels }}
