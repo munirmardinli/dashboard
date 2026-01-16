@@ -34,14 +34,5 @@ runs:
         TURBO_TELEMETRY_DISABLED=1
         NEXT_PUBLIC_TINY_MCE_API_KEY=${{ inputs.tiny-mce-api-key }}
         EOF
-
-        # Portfolio
-        mkdir -p apps/portfolio
-        cat <<EOF > apps/portfolio/.env.production
-        NEXT_PUBLIC_API_URL=
-        NODE_ENV=production
-        NEXT_TELEMETRY_DISABLED=1
-        TURBO_TELEMETRY_DISABLED=1
-        EOF
-
+        
         echo "✅ All environment files created"

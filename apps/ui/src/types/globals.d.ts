@@ -1,3 +1,4 @@
+
 declare global {
   /**
    * Data type identifier - fully dynamic string type
@@ -13,6 +14,7 @@ declare global {
    * const dataType: DataType = "myNewType";
    */
   type DataType = string;
+  type JsonData = Record<string, unknown>;
 
   /**
    * Interface for global loading state
@@ -611,7 +613,7 @@ declare global {
     isArchive?: boolean;
     updatedAt?: string;
   }
-  
+
   interface DashyItemWithMeta extends DashyItem {
     id: string;
     sectionId: string;
@@ -621,14 +623,14 @@ declare global {
     updatedAt: string;
     isArchive: boolean;
   }
-  
+
   interface DashySection {
     id: string;
     title: string;
     icon: string;
     items: DashyItem[];
   }
-  
+
   interface DashyData {
     title: string;
     user: {
@@ -657,7 +659,215 @@ declare global {
     }>;
     sections: DashySection[];
   }
-}
 
+  /** Portfoilo 
+   * @example
+   * {
+   *  "id": "1",
+   *  "title": "Project 1",
+   *  "description": "Description 1",
+   *  "technologies": ["Technology 1", "Technology 2"],
+   *  "image": "image.jpg",
+   *  "demoUrl": "https://demo.com",
+   *  "repoUrl": "https://github.com/repo"
+   * }
+  */
+  interface Project {
+    id: string;
+    title: string;
+    description: string;
+    technologies: string[];
+    image: string | null;
+    demoUrl: string;
+    repoUrl: string;
+  }
+
+  interface TechnicalSkill {
+    name: string;
+    level: number;
+  }
+
+  interface SoftSkill {
+    name: string;
+    icon: string;
+  }
+
+  interface MediaCompetence {
+    name: string;
+    proficiency: number;
+  }
+
+  interface SocialCompetence {
+    name: string;
+    proficiency: number;
+  }
+
+  interface Experience {
+    id: string;
+    company: string;
+    position: string;
+    period: string;
+    description: string;
+    achievements: string[];
+  }
+
+  interface Contact {
+    email: string;
+    location: string;
+    social: {
+      linkedin: string;
+      github: string;
+      xing?: string;
+      youtube?: string;
+      loading?: string;
+    };
+    loading?: string;
+  }
+
+  interface Profile {
+    name: string;
+    firstName: string;
+    lastName: string;
+    title: string;
+    bio: string;
+    email: string;
+    image: string;
+  }
+
+
+  interface PortfolioLanguage {
+    name: string;
+    level: string;
+    proficiency: number;
+  }
+
+
+  interface Hobby {
+    icon: string;
+    name: string;
+  }
+
+  interface Education {
+    id: string;
+    period: string;
+    description: string;
+  }
+
+  interface AboutMe {
+    caption: string;
+    text: string;
+  }
+
+
+  /** Portfolio 
+   *  
+  */
+  interface PortfolioData {
+    traits: string[];
+    projects: Project[];
+    skills: {
+      technicalSkills: TechnicalSkill[];
+      mediaCompetence: MediaCompetence[];
+      socialCompetence: SocialCompetence[];
+    };
+    experiences: Experience[];
+    contact: Contact;
+    profile: Profile;
+    languages: PortfolioLanguage[];
+    hobbies: Hobby[];
+    education: Education[];
+    internships: Education[];
+    aboutMe: AboutMe;
+
+    ui?: {
+      loading?: string;
+      hero?: {
+        greeting?: string;
+        downloadCV?: string;
+        contactMe?: string;
+        learnMore?: string;
+      };
+      navigation?: {
+        about?: string;
+        aboutHref?: string;
+        projects?: string;
+        projectsHref?: string;
+        skills?: string;
+        skillsHref?: string;
+        experience?: string;
+        experienceHref?: string;
+        contact?: string;
+        contactHref?: string;
+        blog?: string;
+        blogHref?: string;
+        toggleMenu?: string;
+      };
+      contact?: {
+        title?: string;
+        subtitle?: string;
+        contactInfo?: string;
+        description?: string;
+        form?: {
+          name?: string;
+          email?: string;
+          message?: string;
+          namePlaceholder?: string;
+          emailPlaceholder?: string;
+          messagePlaceholder?: string;
+          send?: string;
+          sending?: string;
+        };
+        messages?: {
+          successTitle?: string;
+          successMessage?: string;
+          errorTitle?: string;
+          errorSend?: string;
+          errorGeneric?: string;
+        };
+        ariaLabels?: {
+          linkedin?: string;
+          github?: string;
+          email?: string;
+        };
+      };
+      projects?: {
+        label?: string;
+        title?: string;
+        demo?: string;
+      };
+      education?: {
+        label?: string;
+        title?: string;
+      };
+      experience?: {
+        label?: string;
+        title?: string;
+        achievements?: string;
+      };
+      skills?: {
+        label?: string;
+        title?: string;
+        mediaCompetence?: string;
+        socialCompetence?: string;
+      };
+      languages?: {
+        label?: string;
+        title?: string;
+      };
+      internships?: {
+        label?: string;
+        title?: string;
+      };
+      hobbies?: {
+        label?: string;
+        title?: string;
+      };
+      footer?: {
+        rights?: string;
+        created?: string;
+      };
+    };
+  }
+}
 
 export { };

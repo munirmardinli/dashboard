@@ -103,6 +103,12 @@ export const ConfigAPI = {
 	},
 };
 
+export const PortfolioAPI = {
+	async getPortfolioData(): Promise<PortfolioData | null> {
+		const result = await fetchAPI<PortfolioData>(`/api/portfolio`);
+		return result.success ? result.data : null;
+	},
+};
 
 
 export const DashyAPI = {
@@ -155,4 +161,5 @@ export const DashyAPI = {
 		});
 		return result.success && result.data.success;
 	},
+
 };

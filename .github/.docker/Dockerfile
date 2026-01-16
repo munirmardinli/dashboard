@@ -21,15 +21,13 @@ CMD ["node", "dist/src/index.js"]
 
 FROM nginx:alpine as ui
 
-RUN mkdir -p /etc/nginx/http.d \
-    /usr/share/nginx/html/portfolio
+RUN mkdir -p /etc/nginx/http.d
 
 RUN rm -rf /etc/nginx/conf.d/*
 RUN apk update && apk add --no-cache wget ca-certificates
 
 COPY apps/ui/out /usr/share/nginx/html
 
-COPY apps/portfolio/out /usr/share/nginx/html/portfolio
 COPY apps/ui/default.conf /etc/nginx/http.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
