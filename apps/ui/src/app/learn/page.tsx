@@ -9,20 +9,17 @@ export default function RandomPie() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
 	const [data, setData] = useState<RandomPieData | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		LearnAPI.getRandomPieData()
-			.then(res => {
-				if (res) {
-					setData(res as RandomPieData);
-				}
-				setIsLoading(false);
-			})
-			.catch(err => {
-				console.error("Failed to fetch data:", err);
-				setIsLoading(false);
-			});
+		const loadData = async () => {
+			const res = await LearnAPI.getRandomPieData();
+			if (res) {
+				setData(res);
+			}
+			setLoading(false);
+		};
+		loadData();
 	}, []);
 
 	const initialItems: WheelItem[] = useMemo(() => {
@@ -49,7 +46,7 @@ export default function RandomPie() {
 		}
 	}, [initialItems]);
 
-	if (isLoading) {
+	if (loading) {
 		return (
 			<div style={{
 				height: "100vh",
@@ -59,7 +56,7 @@ export default function RandomPie() {
 				background: mode === 'dark' ? "#0f172a" : "#f8fafc",
 				color: theme.text
 			}}>
-				Loading...
+				Lade...
 			</div>
 		);
 	}

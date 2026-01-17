@@ -41,7 +41,6 @@ export default function DashyPage() {
 	useEffect(() => {
 		const loadData = async () => {
 			const dashyData = await DashyAPI.getDashyData();
-			console.log('Dashy Data Loaded:', dashyData);
 			setData(dashyData);
 			setLoading(false);
 		};
