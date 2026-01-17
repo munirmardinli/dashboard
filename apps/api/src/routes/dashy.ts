@@ -2,7 +2,7 @@ import { sendJSON, sendError } from "../utils/http.js";
 import { GitHubService } from "../services/github.js";
 
 const github = new GitHubService();
-const DASHY_FILE_PATH = "dashy/index.json";
+const DASHY_FILE_PATH = "management/dashy.json";
 
 async function getDashyData(): Promise<DashyData> {
 	try {

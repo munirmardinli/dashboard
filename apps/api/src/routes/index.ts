@@ -7,6 +7,7 @@ import { receiptRoutes } from "./receipt.js";
 import { portfolioRoutes } from "./portfolio.js";
 import { blogRoutes } from "./blog.js";
 import { dashyRoutes } from "./dashy.js";
+import { randomPieRoutes } from "./randomPie.js";
 
 export const routes: Route[] = [
 	...dataRoutes,
@@ -18,6 +19,7 @@ export const routes: Route[] = [
 	...portfolioRoutes,
 	...blogRoutes,
 	...dashyRoutes,
+	...randomPieRoutes,
 	{
 		method: "GET",
 		path: /^\/api\/health$/,

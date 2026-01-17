@@ -163,3 +163,10 @@ export const DashyAPI = {
 	},
 
 };
+
+export const LearnAPI = {
+	async getRandomPieData(): Promise<RandomPieData | null> {
+		const result = await fetchAPI<RandomPieData>(`/api/randomPie`);
+		return result.success ? result.data : null;
+	},
+};

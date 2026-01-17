@@ -3,11 +3,11 @@ import { GitHubService } from "../services/github.js";
 import path from "node:path";
 
 const github = new GitHubService();
-const PORTFOLIO_DIR = "portfolio";
+const PORTFOLIO_DIR = "portfolio/index.json";
 
 async function getPortfolioData() {
 	try {
-		const { content } = await github.getFile(`${PORTFOLIO_DIR}/index.json`);
+		const { content } = await github.getFile(PORTFOLIO_DIR);
 		return JSON.parse(content);
 	} catch (err: unknown) {
 		throw err;

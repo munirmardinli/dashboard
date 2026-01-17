@@ -868,6 +868,56 @@ declare global {
       };
     };
   }
+
+  /** Wheel
+   * @example
+   * {
+   *  "title": "Englischlernen",
+   *  "spinDuration": 1,
+   *  "ui": {
+   *    "spinButton": {
+   *      "idle": "Drehen",
+   *      "spinning": "Drehen..."
+   *    },
+   *    "result": {
+   *      "empty": "Keine Ergebnisse"
+   *    }
+   *  },
+   *  "items": [
+   *    {
+   *      "key": "Autonomous Mobility System",
+   *      "value": "Autonomes Mobilitätssystem"
+   *    }
+   *  ]
+   * }
+   */
+
+  interface RandomPieItemData {
+    key: string;
+    value: string;
+  }
+
+  interface RandomPieUI {
+    spinButton: {
+      idle: string;
+      spinning: string;
+    };
+    result: {
+      empty: string;
+    };
+  }
+
+  interface RandomPieData {
+    title: string;
+    spinDuration: number;
+    ui: RandomPieUI;
+    items: RandomPieItemData[];
+  }
+
+  interface WheelItem extends RandomPieItemData {
+    id: string;
+    color: string;
+  }
 }
 
 export { };

@@ -2,7 +2,7 @@ import { sendJSON, sendError } from "../utils/http.js";
 import { GitHubService } from "../services/github.js";
 
 const github = new GitHubService();
-const BLOG_FILE_PATH = "portfolio/blog.json";
+const BLOG_FILE_PATH = "learn/blog.json";
 
 async function getBlogData() {
 	try {
