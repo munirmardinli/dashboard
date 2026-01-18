@@ -118,10 +118,10 @@ const NavigationContent = () => {
               const renderNavItem = (navItem: any, depth: number) => {
                 const isDropdown = navItem.type === 'dropdown';
                 const isExpanded = expandedItems[navItem.key];
-                const currentView = searchParams.get('view');
+                const currentView = searchParams?.get('view');
                 const isSelected = !isDropdown && (
                   currentView === navItem.key ||
-                  (navItem.path && (`${pathname}?${searchParams.toString()}` === navItem.path || pathname === navItem.path))
+                  (navItem.path && (`${pathname}?${searchParams?.toString()}` === navItem.path || pathname === navItem.path))
                 );
                 const paddingLeft = depth === 0 ? '16px' : `${32 + (depth * 16)}px`;
 

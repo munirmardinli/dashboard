@@ -4,8 +4,15 @@ import { Layout, Navbar } from 'nextra-theme-docs';
 import { getPageMap } from 'nextra/page-map';
 import { Search } from 'nextra/components/search';
 
-import '@/app/docs/_metadata';
 import packageJson from '../../../package.json';
+
+import { type Metadata } from 'next/types';
+
+export const metadata: Metadata = {
+	title: '%s',
+	description: '%s',
+};
+
 
 export default async function RootLayout({
 	children,

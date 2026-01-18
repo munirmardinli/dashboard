@@ -26,9 +26,9 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const isDesktop = useIsDesktop();
 
   const actualSlug = slug || 'create';
-  const idFromParams = searchParams.get('id');
-  const sectionIdFromParams = searchParams.get('sectionId');
-  const itemIndexFromParams = searchParams.get('itemIndex');
+  const idFromParams = searchParams?.get('id');
+  const sectionIdFromParams = searchParams?.get('sectionId');
+  const itemIndexFromParams = searchParams?.get('itemIndex');
   const actualId = idFromParams || (actualSlug === 'create' ? 'create' : actualSlug);
 
   const [items, setItems] = useState<GenericJsonItem[]>([]);
