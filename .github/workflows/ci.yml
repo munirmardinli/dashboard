@@ -132,6 +132,11 @@ jobs:
         with:
           node-version: ${{ env.NPM_VERSION }}
           cache: npm
+      - name: Upgrade npm to fixed version
+        run: |
+          npm install -g npm@latest
+          npm --version
+          npm ls tar || true
       - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
@@ -153,7 +158,7 @@ jobs:
           CVE-2024-21538
           EOF
       - name: Install Trivy
-        uses: aquasecurity/setup-trivy@v0.2.4
+        uses: aquasecurity/setup-trivy@v0.2.5
         with:
           version: v${{ env.TRIVY_VERSION }}
       - name: install dependencies production for trivy
