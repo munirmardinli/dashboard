@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
 	reactStrictMode: true,
 	trailingSlash: true,
 	output: "export",
+	//cacheComponents: true,
 	compiler: {
 		removeConsole: process.env.NODE_ENV === 'production' ? {
 			exclude: ['error', 'warn'],
@@ -40,8 +41,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-const withBundleAnalyzer = bundleAnalyzer({
-	enabled: process.env.ANALYZE === 'true',
-})
-
-export default withBundleAnalyzer(withNextra(nextConfig));
+export default (withNextra(nextConfig));
