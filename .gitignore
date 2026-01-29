@@ -63,3 +63,5 @@ apps/api/public/
 **/next-env.d.ts
 
 hosts.json
+**/content/*
+content

@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function Page() {
+export default function Root() {
   const mode = useThemeStore((state) => state.mode);
   const activePath = useSidebarStore((state) => state.activePath);
   const theme = getTheme(mode);

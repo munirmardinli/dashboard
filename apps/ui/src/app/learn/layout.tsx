@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Munir Lab - Dashy",
+  title: "Munir Lab - Learn",
   description: "Personal Dashboard",
 };
 
-export default function DashyLayout({
+export default function LearnLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
