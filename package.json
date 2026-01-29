@@ -31,8 +31,7 @@
     "url": "https://github.com/munirmardinli/dashboard.git"
   },
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "dev": "turbo dev",
