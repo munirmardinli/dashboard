@@ -29,7 +29,7 @@
     "zustand": "^5.0.10",
     "nextra": "4.6.1",
     "nextra-theme-docs": "4.6.1",
-    "katex": "0.16.27"
+    "katex": "0.16.28"
   },
   "devDependencies": {
     "@types/node": "^25.0.10",
