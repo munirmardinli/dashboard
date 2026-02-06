@@ -24,7 +24,7 @@
   "dependencies": {
     "lucide-react": "^0.563.0",
     "next": "16.1.5",
-    "react": "19.2.3",
+    "react": "19.2.4",
     "react-dom": "19.2.4",
     "zustand": "^5.0.11",
     "nextra": "4.6.1",
