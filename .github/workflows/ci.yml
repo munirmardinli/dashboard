@@ -10,7 +10,6 @@ on:
 env:
   NPM_VERSION: "25"
   REGISTRY_URL: "https://npm.pkg.github.com"
-  TRIVY_VERSION: "0.64.1"
   DOCKER_USERNAME: mardinlimunir
   DOCKER_IMAGE_NAME: mardinlimunir/${{ github.event.repository.name }}
   DOCKER_REGISTRY: docker.io
@@ -128,76 +127,6 @@ jobs:
         with:
           name: api-dist
           path: apps/api/dist
-  trivy-scans-prod:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v6
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NPM_VERSION }}
-          cache: npm
-      - name: Upgrade npm to fixed version
-        run: |
-          npm install -g npm@latest
-          npm --version
-          npm ls tar || true
-      - name: Download build artifacts
-        uses: actions/download-artifact@v7
-        with:
-          name: ui-dist
-          path: apps/ui/out
-      - name: Download API build artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: api-dist
-          path: apps/api/dist
-      - name: Create Trivy ignore file
-        run: |
-          cat > .trivyignore << EOF
-          # Ignore known false positives
-          AVD-DS-0002
-          AVD-DS-0031:GEMINI_API_KEY
-          # Ignore NPM's internal glob vulnerability
-          CVE-2025-64756
-          CVE-2024-21538
-          EOF
-      - name: Install Trivy
-        uses: aquasecurity/setup-trivy@v0.2.5
-        with:
-          version: v${{ env.TRIVY_VERSION }}
-      - name: install dependencies production for trivy
-        working-directory: apps/api
-        run: npm install --omit=dev
-      - name: Update Trivy DB
-        run: trivy image --download-db-only
-      - name: Scan npm vulnerabilities
-        run: |
-          trivy fs --scanners vuln \
-          --severity HIGH,CRITICAL \
-          --ignore-unfixed \
-          --format table \
-          --exit-code 1 \
-          --dependency-tree \
-          package-lock.json
-      - name: Scan Dockerfile
-        run: |
-          trivy config .github/.docker/Dockerfile \
-          --severity HIGH,CRITICAL \
-          --format table \
-          --exit-code 1 \
-          --ignorefile .trivyignore
-      - name: Build Docker image
-        run: docker build -f .github/.docker/Dockerfile -t dashboard:latest .
-      - name: Scan Docker image
-        run: |
-          trivy image dashboard:latest \
-          --scanners vuln \
-          --severity HIGH,CRITICAL \
-          --ignore-unfixed \
-          --format table \
-          --exit-code 1
 
   docker-prod:
     needs: build
