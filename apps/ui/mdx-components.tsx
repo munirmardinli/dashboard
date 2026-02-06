@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs';
 import type { MDXComponents } from 'mdx/types';
 import Image, { ImageProps } from 'next/image';

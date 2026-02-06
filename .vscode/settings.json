@@ -3,7 +3,7 @@
     "editor.fontFamily": "'MesloLGS NF','Fragment Mono', 'FiraCode-Retina','FiraCode Nerd Font Mono','Fira Code', 'Menlo','3270 Nerd Font','Hack Nerd Font', 'FiraCode', 'Menlo', 'Monaco', 'Courier New', monospace, '3270 Nerd Font',Cascadia Mono, Consolas, DejaVu Sans Mono",
     "terminal.integrated.fontFamily": "'MesloLGS NF','Fragment Mono', 'FiraCode-Retina','FiraCode Nerd Font Mono','Fira Code', 'Menlo','3270 Nerd Font','Hack Nerd Font', 'FiraCode', 'Menlo', 'Monaco', 'Courier New', monospace, '3270 Nerd Font',Cascadia Mono, Consolas, DejaVu Sans Mono",
     "git.postCommitCommand": "sync",
-    "workbench.colorTheme": "Catppuccin Macchiato",
+    "workbench.colorTheme": "Catppuccin Frappé",
     "terminal.integrated.fontSize": 20,
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
@@ -68,7 +68,7 @@
         "statusBarItem.remoteForeground": "#e7e7e7",
         "commandCenter.border": "#e7e7e799"
     },
-    "workbench.iconTheme": "catppuccin-mocha",
+    "workbench.iconTheme": "catppuccin-frappe",
     "git.autofetch": true,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
@@ -84,7 +84,7 @@
     "cursor.cpp.enablePartialAccepts": true,
     "editor.codeActions.triggerOnFocusChange": true,
     "git.inputValidationLength": 30,
-    "workbench.statusBar.visible": true,
+    "workbench.statusBar.visible": false,
     "terminal.integrated.env.windows": {
         "LANG": "de_DE.UTF-8",
         "LC_ALL": "de_DE.UTF-8"

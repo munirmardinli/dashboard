@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import bundleAnalyzer from "@next/bundle-analyzer";
 import nextra from 'nextra';
 
 const withNextra = nextra({
