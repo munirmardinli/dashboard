@@ -9,10 +9,6 @@
     "firefox 111",
     "safari 16.4"
   ],
-  "preview": {
-    "headerTitel": "Dashboard",
-    "repoUrl": "https://github.com/munirmardinli/dashboard"
-  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack 2>&1 | grep -vE '(Warning.*localstorage-file|warn.*Failed to get the last modified timestamp|Use.*node --trace-warnings)' || true",
@@ -24,6 +20,7 @@
   "dependencies": {
     "katex": "0.16.21",
     "lucide-react": "0.563.0",
+    "mermaid": "11.12.2",
     "next": "16.1.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",

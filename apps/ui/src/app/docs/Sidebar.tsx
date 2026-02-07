@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
 import { ChevronDown, ChevronRight, FileText, Folder } from 'lucide-react';
@@ -11,6 +11,7 @@ import { DocsAPI } from '@/utils/api';
 
 export default function Sidebar() {
 	const searchParams = useSearchParams();
+	const pathname = usePathname();
 	const currentPage = searchParams.get('p') || 'index';
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
@@ -37,12 +38,12 @@ export default function Sidebar() {
 			gap: '4px',
 			overflowY: 'auto',
 		}}>
-			<ItemRenderer items={meta} theme={theme} currentPage={currentPage} />
+			<ItemRenderer items={meta} theme={theme} currentPage={currentPage} pathname={pathname} />
 		</div>
 	);
 }
 
-function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: MetaData; parentKey?: string; theme: Theme; currentPage: string }) {
+function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname }: { items: MetaData; parentKey?: string; theme: Theme; currentPage: string; pathname: string }) {
 	return (
 		<>
 			{Object.entries(items).map(([key, value]) => {
@@ -62,6 +63,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: Me
 							parentKey={currentPath}
 							theme={theme}
 							currentPage={currentPage}
+							pathname={pathname}
 							nestedItems={rest as MetaData}
 						/>
 					);
@@ -70,7 +72,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: Me
 				return (
 					<Link
 						key={key}
-						href={`/docs/?type=docs&p=${currentPath}`}
+						href={`${pathname}?type=docs&p=${currentPath}`}
 						style={{
 							display: 'flex',
 							alignItems: 'center',
@@ -94,8 +96,17 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: Me
 	);
 }
 
-function FolderItem({ title, pages, parentKey, theme, currentPage, nestedItems }: FolderItemProps) {
-	const [isOpen, setIsOpen] = useState(true);
+function FolderItem({ title, pages, parentKey, theme, currentPage, pathname, nestedItems }: FolderItemProps & { pathname: string }) {
+	const isActiveBranch = currentPage.startsWith(parentKey);
+	const [isOpen, setIsOpen] = useState(isActiveBranch);
+
+	useEffect(() => {
+		if (isActiveBranch) {
+			setIsOpen(true);
+		} else {
+			setIsOpen(false);
+		}
+	}, [isActiveBranch]);
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -130,7 +141,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, nestedItems }
 						return (
 							<Link
 								key={key}
-								href={`/docs/?type=docs&p=${currentPath}`}
+								href={`${pathname}?type=docs&p=${currentPath}`}
 								style={{
 									display: 'flex',
 									alignItems: 'center',
@@ -152,7 +163,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, nestedItems }
 					})}
 					{nestedItems && (
 						<div style={{ marginLeft: '8px' }}>
-							<ItemRenderer items={nestedItems} parentKey={parentKey} theme={theme} currentPage={currentPage} />
+							<ItemRenderer items={nestedItems} parentKey={parentKey} theme={theme} currentPage={currentPage} pathname={pathname} />
 						</div>
 					)}
 				</div>

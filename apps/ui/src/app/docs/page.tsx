@@ -12,6 +12,82 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import { DocsAPI } from '@/utils/api';
 import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown, FileText } from 'lucide-react';
+import mermaid from 'mermaid';
+
+function MermaidDiagram({ chart }: { chart: string }) {
+	const mode = useThemeStore((s) => s.mode);
+	const theme = getTheme(mode);
+	const [svg, setSvg] = useState<string>('');
+	const [error, setError] = useState<boolean>(false);
+
+	useEffect(() => {
+		const isDark = mode === 'dark' || mode === 'contrast';
+		mermaid.initialize({
+			startOnLoad: true,
+			theme: mode === 'dark' ? 'dark' : (mode === 'contrast' ? 'base' : 'default'),
+			themeVariables: {
+				primaryColor: theme.primary,
+				primaryTextColor: theme.text,
+				primaryBorderColor: theme.primary,
+				lineColor: theme.textSec,
+				secondaryColor: theme.paperSec,
+				tertiaryColor: theme.paper,
+			},
+			securityLevel: 'loose',
+			fontFamily: 'Inter, system-ui, sans-serif',
+		});
+
+		const renderChart = async () => {
+			try {
+				const id = `mermaid-${Math.random().toString(36).substring(2, 11)}`;
+				const { svg } = await mermaid.render(id, chart);
+				setSvg(svg);
+				setError(false);
+			} catch (err) {
+				console.error('Mermaid render error:', err);
+				setError(true);
+			}
+		};
+
+		renderChart();
+	}, [chart, mode, theme]);
+
+	if (error) {
+		return (
+			<div style={{
+				padding: '1rem',
+				border: `1px solid ${theme.divider}`,
+				borderRadius: '8px',
+				background: `${theme.primary}05`,
+				color: theme.textSec,
+				fontSize: '0.9rem',
+				fontFamily: 'monospace',
+				margin: '1rem 0'
+			}}>
+				[Mermaid Syntax Fehler]
+			</div>
+		);
+	}
+
+	return (
+		<div
+			className="mermaid"
+			dangerouslySetInnerHTML={{ __html: svg }}
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+				margin: '2rem 0',
+				padding: '24px',
+				background: mode === 'dark' ? '#00000020' : '#ffffff20',
+				borderRadius: '16px',
+				border: `1px solid ${theme.divider}`,
+				overflowX: 'auto',
+				backdropFilter: 'blur(8px)',
+				boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+			}}
+		/>
+	);
+}
 
 function DocContent() {
 	const searchParams = useSearchParams();
@@ -158,6 +234,13 @@ function DocContent() {
 					),
 					code: ({ children, className }) => {
 						const isInline = !className;
+						const match = /language-(\w+)/.exec(className || '');
+						const language = match ? match[1] : '';
+
+						if (language === 'mermaid') {
+							return <MermaidDiagram chart={String(children).replace(/\n$/, '')} />;
+						}
+
 						return isInline ? (
 							<code style={{
 								color: theme.text,
