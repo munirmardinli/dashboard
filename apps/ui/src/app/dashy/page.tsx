@@ -27,7 +27,8 @@ import {
 	ChevronDown,
 	ChevronRight,
 	Code,
-	ExternalLink
+	ExternalLink,
+	LucideIcon
 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
@@ -92,7 +93,7 @@ export default function DashyPage() {
 	}
 
 	const getIcon = (iconName: string) => {
-		const iconMap: Record<string, any> = {
+		const iconMap: Record<string, LucideIcon> = {
 			'cloud': Cloud,
 			'user': User,
 			'graduation-cap': GraduationCap,

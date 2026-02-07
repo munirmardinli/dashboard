@@ -82,7 +82,7 @@ const NavigationContent = () => {
 
   const getNavigationTitle = useCallback((key: string): string => {
     if (!translations.navigation?.mainItems || !Array.isArray(translations.navigation.mainItems)) return '';
-    const findTitle = (items: any[]): string | null => {
+    const findTitle = (items: TranslationNavigationItem[]): string | null => {
       for (const item of items) {
         if (item.key === key) return item.title;
         if (item.subItems) {
@@ -92,7 +92,7 @@ const NavigationContent = () => {
       }
       return null;
     };
-    return findTitle(translations.navigation.mainItems as any[]) || '';
+    return findTitle(translations.navigation.mainItems as TranslationNavigationItem[]) || '';
   }, [translations.navigation]);
 
   const languageMenuItems = useMemo(() => [
@@ -115,7 +115,7 @@ const NavigationContent = () => {
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {navigationConfig?.mainItems?.map((item) => {
-              const renderNavItem = (navItem: any, depth: number) => {
+              const renderNavItem = (navItem: TranslationNavigationItem, depth: number) => {
                 const isDropdown = navItem.type === 'dropdown';
                 const isExpanded = expandedItems[navItem.key];
                 const currentView = searchParams?.get('view');
@@ -157,7 +157,7 @@ const NavigationContent = () => {
                     </div>
                     {isDropdown && isExpanded && (
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                        {navItem.subItems?.map((subItem: any) => renderNavItem(subItem, depth + 1))}
+                        {navItem.subItems?.map((subItem: TranslationNavigationItem) => renderNavItem(subItem, depth + 1))}
                       </ul>
                     )}
                   </li>

@@ -950,6 +950,11 @@ declare global {
     id: string;
     color: string;
   }
+  interface CodeBlockProps extends React.HTMLAttributes<HTMLElement> {
+    node?: any;
+    children?: React.ReactNode;
+    className?: string;
+  }
 }
 
 export { };

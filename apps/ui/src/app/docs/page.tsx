@@ -1,18 +1,113 @@
 "use client";
 
+import { useState, useEffect, Suspense, ReactNode, HTMLAttributes, ReactElement, isValidElement, cloneElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
+import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown, FileText, Copy, Check } from 'lucide-react';
+import mermaid from 'mermaid';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, Suspense } from 'react';
+import { useSnackStore } from "@/stores/snackbarStore";
 import { DocsAPI } from '@/utils/api';
-import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown, FileText } from 'lucide-react';
-import mermaid from 'mermaid';
+import { useI18nStore } from '@/stores/i18nStore';
+
+function CodeBlock({ children, className, node, ...props }: CodeBlockProps) {
+	const mode = useThemeStore((s) => s.mode);
+	const theme = getTheme(mode);
+	const [copied, setCopied] = useState(false);
+	const setSnack = useSnackStore((state) => state.setSnack);
+	const match = /language-(\w+)/.exec(className || '');
+	const { t } = useI18nStore();
+	const language = match ? match[1] : '';
+	const meta = (node as { data?: { meta?: string } })?.data?.meta;
+
+	const titleMatch = /title="([^"]+)"/.exec(meta || '');
+	const title = titleMatch ? titleMatch[1] : '';
+
+	const codeContent = String(children).replace(/\n$/, '');
+
+	const handleCopy = () => {
+		navigator.clipboard.writeText(codeContent);
+		setCopied(true);
+		setSnack(t("ui.copiedToClipboard"), "success");
+		setTimeout(() => setCopied(false), 2000);
+	};
+
+	if (language === 'mermaid') {
+		return <MermaidDiagram chart={codeContent} />;
+	}
+
+	return (
+		<div style={{
+			margin: '1.5rem 0',
+			borderRadius: '12px',
+			overflow: 'hidden',
+			border: `1px solid ${theme.divider}`,
+			background: mode === 'dark' ? '#1e1e1e' : '#ffffff',
+			boxShadow: theme.shadowMd
+		}}>
+			{(title || language) && (
+				<div style={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					padding: '8px 16px',
+					background: mode === 'dark' ? '#2d2d2d' : '#f5f5f5',
+					borderBottom: `1px solid ${theme.divider}`,
+					fontSize: '0.85rem',
+					color: theme.textSec,
+					fontFamily: 'monospace'
+				}}>
+					<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+						<div style={{ display: 'flex', gap: '6px' }}>
+							<div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
+							<div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
+							<div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
+						</div>
+						{title && <span style={{ marginLeft: '8px', fontWeight: 600 }}>{title}</span>}
+					</div>
+					<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+						{language && <span style={{ textTransform: 'uppercase', opacity: 0.6, fontSize: '0.75rem' }}>{language}</span>}
+						<button
+							onClick={handleCopy}
+							style={{
+								border: 'none',
+								background: 'transparent',
+								cursor: 'pointer',
+								display: 'flex',
+								alignItems: 'center',
+								color: copied ? theme.primary : theme.textSec,
+								transition: 'color 0.2s'
+							}}
+							title="Copy code"
+						>
+							{copied ? <Check size={14} /> : <Copy size={14} />}
+						</button>
+					</div>
+				</div>
+			)}
+			<div style={{ fontSize: '0.9rem', overflowX: 'auto' }}>
+				<SyntaxHighlighter
+					language={language || 'text'}
+					style={mode === 'dark' ? vscDarkPlus : vs}
+					customStyle={{ margin: 0, padding: '16px', borderRadius: 0, background: 'transparent' }}
+					wrapLongLines={false}
+				>
+					{codeContent}
+				</SyntaxHighlighter>
+			</div>
+		</div>
+	);
+}
+
 
 function MermaidDiagram({ chart }: { chart: string }) {
 	const mode = useThemeStore((s) => s.mode);
@@ -232,7 +327,7 @@ function DocContent() {
 							{children}
 						</li>
 					),
-					code: ({ children, className }) => {
+					code: ({ children, className, node, ...props }) => {
 						const isInline = !className;
 						const match = /language-(\w+)/.exec(className || '');
 						const language = match ? match[1] : '';
@@ -241,38 +336,25 @@ function DocContent() {
 							return <MermaidDiagram chart={String(children).replace(/\n$/, '')} />;
 						}
 
-						return isInline ? (
-							<code style={{
-								color: theme.text,
-								padding: '2px 6px',
-								borderRadius: '4px',
-								fontSize: '1em',
-								fontFamily: 'monospace',
-							}}>
-								{children}
-							</code>
-						) : (
-							<div style={{ position: 'relative', margin: '2.5rem 0' }}>
-								<pre style={{
-									background: theme.paper,
-									backdropFilter: 'blur(16px)',
-									padding: '24px',
-									borderRadius: '16px',
-									border: `1px solid ${theme.divider}`,
-									overflowX: 'auto',
-									marginBottom: '1.5rem',
-									boxShadow: theme.shadowMd,
+						if (isInline) {
+							return (
+								<code style={{
+									color: theme.text,
+									padding: '2px 6px',
+									borderRadius: '4px',
+									fontSize: '1em',
+									fontFamily: 'monospace',
+									background: `${theme.text}10`,
 								}}>
-									<code style={{
-										color: theme.text,
-										fontSize: '0.9em',
-										fontFamily: 'monospace',
-										lineHeight: '1.5'
-									}}>
-										{children}
-									</code>
-								</pre>
-							</div>
+									{children}
+								</code>
+							);
+						}
+
+						return (
+							<CodeBlock className={className} node={node} {...props}>
+								{children}
+							</CodeBlock>
 						);
 					},
 					blockquote: ({ children }) => {
@@ -281,10 +363,15 @@ function DocContent() {
 						let initiallyOpen = false;
 						let customTitle = '';
 
-						const findTextContent = (node: any): string => {
+						const findTextContent = (node: ReactNode): string => {
 							if (typeof node === 'string') return node;
 							if (Array.isArray(node)) return node.map(findTextContent).join(' ');
-							if (node?.props?.children) return findTextContent(node.props.children);
+							if (isValidElement(node)) {
+								const element = node as ReactElement<{ children?: ReactNode }>;
+								if (element.props.children) {
+									return findTextContent(element.props.children);
+								}
+							}
 							return '';
 						};
 
@@ -318,7 +405,7 @@ function DocContent() {
 							}
 						}
 
-						const stripTag = (node: any): any => {
+						const stripTag = (node: ReactNode): ReactNode => {
 							if (typeof node === 'string') {
 								let cleaned = node.replace(/\[!(SUCCESS|INFO|WARNING|ERROR|TIP|NOTE)\]/gi, '');
 								cleaned = cleaned.replace(/^(\?{3}|!{3})\s*[+-]?\s*\w+(?:\s+"[^"]+")?/gi, '');
@@ -327,14 +414,13 @@ function DocContent() {
 							if (Array.isArray(node)) {
 								return node.map(stripTag);
 							}
-							if (node?.props?.children) {
-								return {
-									...node,
-									props: {
-										...node.props,
-										children: stripTag(node.props.children)
-									}
-								};
+							if (isValidElement(node)) {
+								const element = node as ReactElement<{ children?: ReactNode }>;
+								if (element.props.children) {
+									return cloneElement(element, {
+										children: stripTag(element.props.children)
+									});
+								}
 							}
 							return node;
 						};

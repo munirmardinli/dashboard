@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 
 import { DocsAPI } from '@/utils/api';
 
-export default function Sidebar() {
+export default function Sidebar({ mobile, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const currentPage = searchParams.get('p') || 'index';
@@ -23,27 +23,27 @@ export default function Sidebar() {
 		});
 	}, []);
 
-	if (!meta) return <div style={{ width: '280px' }}>Lade Navigation...</div>;
+	if (!meta) return <div style={{ width: mobile ? '100%' : '280px', padding: '24px' }}>Lade Navigation...</div>;
 
 	return (
 		<div style={{
-			width: '280px',
-			height: 'calc(100vh - 64px)',
-			position: 'sticky',
-			top: '64px',
+			width: mobile ? '100%' : '280px',
+			height: mobile ? '100%' : 'calc(100vh - 64px)',
+			position: mobile ? 'relative' : 'sticky',
+			top: mobile ? 0 : '64px',
 			padding: '24px',
-			borderRight: `1px solid ${theme.divider}`,
+			borderRight: mobile ? 'none' : `1px solid ${theme.divider}`,
 			display: 'flex',
 			flexDirection: 'column',
 			gap: '4px',
 			overflowY: 'auto',
 		}}>
-			<ItemRenderer items={meta} theme={theme} currentPage={currentPage} pathname={pathname} />
+			<ItemRenderer items={meta} theme={theme} currentPage={currentPage} pathname={pathname} onLinkClick={onLinkClick} />
 		</div>
 	);
 }
 
-function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname }: { items: MetaData; parentKey?: string; theme: Theme; currentPage: string; pathname: string }) {
+function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname, onLinkClick }: { items: MetaData; parentKey?: string; theme: Theme; currentPage: string; pathname: string; onLinkClick?: () => void }) {
 	return (
 		<>
 			{Object.entries(items).map(([key, value]) => {
@@ -65,6 +65,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname }: {
 							currentPage={currentPage}
 							pathname={pathname}
 							nestedItems={rest as MetaData}
+							onLinkClick={onLinkClick}
 						/>
 					);
 				}
@@ -73,6 +74,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname }: {
 					<Link
 						key={key}
 						href={`${pathname}?type=docs&p=${currentPath}`}
+						onClick={onLinkClick}
 						style={{
 							display: 'flex',
 							alignItems: 'center',
@@ -96,7 +98,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage, pathname }: {
 	);
 }
 
-function FolderItem({ title, pages, parentKey, theme, currentPage, pathname, nestedItems }: FolderItemProps & { pathname: string }) {
+function FolderItem({ title, pages, parentKey, theme, currentPage, pathname, nestedItems, onLinkClick }: FolderItemProps & { pathname: string; onLinkClick?: () => void }) {
 	const isActiveBranch = currentPage.startsWith(parentKey);
 	const [isOpen, setIsOpen] = useState(isActiveBranch);
 
@@ -142,6 +144,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, pathname, nes
 							<Link
 								key={key}
 								href={`${pathname}?type=docs&p=${currentPath}`}
+								onClick={onLinkClick}
 								style={{
 									display: 'flex',
 									alignItems: 'center',
@@ -163,7 +166,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, pathname, nes
 					})}
 					{nestedItems && (
 						<div style={{ marginLeft: '8px' }}>
-							<ItemRenderer items={nestedItems} parentKey={parentKey} theme={theme} currentPage={currentPage} pathname={pathname} />
+							<ItemRenderer items={nestedItems} parentKey={parentKey} theme={theme} currentPage={currentPage} pathname={pathname} onLinkClick={onLinkClick} />
 						</div>
 					)}
 				</div>
