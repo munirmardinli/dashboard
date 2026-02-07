@@ -1,5 +1,5 @@
-export const getTheme = (mode: 'light' | 'dark' | 'contrast') => {
-	const themes = {
+export const getTheme = (mode: 'light' | 'dark' | 'contrast'): Theme => {
+	const themes: Record<'light' | 'dark' | 'contrast', Theme> = {
 		light: {
 			primary: '#6366f1', accent: '#10b981', bg: '#f8fafc', paper: 'rgba(255,255,255,0.7)', paperSec: '#ffffff', text: '#1e293b', textSec: '#64748b',
 			divider: 'rgba(148,163,184,0.1)', gradient: 'linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)',

@@ -8,6 +8,7 @@ import { portfolioRoutes } from "./portfolio.js";
 import { blogRoutes } from "./blog.js";
 import { dashyRoutes } from "./dashy.js";
 import { randomPieRoutes } from "./randomPie.js";
+import { docsRoutes } from "./docs.js";
 
 export const routes: Route[] = [
 	...dataRoutes,
@@ -20,6 +21,7 @@ export const routes: Route[] = [
 	...blogRoutes,
 	...dashyRoutes,
 	...randomPieRoutes,
+	...docsRoutes,
 	{
 		method: "GET",
 		path: /^\/api\/health$/,

@@ -170,3 +170,24 @@ export const LearnAPI = {
 		return result.success ? result.data : null;
 	},
 };
+
+export const DocsAPI = {
+	async getMeta(): Promise<MetaData | null> {
+		const result = await fetchAPI<MetaData>(`/api/docs/meta`);
+		return result.success ? result.data : null;
+	},
+
+	async getContent(path: string): Promise<string | null> {
+		// Note: Using fetch directly for plain text if DocsAPI needs raw text
+		// But let's try fetchAPI first and see if it handles text (it currently expects JSON)
+		// I'll add a specialized fetchText for plain text markdown
+		try {
+			const response = await fetch(`${API_URL}/api/docs/content?p=${path}`);
+			if (!response.ok) return null;
+			return await response.text();
+		} catch (error) {
+			console.error(`Error fetching doc content:`, error);
+			return null;
+		}
+	},
+};

@@ -1,13 +1,13 @@
 "use client";
 import { Navigation } from "@/app/default";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 
 export default function QueryLayout({ children }: Readonly<{ children: ReactNode }>) {
   const isDesktop = useIsDesktop();
 
   return (
-    <>
+    <Suspense>
       <Navigation />
       <div style={{
         marginLeft: isDesktop ? '280px' : '0',
@@ -16,6 +16,6 @@ export default function QueryLayout({ children }: Readonly<{ children: ReactNode
       }}>
         {children}
       </div>
-    </>
+    </Suspense>
   );
 }

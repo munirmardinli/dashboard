@@ -4,6 +4,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import { useState, useMemo, useEffect } from "react";
 import { LearnAPI } from "@/utils/api";
+import { notFound } from "next/navigation";
 
 export default function RandomPie() {
 	const mode = useThemeStore((state) => state.mode);
@@ -61,7 +62,7 @@ export default function RandomPie() {
 		);
 	}
 
-	if (!data) return null;
+	if (!data) return notFound();
 
 	const spinWheel = () => {
 		if (isSpinning || items.length === 0) return;

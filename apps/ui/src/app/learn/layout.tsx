@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Munir Lab - Learn",
@@ -11,6 +12,8 @@ export default function LearnLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>{ children }</>
+    <Suspense>
+      {children}
+    </Suspense>
   );
 }

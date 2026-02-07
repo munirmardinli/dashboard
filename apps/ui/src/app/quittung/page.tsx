@@ -7,7 +7,7 @@ export default function QuittungPage() {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [imageFile, setImageFile] = useState<File | null>(null);
 	const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
-	const [expenses, setExpenses] = useState<ExpenseData[]>([]);
+	const [, setExpenses] = useState<ExpenseData[]>([]);
 	const [isAnalyzing, setIsAnalyzing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);

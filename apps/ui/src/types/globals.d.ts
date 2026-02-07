@@ -758,6 +758,38 @@ declare global {
     text: string;
   }
 
+  interface Theme {
+    primary: string;
+    accent: string;
+    bg: string;
+    paper: string;
+    paperSec: string;
+    text: string;
+    textSec: string;
+    divider: string;
+    gradient: string;
+    shadowSm: string;
+    shadowMd: string;
+    shadowLg: string;
+    shadowPrimary: string;
+  }
+
+  interface DocFolder {
+    title: string;
+    pages?: Record<string, string>;
+    [key: string]: string | DocFolder | Record<string, string> | undefined;
+  }
+
+  type MetaData = Record<string, string | DocFolder>;
+
+  interface FolderItemProps {
+    title: string;
+    pages?: Record<string, string>;
+    parentKey: string;
+    theme: Theme;
+    currentPage: string;
+    nestedItems?: MetaData;
+  }
 
   /** Portfolio 
    *  

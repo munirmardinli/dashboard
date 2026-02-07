@@ -32,10 +32,6 @@ const nextConfig: NextConfig = {
 		unoptimized: true,
 	},
 	turbopack: {
-		resolveAlias: {
-			'next-mdx-import-source-file': './mdx-components.tsx',
-			underscore: 'lodash',
-		},
 		resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.json'],
 	},
 };

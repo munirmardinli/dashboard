@@ -29,6 +29,7 @@ import {
 	Code,
 	ExternalLink
 } from 'lucide-react';
+import { notFound } from 'next/navigation';
 
 export default function DashyPage() {
 	const mode = useThemeStore((state) => state.mode);
@@ -87,18 +88,7 @@ export default function DashyPage() {
 	}
 
 	if (!data) {
-		return (
-			<div style={{
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				height: '100vh',
-				backgroundColor: theme.bg,
-				color: theme.text
-			}}>
-				Fehler beim Laden der Daten
-			</div>
-		);
+		return notFound();
 	}
 
 	const getIcon = (iconName: string) => {

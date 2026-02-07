@@ -1,50 +1,26 @@
-import 'nextra-theme-docs/style.css';
-import 'katex/dist/katex.min.css';
-import { Layout, Navbar } from 'nextra-theme-docs';
-import { getPageMap } from 'nextra/page-map';
-import { Search } from 'nextra/components/search';
+"use client";
 
-import packageJson from '../../../package.json';
+import { ReactNode, Suspense } from 'react';
+import Sidebar from './Sidebar';
+import { getTheme } from '@/utils/theme';
+import { useThemeStore } from '@/stores/themeStore';
 
-import { type Metadata } from 'next/types';
+export default function DocsLayout({ children }: { children: ReactNode }) {
+	const mode = useThemeStore((s) => s.mode);
+	const theme = getTheme(mode);
 
-export const metadata: Metadata = {
-	title: '%s',
-	description: '%s',
-};
-
-
-export default async function DocsLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
-
-	const sidebarData = await getPageMap("/docs");
 	return (
-		<div className="antialiased tracking-tight">
-			<Layout
-				sidebar={{ autoCollapse: true }}
-				navbar={
-					<Navbar
-						logoLink="/"
-						projectLink={packageJson.preview.repoUrl}
-						logo={
-							<span className="ml-[0.4em] font-extrabold">
-								{packageJson.preview.headerTitel}
-							</span>
-						}
-						align="left"
-					/>
-				}
-				docsRepositoryBase={packageJson.preview.repoUrl}
-				pageMap={sidebarData}
-				feedback={{ content: null }}
-				search={<Search placeholder="Suche..." />}
-				editLink={false}
-			>
-				{children}
-			</Layout>
+		<div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: theme.bg }}>
+			<div style={{ display: 'flex', flex: 1 }}>
+				<Suspense fallback={<div style={{ width: '280px' }}>Lade Sidebar...</div>}>
+					<Sidebar />
+				</Suspense>
+				<main style={{ flex: 1, padding: '40px', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+					<Suspense fallback={<div>Lade Dokumentation...</div>}>
+						{children}
+					</Suspense>
+				</main>
+			</div>
 		</div>
 	);
 }

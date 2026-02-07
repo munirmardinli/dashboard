@@ -6,6 +6,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default function PortfolioPage() {
 	const mode = useThemeStore((state) => state.mode);
@@ -24,8 +25,7 @@ export default function PortfolioPage() {
 					setError("Keine Daten gefunden");
 				}
 			} catch (err) {
-				setError("Fehler beim Laden der Daten");
-				console.error(err);
+				notFound();
 			} finally {
 				setLoading(false);
 			}
@@ -50,22 +50,7 @@ export default function PortfolioPage() {
 	}
 
 	if (error || !data) {
-		return (
-			<div style={{
-				minHeight: "100vh",
-				background: theme.bg,
-				color: theme.text,
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				fontFamily: "system-ui, -apple-system, sans-serif",
-			}}>
-				<div style={{ textAlign: "center" }}>
-					<h1 style={{ marginBottom: "16px" }}>Oops!</h1>
-					<p>{error ?? ""}</p>
-				</div>
-			</div>
-		);
+		return notFound();
 	}
 
 	return (
