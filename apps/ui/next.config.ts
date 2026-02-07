@@ -1,22 +1,4 @@
 import type { NextConfig } from "next";
-import nextra from 'nextra';
-
-const withNextra = nextra({
-	defaultShowCopyCode: true,
-	codeHighlight: true,
-	readingTime: true,
-	staticImage: true,
-	search: true,
-	latex: {
-		renderer: 'katex',
-		options: {
-			macros: {
-				'\\RR': '\\mathbb{R}',
-			},
-		},
-	},
-	whiteListTagsStyling: ['table', 'thead', 'tbody', 'tr', 'th', 'td'],
-});
 
 const nextConfig: NextConfig = {
 	reactStrictMode: true,
@@ -36,4 +18,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-export default (withNextra(nextConfig));
+export default nextConfig;
