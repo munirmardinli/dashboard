@@ -8,10 +8,10 @@ import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
 import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
-import { useSearchParams, notFound } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import { DocsAPI } from '@/utils/api';
-import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown, FileText } from 'lucide-react';
 
 function DocContent() {
 	const searchParams = useSearchParams();
@@ -55,14 +55,33 @@ function DocContent() {
 
 					setContent(processedLines.join('\n'));
 				} else {
-					notFound();
+					setContent('');
 				}
 			})
-			.catch(() => notFound())
+			.catch(() => setContent(''))
 			.finally(() => setLoading(false));
 	}, [p]);
 
 	if (loading) return <div style={{ color: theme.text }}>Lade...</div>;
+
+	if (!content) {
+		return (
+			<div style={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+				justifyContent: 'center',
+				height: '60vh',
+				color: theme.text,
+				opacity: 0.6,
+				textAlign: 'center'
+			}}>
+				<FileText size={48} style={{ marginBottom: '1rem' }} />
+				<h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Dokumentation nicht gefunden</h2>
+				<p>Bitte wähle ein anderes Thema aus der Seitenleiste.</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="markdown-container" style={{ color: theme.text }}>

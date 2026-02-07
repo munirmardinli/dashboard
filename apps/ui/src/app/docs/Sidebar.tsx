@@ -49,10 +49,11 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: Me
 				const currentPath = parentKey ? `${parentKey}/${key}` : key;
 				const isActive = currentPage === currentPath;
 
-				if (typeof value === 'object' && value !== null && 'title' in value) {
-					const folder = value as DocFolder;
-					// Filter out 'title' and 'pages' to find nested folders
-					const { title, pages, ...rest } = folder;
+				if (typeof value === 'object' && value !== null) {
+					const title = 'title' in value ? (value.title as string) : key;
+					const pages = 'pages' in value ? (value.pages as Record<string, string>) : undefined;
+					const { title: _t, pages: _p, ...rest } = value as any;
+
 					return (
 						<FolderItem
 							key={key}
@@ -85,7 +86,7 @@ function ItemRenderer({ items, parentKey = '', theme, currentPage }: { items: Me
 						}}
 					>
 						<FileText size={16} opacity={isActive ? 1 : 0.6} />
-						{value as string}
+						{String(value)}
 					</Link>
 				);
 			})}
@@ -122,7 +123,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, nestedItems }
 			</div>
 			{isOpen && (
 				<div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginLeft: '8px', borderLeft: `1px solid ${theme.divider}` }}>
-					{pages && Object.entries(pages).map(([key, value]) => {
+					{pages && typeof pages === 'object' && Object.entries(pages).map(([key, value]) => {
 						const currentPath = `${parentKey}/${key}`;
 						const isActive = currentPage === currentPath;
 
@@ -145,7 +146,7 @@ function FolderItem({ title, pages, parentKey, theme, currentPage, nestedItems }
 									transition: 'all 0.2s ease',
 								}}
 							>
-								{value}
+								{String(value)}
 							</Link>
 						);
 					})}
