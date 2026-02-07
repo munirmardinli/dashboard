@@ -6,6 +6,8 @@ export class GitHubService {
 	public repo: string;
 	private branch: string;
 	private baseUrl: string;
+	private cache: Map<string, { data: any; timestamp: number }> = new Map();
+	private readonly CACHE_TTL = 5 * 60 * 1000;
 
 	constructor() {
 		this.token = process.env.GITHUB_TOKEN?.trim();
@@ -66,6 +68,14 @@ export class GitHubService {
 		const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
 		const url = `${this.baseUrl}/dashboard/${normalizedPath}?ref=${this.branch}`;
 
+		// Check cache for GET requests
+		if (!options.method || options.method === "GET") {
+			const cached = this.cache.get(url);
+			if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+				return cached.data;
+			}
+		}
+
 		const headers: Record<string, string> = {
 			Accept: "application/vnd.github.v3+json",
 			...options.headers,
@@ -109,7 +119,17 @@ export class GitHubService {
 			throw new Error(`GitHub API Error: ${response.status} ${JSON.stringify(errorData)}`);
 		}
 
-		return response.json();
+		const data = await response.json();
+
+		// Cache successful GET responses
+		if (!options.method || options.method === "GET") {
+			this.cache.set(url, { data, timestamp: Date.now() });
+		} else {
+			// Invalidate cache for mutations
+			this.cache.clear();
+		}
+
+		return data;
 	}
 
 	async getRawFile(path: string): Promise<{ content: Buffer; sha: string }> {

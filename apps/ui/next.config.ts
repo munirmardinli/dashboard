@@ -13,9 +13,7 @@ const nextConfig: NextConfig = {
 	images: {
 		unoptimized: true,
 	},
-	turbopack: {
-		resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.json'],
-	},
+	pageExtensions: ['md','tsx'],
 };
 
 export default nextConfig;

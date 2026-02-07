@@ -2,11 +2,16 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import 'katex/dist/katex.min.css';
 import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSearchParams, notFound } from 'next/navigation';
 import { useState, useEffect, Suspense } from 'react';
 import { DocsAPI } from '@/utils/api';
+import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown } from 'lucide-react';
 
 function DocContent() {
 	const searchParams = useSearchParams();
@@ -23,7 +28,32 @@ function DocContent() {
 		DocsAPI.getContent(p)
 			.then(data => {
 				if (data) {
-					setContent(data);
+					const lines = data.split('\n');
+					const processedLines = [];
+					let inAdmonition = false;
+
+					for (let i = 0; i < lines.length; i++) {
+						const line = lines[i];
+						const trimmed = line.trim();
+						const isAdmonitionStart = /^(\?{3}|!{3})[+-]?\s+\w+.*$/.test(trimmed);
+
+						if (isAdmonitionStart) {
+							processedLines.push('> ' + trimmed);
+							inAdmonition = true;
+						} else if (inAdmonition && (line.startsWith('    ') || line.startsWith('\t') || line.startsWith('  ') || trimmed === '')) {
+							let contentLine = line;
+							if (line.startsWith('    ')) contentLine = line.substring(4);
+							else if (line.startsWith('\t')) contentLine = line.substring(1);
+							else if (line.startsWith('  ')) contentLine = line.substring(2);
+
+							processedLines.push('> ' + contentLine);
+						} else {
+							processedLines.push(line);
+							if (trimmed !== '') inAdmonition = false;
+						}
+					}
+
+					setContent(processedLines.join('\n'));
 				} else {
 					notFound();
 				}
@@ -37,7 +67,8 @@ function DocContent() {
 	return (
 		<div className="markdown-container" style={{ color: theme.text }}>
 			<ReactMarkdown
-				remarkPlugins={[remarkGfm]}
+				remarkPlugins={[remarkGfm, remarkMath]}
+				rehypePlugins={[rehypeKatex, rehypeRaw]}
 				components={{
 					h1: ({ children }) => (
 						<h1 style={{
@@ -81,7 +112,7 @@ function DocContent() {
 							fontSize: '1rem',
 							lineHeight: '1.8',
 							marginBottom: '1.25rem',
-							color: theme.textSec,
+							color: theme.text,
 							textAlign: 'justify'
 						}}>
 							{children}
@@ -91,15 +122,17 @@ function DocContent() {
 						<ul style={{
 							marginBottom: '1.25rem',
 							paddingLeft: '1.5rem',
-							color: theme.textSec,
+							color: theme.text,
 						}}>
 							{children}
 						</ul>
 					),
 					li: ({ children }) => (
 						<li style={{
-							marginBottom: '0.5rem',
-							lineHeight: '1.6'
+							marginBottom: '0.4rem',
+							lineHeight: '1.8',
+							color: theme.text,
+							textAlign: 'justify'
 						}}>
 							{children}
 						</li>
@@ -108,50 +141,254 @@ function DocContent() {
 						const isInline = !className;
 						return isInline ? (
 							<code style={{
-								background: `${theme.primary}20`,
-								color: theme.primary,
+								color: theme.text,
 								padding: '2px 6px',
 								borderRadius: '4px',
-								fontSize: '0.9em',
+								fontSize: '1em',
 								fontFamily: 'monospace',
 							}}>
 								{children}
 							</code>
 						) : (
-							<pre style={{
-								background: theme.paper,
-								backdropFilter: 'blur(16px)',
-								padding: '24px',
-								borderRadius: '16px',
-								border: `1px solid ${theme.divider}`,
-								overflowX: 'auto',
-								marginBottom: '1.5rem',
-								boxShadow: theme.shadowMd,
-							}}>
-								<code style={{
-									color: theme.text,
-									fontSize: '0.9em',
-									fontFamily: 'monospace',
-									lineHeight: '1.5'
+							<div style={{ position: 'relative', margin: '2.5rem 0' }}>
+								<pre style={{
+									background: theme.paper,
+									backdropFilter: 'blur(16px)',
+									padding: '24px',
+									borderRadius: '16px',
+									border: `1px solid ${theme.divider}`,
+									overflowX: 'auto',
+									marginBottom: '1.5rem',
+									boxShadow: theme.shadowMd,
 								}}>
-									{children}
-								</code>
-							</pre>
+									<code style={{
+										color: theme.text,
+										fontSize: '0.9em',
+										fontFamily: 'monospace',
+										lineHeight: '1.5'
+									}}>
+										{children}
+									</code>
+								</pre>
+							</div>
 						);
 					},
-					blockquote: ({ children }) => (
-						<blockquote style={{
-							borderLeft: `4px solid ${theme.primary}`,
-							paddingLeft: '20px',
-							margin: '2rem 0',
-							fontStyle: 'italic',
-							color: theme.textSec,
-							background: `${theme.primary}05`,
-							padding: '20px 24px',
-							borderRadius: '0 16px 16px 0',
+					blockquote: ({ children }) => {
+						let type: 'default' | 'success' | 'info' | 'warning' | 'error' | 'tip' | 'note' = 'default';
+						let isAdmonition = false;
+						let initiallyOpen = false;
+						let customTitle = '';
+
+						const findTextContent = (node: any): string => {
+							if (typeof node === 'string') return node;
+							if (Array.isArray(node)) return node.map(findTextContent).join(' ');
+							if (node?.props?.children) return findTextContent(node.props.children);
+							return '';
+						};
+
+						const textContent = findTextContent(children).trim();
+
+						const admonitionMatch = textContent.match(/^(\?{3}|!{3})\s*([+-])?\s*(\w+)(?:\s+"([^"]+)")?/i);
+						if (admonitionMatch) {
+							isAdmonition = true;
+							initiallyOpen = admonitionMatch[2] === '+';
+							const typeStr = admonitionMatch[3].toLowerCase();
+							customTitle = admonitionMatch[4] || admonitionMatch[3].charAt(0).toUpperCase() + admonitionMatch[3].slice(1);
+
+							if (typeStr === 'success' || typeStr === 'check') type = 'success';
+							else if (typeStr === 'info' || typeStr === 'abstract' || typeStr === 'todo') type = 'info';
+							else if (typeStr === 'warning' || typeStr === 'caution' || typeStr === 'attention') type = 'warning';
+							else if (typeStr === 'error' || typeStr === 'danger' || typeStr === 'failure') type = 'error';
+							else if (typeStr === 'tip' || typeStr === 'hint' || typeStr === 'important') type = 'tip';
+							else if (typeStr === 'note' || typeStr === 'quote' || typeStr === 'cite') type = 'note';
+						} else {
+							const tags = ['[!SUCCESS]', '[!INFO]', '[!WARNING]', '[!ERROR]', '[!TIP]', '[!NOTE]'];
+							const matchedTag = tags.find(tag => textContent.toUpperCase().includes(tag));
+
+							if (matchedTag) {
+								const upperTag = matchedTag.toUpperCase();
+								if (upperTag === '[!SUCCESS]') type = 'success';
+								else if (upperTag === '[!INFO]') type = 'info';
+								else if (upperTag === '[!WARNING]') type = 'warning';
+								else if (upperTag === '[!ERROR]') type = 'error';
+								else if (upperTag === '[!TIP]') type = 'tip';
+								else if (upperTag === '[!NOTE]') type = 'note';
+							}
+						}
+
+						const stripTag = (node: any): any => {
+							if (typeof node === 'string') {
+								let cleaned = node.replace(/\[!(SUCCESS|INFO|WARNING|ERROR|TIP|NOTE)\]/gi, '');
+								cleaned = cleaned.replace(/^(\?{3}|!{3})\s*[+-]?\s*\w+(?:\s+"[^"]+")?/gi, '');
+								return cleaned.trimStart();
+							}
+							if (Array.isArray(node)) {
+								return node.map(stripTag);
+							}
+							if (node?.props?.children) {
+								return {
+									...node,
+									props: {
+										...node.props,
+										children: stripTag(node.props.children)
+									}
+								};
+							}
+							return node;
+						};
+
+						const cleanChildren = (isAdmonition || textContent.includes('[!')) ? stripTag(children) : children;
+
+						const getStyles = () => {
+							switch (type) {
+								case 'success': return { border: '#10b981', bg: '#10b98112', icon: <CheckCircle2 size={20} color="#10b981" /> };
+								case 'info': return { border: '#3b82f6', bg: '#3b82f612', icon: <Info size={20} color="#3b82f6" /> };
+								case 'warning': return { border: '#f59e0b', bg: '#f59e0b12', icon: <AlertTriangle size={20} color="#f59e0b" /> };
+								case 'error': return { border: '#ef4444', bg: '#ef444412', icon: <AlertCircle size={20} color="#ef4444" /> };
+								case 'tip': return { border: '#8b5cf6', bg: '#8b5cf612', icon: <Lightbulb size={20} color="#8b5cf6" /> };
+								case 'note': return { border: '#64748b', bg: '#64748b12', icon: <StickyNote size={20} color="#64748b" /> };
+								default: return { border: theme.primary, bg: `${theme.primary}05`, icon: null };
+							}
+						};
+
+						const { border, bg, icon } = getStyles();
+
+						if (isAdmonition) {
+							return (
+								<details
+									open={initiallyOpen}
+									style={{
+										margin: '1.5rem 0',
+										background: `${border}05`,
+										borderRadius: '12px',
+										border: `1px solid ${border}20`,
+										boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+										backdropFilter: 'blur(12px)',
+										width: '100%',
+									}}
+								>
+									<summary style={{
+										padding: '14px 16px',
+										cursor: 'pointer',
+										display: 'flex',
+										alignItems: 'flex-start',
+										gap: '12px',
+										borderLeft: `4px solid ${border}`,
+										fontWeight: 700,
+										listStyle: 'none',
+										userSelect: 'none',
+										background: `${border}08`,
+										transition: 'background 0.2s ease',
+									}}>
+										<style>{`
+											summary::-webkit-details-marker { display: none; }
+											summary::marker { display: none; }
+										`}</style>
+										<div style={{ flexShrink: 0, marginTop: '4px', display: 'flex' }}>
+											{icon}
+										</div>
+										<span style={{
+											flex: 1,
+											color: theme.text,
+											fontSize: '0.95rem',
+											lineHeight: '1.4',
+											letterSpacing: '-0.01em',
+											minWidth: 0,
+											overflowWrap: 'break-word'
+										}}>
+											{customTitle}
+										</span>
+										<div className="chevron" style={{ marginTop: '4px', opacity: 0.5, flexShrink: 0 }}>
+											<ChevronDown size={18} color={theme.text} />
+										</div>
+									</summary>
+									<div style={{
+										padding: '16px 20px',
+										borderLeft: `4px solid ${border}`,
+										lineHeight: '1.7',
+										color: theme.text,
+										textAlign: 'justify',
+										fontSize: '0.95rem',
+										minWidth: 0,
+										overflowWrap: 'break-word'
+									}}>
+										{cleanChildren}
+									</div>
+								</details>
+							);
+						}
+
+						return (
+							<blockquote style={{
+								borderLeft: `4px solid ${border}`,
+								margin: '1.5rem 0',
+								color: theme.text,
+								background: `${border}05`,
+								padding: '16px 20px',
+								borderRadius: '0 12px 12px 0',
+								display: 'flex',
+								gap: '12px',
+								alignItems: 'flex-start',
+								boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+								backdropFilter: 'blur(8px)',
+								width: '100%',
+							}}>
+								<div style={{ flexShrink: 0, marginTop: '4px' }}>
+									{icon || <Info size={20} color={border} />}
+								</div>
+								<div style={{
+									flex: 1,
+									minWidth: 0,
+									fontSize: '1rem',
+									lineHeight: '1.8',
+									color: theme.text,
+									textAlign: 'justify',
+									overflowWrap: 'break-word'
+								}}>
+									{cleanChildren}
+								</div>
+							</blockquote>
+						);
+					},
+					table: ({ children }) => (
+						<div style={{ overflowX: 'auto', marginBottom: '2rem' }}>
+							<table style={{
+								width: '100%',
+								borderCollapse: 'collapse',
+								border: `1px solid ${theme.divider}`,
+								borderRadius: '12px',
+								overflow: 'hidden'
+							}}>
+								{children}
+							</table>
+						</div>
+					),
+					thead: ({ children }) => (
+						<thead style={{ background: `${theme.primary}10` }}>
+							{children}
+						</thead>
+					),
+					th: ({ children }) => (
+						<th style={{
+							padding: '12px 16px',
+							textAlign: 'left',
+							fontWeight: 700,
+							color: theme.text,
+							borderBottom: `2px solid ${theme.divider}`,
 						}}>
 							{children}
-						</blockquote>
+						</th>
+					),
+					td: ({ children }) => (
+						<td style={{
+							padding: '12px 16px',
+							borderBottom: `1px solid ${theme.divider}`,
+							color: theme.text,
+							fontSize: '1rem',
+							lineHeight: '1.6'
+						}}>
+							{children}
+						</td>
 					),
 					img: ({ src, alt }) => {
 						if (typeof src !== 'string') return null;
