@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "katex": "0.16.21",
+    "katex": "0.16.28",
     "lucide-react": "0.563.0",
     "mermaid": "11.12.2",
     "next": "16.1.6",
