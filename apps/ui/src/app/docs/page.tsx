@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, ReactNode, HTMLAttributes, ReactElement, isValidElement, cloneElement } from 'react';
+import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -9,6 +9,7 @@ import rehypeRaw from 'rehype-raw';
 import 'katex/dist/katex.min.css';
 import { CheckCircle2, Info, AlertTriangle, AlertCircle, Lightbulb, StickyNote, ChevronDown, FileText, Copy, Check } from 'lucide-react';
 import mermaid from 'mermaid';
+import matter from 'gray-matter';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -188,6 +189,7 @@ function DocContent() {
 	const searchParams = useSearchParams();
 	const p = searchParams.get('p') || 'index';
 	const [content, setContent] = useState<string>('');
+	const [frontmatter, setFrontmatter] = useState<Record<string, any>>({});
 	const [loading, setLoading] = useState(true);
 	const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4012');
 
@@ -196,10 +198,19 @@ function DocContent() {
 
 	useEffect(() => {
 		setLoading(true);
+
 		DocsAPI.getContent(p)
 			.then(data => {
 				if (data) {
-					const lines = data.split('\n');
+					const parsed = matter(data);
+					setFrontmatter(parsed.data || {});
+					let rawContent = parsed.content;
+
+					if (parsed.data?.title) {
+						rawContent = rawContent.replace(/^\s*#\s+.+\r?\n/, '');
+					}
+
+					const lines = rawContent.split('\n');
 					const processedLines = [];
 					let inAdmonition = false;
 
@@ -211,7 +222,13 @@ function DocContent() {
 						if (isAdmonitionStart) {
 							processedLines.push('> ' + trimmed);
 							inAdmonition = true;
-						} else if (inAdmonition && (line.startsWith('    ') || line.startsWith('\t') || line.startsWith('  ') || trimmed === '')) {
+						} else if (
+							inAdmonition &&
+							(line.startsWith('    ') ||
+								line.startsWith('\t') ||
+								line.startsWith('  ') ||
+								trimmed === '')
+						) {
 							let contentLine = line;
 							if (line.startsWith('    ')) contentLine = line.substring(4);
 							else if (line.startsWith('\t')) contentLine = line.substring(1);
@@ -227,35 +244,160 @@ function DocContent() {
 					setContent(processedLines.join('\n'));
 				} else {
 					setContent('');
+					setFrontmatter({});
 				}
 			})
-			.catch(() => setContent(''))
+			.catch(() => {
+				setContent('');
+				setFrontmatter({});
+			})
 			.finally(() => setLoading(false));
 	}, [p]);
+
+	useEffect(() => {
+		if (frontmatter.title) {
+			document.title = `${frontmatter.title} – Docs`;
+		}
+	}, [frontmatter]);
+
+	useEffect(() => {
+		if (frontmatter.description) {
+			const meta = document.querySelector('meta[name="description"]');
+			if (meta) {
+				meta.setAttribute('content', frontmatter.description);
+			}
+		}
+	}, [frontmatter]);
 
 	if (loading) return <div style={{ color: theme.text }}>Lade...</div>;
 
 	if (!content) {
 		return (
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				justifyContent: 'center',
-				height: '60vh',
-				color: theme.text,
-				opacity: 0.6,
-				textAlign: 'center'
-			}}>
+			<div
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'center',
+					height: '60vh',
+					color: theme.text,
+					opacity: 0.6,
+					textAlign: 'center'
+				}}
+			>
 				<FileText size={48} style={{ marginBottom: '1rem' }} />
-				<h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Dokumentation nicht gefunden</h2>
+				<h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+					Dokumentation nicht gefunden
+				</h2>
 				<p>Bitte wähle ein anderes Thema aus der Seitenleiste.</p>
 			</div>
 		);
 	}
 
+		const formatDate = (d?: string) =>
+		d ? new Date(d).toLocaleDateString('de-DE', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		}) : null;
+
 	return (
 		<div className="markdown-container" style={{ color: theme.text }}>
+			{frontmatter.title && (
+				<h1
+					style={{
+						fontSize: '2.5rem',
+						fontWeight: 800,
+						marginBottom: '1.5rem',
+						background: 'linear-gradient(to right, #818cf8, #e879f9)',
+						WebkitBackgroundClip: 'text',
+						WebkitTextFillColor: 'transparent',
+						letterSpacing: '-0.02em',
+					}}
+				>
+					{frontmatter.title}
+				</h1>
+			)}
+
+{(frontmatter.authors || frontmatter.date || frontmatter.lastmod || frontmatter.rating || frontmatter.tags) && (
+	<div
+		style={{
+			display: 'flex',
+			flexWrap: 'wrap',
+			alignItems: 'center',
+			gap: '14px',
+			marginBottom: '2rem',
+			paddingBottom: '14px',
+			borderBottom: `1px solid ${theme.divider}`,
+			fontSize: '0.85rem',
+			color: theme.textSec
+		}}
+	>
+
+		{frontmatter.authors && (
+			<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+				<span style={{ opacity: 0.6 }}>👤</span>
+				{Array.isArray(frontmatter.authors)
+					? frontmatter.authors.join(', ')
+					: frontmatter.authors}
+			</span>
+		)}
+
+		{frontmatter.rating && (
+			<span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+				<span style={{ color: '#f59e0b' }}>
+					{'★'.repeat(Math.round(frontmatter.rating))}
+				</span>
+				<span style={{ opacity: 0.6 }}>
+					{frontmatter.rating}/5
+				</span>
+			</span>
+		)}
+
+		{frontmatter.date && (
+			<span style={{ opacity: 0.6 }}>
+				Erstellt {new Date(frontmatter.date).toLocaleDateString('de-DE')}
+			</span>
+		)}
+
+		{frontmatter.lastmod && (
+			<span style={{ opacity: 0.6 }}>
+				Aktualisiert {new Date(frontmatter.lastmod).toLocaleDateString('de-DE')}
+			</span>
+		)}
+
+		{frontmatter.tags && (
+			<div style={{
+				display: 'flex',
+				gap: '8px',
+				flexWrap: 'wrap'
+			}}>
+				{(Array.isArray(frontmatter.tags)
+					? frontmatter.tags
+					: [frontmatter.tags]
+				).map((tag: string) => (
+					<span
+						key={tag}
+						style={{
+							padding: '3px 10px',
+							borderRadius: '999px',
+							background: `${theme.primary}15`,
+							color: theme.primary,
+							fontWeight: 500,
+							fontSize: '0.75rem',
+							transition: 'all 0.2s ease',
+							cursor: 'default'
+						}}
+					>
+						{tag}
+					</span>
+				))}
+			</div>
+		)}
+
+	</div>
+)}
+
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm, remarkMath]}
 				rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -635,8 +777,8 @@ function DocContent() {
 				}}
 			>
 				{content || ''}
-			</ReactMarkdown >
-		</div >
+			</ReactMarkdown>
+		</div>
 	);
 }
 

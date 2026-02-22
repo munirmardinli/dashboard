@@ -92,11 +92,11 @@ export default function Root() {
           cursor: "pointer",
           animation: "fadeInUp 0.6s ease-out 0.3s backwards"
         }}
-          onMouseEnter={(e) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.currentTarget.style.transform = "translateY(-4px)";
             e.currentTarget.style.boxShadow = `0 12px 30px ${theme.primary}50`;
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow = `0 8px 20px ${theme.primary}40`;
           }}>
@@ -161,7 +161,7 @@ export default function Root() {
         <p>© 2025 Management Dashboard. Alle Rechte vorbehalten.</p>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;

@@ -1,5 +1,3 @@
-
-
 export class GitHubService {
 	private token: string | undefined;
 	private owner: string;

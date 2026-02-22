@@ -425,20 +425,19 @@ export default function QuittungPage() {
 				</div>
 			</div>
 
-
-			<style jsx>{`
-				@keyframes spin {
-					from {
-						transform: rotate(0deg);
-					}
-					to {
-						transform: rotate(360deg);
-					}
+			<style>{`
+			@keyframes spin {
+				from {
+					transform: rotate(0deg);
 				}
-				:global(.spin) {
-					animation: spin 1s linear infinite;
+				to {
+					transform: rotate(360deg);
 				}
-			`}</style>
+			}
+			.spin {
+				animation: spin 1s linear infinite;
+			}
+		`}</style>
 		</div>
 	);
 }

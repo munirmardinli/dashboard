@@ -104,11 +104,11 @@ export default function NotFound() {
           border: "none",
           cursor: "pointer"
         }}
-          onMouseEnter={(e) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.currentTarget.style.transform = "translateY(-4px) scale(1.05)";
             e.currentTarget.style.boxShadow = `0 12px 30px ${theme.primary}50`;
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
             e.currentTarget.style.transform = "translateY(0) scale(1)";
             e.currentTarget.style.boxShadow = `0 8px 20px ${theme.primary}40`;
           }}>
@@ -117,7 +117,7 @@ export default function NotFound() {
         </Link>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeInScale {
           from {
             opacity: 0;
