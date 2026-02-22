@@ -21,23 +21,23 @@ function getContentType(filename: string): string {
 export const imageRoutes: Route[] = [
 	{
 		method: "GET",
-		path: /^\/api\/portfolio\/(?<filename>[^/]+\.(jpg|jpeg|png|gif|webp|svg))$/i,
+		path: /^\/api\/portfolio\/(?<filepath>(?:[\w-]+\/){0,2}[\w-]+\.(jpg|jpeg|png|gif|webp|svg))$/i,
 		handler: async (_req, res, ctx) => {
 			try {
-				const { filename } = ctx.params;
-				if (!filename) {
-					sendError(res, 400, "Filename is required");
+				const { filepath } = ctx.params;
+				if (!filepath) {
+					sendError(res, 400, "File path is required");
 					return;
 				}
 
-				if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
-					sendError(res, 400, "Invalid filename");
+				if (filepath.includes("..")) {
+					sendError(res, 400, "Invalid file path");
 					return;
 				}
 
 				try {
-					const { content: buffer } = await github.getRawFile(`${PORTFOLIO_DIR}/${filename}`);
-					const contentType = getContentType(filename);
+					const { content: buffer } = await github.getRawFile(`${PORTFOLIO_DIR}/${filepath}`);
+					const contentType = getContentType(filepath);
 					sendImage(res, buffer, contentType);
 				} catch (error) {
 					sendError(res, 404, "Image not found");

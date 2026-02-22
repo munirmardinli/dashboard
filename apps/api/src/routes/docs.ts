@@ -19,28 +19,19 @@ export const docsRoutes: Route[] = [
 	},
 	{
 		method: "GET",
-		path: /^\/api\/docs\/content$/,
+		path: /^\/api\/docs\/assets\/images(?:\/(.*))?$/,
 		handler: async (_req, res, ctx) => {
 			try {
-				const p = ctx.query["p"] || "index";
-				const content = await docsService.getContent(p);
-				res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-				res.end(content);
-			} catch (error) {
-				sendError(res, 404, error instanceof Error ? error.message : "Documentation not found");
-			}
-		},
-	},
-	{
-		method: "GET",
-		path: /^\/api\/docs\/assets\/images$/,
-		handler: async (_req, res, ctx) => {
-			try {
-				const p = ctx.query["p"];
-				if (!p) throw new Error("Missing file path");
+				const subPath = ctx.params?.[0] || "";
+				const fileName = ctx.query["p"];
 
-				const { content } = await docsService.getAsset(`images/${p}`);
-				const ext = p.split(".").pop()?.toLowerCase();
+				if (!fileName) throw new Error("Missing file name");
+				const fullPath = subPath ? `${subPath}/${fileName}` : fileName;
+				if (fullPath.includes("..")) throw new Error("Invalid file path");
+
+				const { content } = await docsService.getAsset(`images/${fullPath}`);
+
+				const ext = fileName.split(".").pop()?.toLowerCase();
 				const mimeMap: Record<string, string> = {
 					png: "image/png",
 					jpg: "image/jpeg",
@@ -50,7 +41,7 @@ export const docsRoutes: Route[] = [
 					webp: "image/webp",
 				};
 
-				res.writeHead(200, { "Content-Type": mimeMap[ext || ""] || "image/png" });
+				res.writeHead(200, { "Content-Type": mimeMap[ext || ""] || "application/octet-stream" });
 				res.end(content);
 			} catch (error) {
 				sendError(res, 404, error instanceof Error ? error.message : "Image not found");
@@ -59,13 +50,19 @@ export const docsRoutes: Route[] = [
 	},
 	{
 		method: "GET",
-		path: /^\/api\/docs\/assets\/pdf$/,
+		path: /^\/api\/docs\/assets\/pdf(?:\/(.*))?$/,
 		handler: async (_req, res, ctx) => {
 			try {
-				const p = ctx.query["p"];
-				if (!p) throw new Error("Missing file path");
+				const subPath = ctx.params?.[0] || "";
+				const fileName = ctx.query["p"];
 
-				const { content } = await docsService.getAsset(`pdf/${p}`);
+				if (!fileName) throw new Error("Missing file name");
+
+				const fullPath = subPath ? `${subPath}/${fileName}` : fileName;
+
+				if (fullPath.includes("..")) throw new Error("Invalid file path");
+
+				const { content } = await docsService.getAsset(`pdf/${fullPath}`);
 				res.writeHead(200, { "Content-Type": "application/pdf" });
 				res.end(content);
 			} catch (error) {
