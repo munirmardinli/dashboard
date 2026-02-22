@@ -17,6 +17,20 @@ export const docsRoutes: Route[] = [
 			}
 		},
 	},
+		{
+		method: "GET",
+		path: /^\/api\/docs\/content$/,
+		handler: async (_req, res, ctx) => {
+			try {
+				const p = ctx.query["p"] || "index";
+				const content = await docsService.getContent(p);
+				res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+				res.end(content);
+			} catch (error) {
+				sendError(res, 404, error instanceof Error ? error.message : "Documentation not found");
+			}
+		},
+	},
 	{
 		method: "GET",
 		path: /^\/api\/docs\/assets\/images(?:\/(.*))?$/,
