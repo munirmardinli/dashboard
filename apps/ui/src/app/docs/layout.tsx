@@ -6,12 +6,14 @@ import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { Menu, X } from 'lucide-react';
+import { useI18nStore } from '@/stores/i18nStore';
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
 	const isDesktop = useIsDesktop();
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const { t } = useI18nStore();
 
 	return (
 		<div style={{
@@ -49,7 +51,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
 						>
 							<Menu size={24} />
 						</button>
-						<span style={{ fontWeight: 600, color: theme.text }}>Dokumentation</span>
+						<span style={{ fontWeight: 600, color: theme.text }}>{t("ui.documentation")}</span>
 					</div>
 				</div>
 			)}
@@ -93,7 +95,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
 
 			<div style={{ flex: 1, padding: isDesktop ? '32px 48px' : '24px 16px', maxWidth: '100%', overflowX: 'hidden' }}>
 				<main style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-					<Suspense fallback={<div>Lade Dokumentation...</div>}>
+					<Suspense fallback={<div>{t("ui.loading")}</div>}>
 						{children}
 					</Suspense>
 				</main>

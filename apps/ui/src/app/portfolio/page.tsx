@@ -7,12 +7,15 @@ import { getTheme } from "@/utils/theme";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useI18nStore } from '@/stores/i18nStore';
+import { Github, Linkedin, Mail, Globe, Twitter, Instagram } from 'lucide-react';
 
 export default function PortfolioPage() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
 	const [data, setData] = useState<PortfolioData | null>(null);
 	const [loading, setLoading] = useState(true);
+	const { t } = useI18nStore();
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -22,7 +25,7 @@ export default function PortfolioPage() {
 				if (portfolioData) {
 					setData(portfolioData);
 				} else {
-					setError("Keine Daten gefunden");
+					setError(t("ui.noEntries"));
 				}
 			} catch (err) {
 				notFound();
@@ -44,7 +47,7 @@ export default function PortfolioPage() {
 				alignItems: "center",
 				fontFamily: "system-ui, -apple-system, sans-serif",
 			}}>
-				Laden...
+				{t("ui.loading")}
 			</div>
 		);
 	}
@@ -95,7 +98,6 @@ export default function PortfolioPage() {
 				</div>
 			</nav>
 
-			{/* Hero Section */}
 			<section style={{
 				minHeight: "85vh",
 				display: "flex",
@@ -529,8 +531,6 @@ export default function PortfolioPage() {
 							))}
 						</div>
 					</div>
-
-					{/* Hobbies */}
 					<div>
 						<h2 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "40px" }}>{data.ui?.hobbies?.title}</h2>
 						<div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
@@ -657,8 +657,19 @@ export default function PortfolioPage() {
 								height: "56px",
 								fontSize: "0.9rem",
 								fontWeight: 700
-							}}>
-								In
+							}}
+								onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => {
+									e.currentTarget.style.transform = "translateY(-4px)";
+									e.currentTarget.style.borderColor = theme.primary;
+									e.currentTarget.style.color = theme.primary;
+								}}
+								onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => {
+									e.currentTarget.style.transform = "translateY(0)";
+									e.currentTarget.style.borderColor = theme.divider;
+									e.currentTarget.style.color = theme.text;
+								}}
+							>
+								<Linkedin size={24} strokeWidth={1.5} />
 							</Link>
 						)}
 						{data.contact.social.github && (
@@ -676,8 +687,19 @@ export default function PortfolioPage() {
 								height: "56px",
 								fontSize: "0.9rem",
 								fontWeight: 700
-							}}>
-								Gh
+							}}
+								onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => {
+									e.currentTarget.style.transform = "translateY(-4px)";
+									e.currentTarget.style.borderColor = theme.primary;
+									e.currentTarget.style.color = theme.primary;
+								}}
+								onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => {
+									e.currentTarget.style.transform = "translateY(0)";
+									e.currentTarget.style.borderColor = theme.divider;
+									e.currentTarget.style.color = theme.text;
+								}}
+							>
+								<Github size={24} strokeWidth={1.5} />
 							</Link>
 						)}
 						<a href={`mailto:${data.contact.email}`} style={{
@@ -694,8 +716,19 @@ export default function PortfolioPage() {
 							height: "56px",
 							fontSize: "1.2rem",
 							fontWeight: 700
-						}}>
-							@
+						}}
+							onMouseOver={(e) => {
+								e.currentTarget.style.transform = "translateY(-4px)";
+								e.currentTarget.style.borderColor = theme.primary;
+								e.currentTarget.style.color = theme.primary;
+							}}
+							onMouseOut={(e) => {
+								e.currentTarget.style.transform = "translateY(0)";
+								e.currentTarget.style.borderColor = theme.divider;
+								e.currentTarget.style.color = theme.text;
+							}}
+						>
+							<Mail size={24} strokeWidth={1.5} />
 						</a>
 					</div>
 				</div>

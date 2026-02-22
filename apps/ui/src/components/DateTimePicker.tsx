@@ -17,7 +17,7 @@ const formatNumber = (num: number, language: string): string => {
 };
 
 export const DateTimePicker: FC<DateTimePickerProps> = ({
-	value, onChange, label, placeholder, required, error, helperText, disabled, customInputStyle, onFocus, onBlur
+	value, onChange, label, placeholder, error, helperText, disabled, customInputStyle, onFocus, onBlur
 }) => {
 	const { language, t, isRTL, formatDateTime: formatDateTimeFromStore } = useI18nStore();
 	const mode = useThemeStore((s) => s.mode);

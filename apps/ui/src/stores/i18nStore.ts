@@ -10,9 +10,6 @@ if (!defaultLanguageEnv) {
 }
 const defaultLanguage: Language = defaultLanguageEnv as Language;
 
-/**
-	* Mapping von Sprachen zu Locales
-	*/
 const languageToLocale: Record<Language, string> = {
 	de: "de-DE",
 	en: "en-US",
@@ -20,9 +17,6 @@ const languageToLocale: Record<Language, string> = {
 	ar: "ar-SA",
 };
 
-/**
-	* Ermittelt die Zeitzone aus process.env.TZ oder Browser
-	*/
 function getTimezone(): string {
 	if (typeof process !== "undefined" && process.env?.TZ) {
 		return process.env.TZ;
@@ -52,9 +46,6 @@ function getStoredLanguage(): Language {
 	return defaultLanguage;
 }
 
-/**
-	* Speichert die Sprache im Cookie
-	*/
 function saveLanguageToCookie(lang: Language): void {
 	if (typeof window === "undefined") return;
 	document.cookie = `languageSelected=${lang}; max-age=${30 * 24 * 60 * 60}; path=/`;
@@ -89,9 +80,6 @@ function getNestedValue(obj: TranslationValue, path: string): string {
 	return typeof current === "string" ? current : "";
 }
 
-/**
-	* Mapping für Ziffernkonvertierung nach Sprache
-	*/
 function getDigitMap(language: Language): Record<string, string> {
 	switch (language) {
 		case 'ar':
@@ -107,9 +95,6 @@ function getDigitMap(language: Language): Record<string, string> {
 	}
 }
 
-/**
-	* Konvertiert eine Zahl zu einem String mit sprachspezifischen Ziffern
-	*/
 function formatNumberString(num: string, language: Language): string {
 	const digitMap = getDigitMap(language);
 	return num.split('').map(digit => digitMap[digit] || digit).join('');
@@ -172,11 +157,6 @@ export const useI18nStore = create<I18nState>((set, get) => {
 			return getTimezone();
 		},
 
-		/**
-			* Formatiert ein Datum basierend auf der aktuellen Sprache
-			* Für Arabisch: Gregorianischer Kalender mit arabischen Zahlen (Tag.Monat.Jahr)
-			* Für andere Sprachen: Deutsches Format (Tag.Monat.Jahr)
-			*/
 		formatDate: (dateString: string): string => {
 			const { language } = get();
 			if (!dateString) return '';
@@ -202,11 +182,6 @@ export const useI18nStore = create<I18nState>((set, get) => {
 			}
 		},
 
-		/**
-			* Formatiert ein Datum und eine Uhrzeit basierend auf der aktuellen Sprache
-			* Für Arabisch: Gregorianischer Kalender mit arabischen Zahlen (Tag.Monat.Jahr Stunde:Minute)
-			* Für andere Sprachen: Deutsches Format (Tag.Monat.Jahr Stunde:Minute)
-			*/
 		formatDateTime: (dateTimeString: string): { date: string; time: string } => {
 			const { language } = get();
 			if (!dateTimeString) return { date: '', time: '' };
@@ -245,11 +220,6 @@ export const useI18nStore = create<I18nState>((set, get) => {
 	};
 });
 
-/**
-	* Initialisiert die Sprache aus dem Cookie nach dem Mount
-	* Muss in einem useEffect aufgerufen werden, um Hydration-Mismatches zu vermeiden
-	* Lädt auch die Übersetzungen, falls noch nicht geladen
-	*/
 export async function initializeLanguageFromCookie(): Promise<void> {
 	if (typeof window === "undefined") return;
 
@@ -274,9 +244,6 @@ export async function initializeLanguageFromCookie(): Promise<void> {
 	}
 }
 
-/**
-	* Prüft periodisch ob sich das Cookie geändert hat und aktualisiert die Sprache dynamisch
-	*/
 export function watchLanguageCookie(): () => void {
 	if (typeof window === "undefined") return () => { };
 

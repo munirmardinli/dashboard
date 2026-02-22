@@ -4,14 +4,21 @@ import { useThemeStore } from "@/stores/themeStore";
 import { useSidebarStore } from "@/stores/sidebarStore";
 import { getTheme } from "@/utils/theme";
 import Link from "next/link";
+import { useRouter } from 'next/navigation'
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useI18nStore } from "@/stores/i18nStore";
+import { ConfigAPI } from "@/utils/api";
 
 export default function Root() {
   const mode = useThemeStore((state) => state.mode);
   const activePath = useSidebarStore((state) => state.activePath);
   const theme = getTheme(mode);
+  const router = useRouter();
   const [dashboardUrl, setDashboardUrl] = useState("/q/?view=privateTodos");
+  const [onboardingFeatures, setOnboardingFeatures] = useState<OnboardingFeature[]>([]);
+
+  const { t } = useI18nStore();
 
   useEffect(() => {
     if (activePath) {
@@ -19,6 +26,11 @@ export default function Root() {
     }
   }, [activePath]);
 
+  useEffect(() => {
+    ConfigAPI.getOnboardingConfig().then(setOnboardingFeatures);
+  }, []);
+
+  console.log(onboardingFeatures);
   return (
     <div style={{
       minHeight: "100vh",
@@ -30,25 +42,9 @@ export default function Root() {
       alignItems: "center",
       padding: "0 20px"
     }}>
-      <div style={{
-        marginTop: "120px",
-        textAlign: "center",
-        maxWidth: "800px",
-        width: "100%"
-      }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "32px",
-          animation: "fadeInUp 0.6s ease-out"
-        }}>
-          <Image
-            src="/dashboard.png"
-            alt="Logo"
-            width={80}
-            height={80}
-            priority
-          />
+      <div style={{ marginTop: "120px", textAlign: "center", maxWidth: "800px", width: "100%" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px", animation: "fadeInUp 0.6s ease-out" }}>
+          <Image src="/dashboard.png" alt="Logo" width={80} height={80} priority />
         </div>
 
         <h1 style={{
@@ -61,7 +57,7 @@ export default function Root() {
           lineHeight: 1.2,
           animation: "fadeInUp 0.6s ease-out 0.1s backwards"
         }}>
-          Management Dashboard
+          {t("ui.managementDashboard")}
         </h1>
 
         <p style={{
@@ -74,34 +70,39 @@ export default function Root() {
           marginRight: "auto",
           animation: "fadeInUp 0.6s ease-out 0.2s backwards"
         }}>
-          Ihre zentrale Plattform für effizientes Management. Verwalten Sie Aufgaben, Kontakte und Finanzen an einem Ort.
+          {t("ui.managementDashboardDescription")}
         </p>
 
-        <Link href={dashboardUrl} style={{
-          display: "inline-block",
-          background: theme.primary,
-          color: "#ffffff",
-          padding: "16px 48px",
-          borderRadius: "16px",
-          fontSize: "1.125rem",
-          fontWeight: 600,
-          textDecoration: "none",
-          boxShadow: `0 8px 20px ${theme.primary}40`,
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          border: "none",
-          cursor: "pointer",
-          animation: "fadeInUp 0.6s ease-out 0.3s backwards"
-        }}
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        <div
+          role="link"
+          onClick={() => router.push(dashboardUrl)}
+          onKeyDown={(e) => e.key === "Enter" && router.push(dashboardUrl)}
+          tabIndex={0}
+          style={{
+            display: "inline-block",
+            background: theme.primary,
+            color: "#ffffff",
+            padding: "16px 48px",
+            borderRadius: "16px",
+            fontSize: "1.125rem",
+            fontWeight: 600,
+            textDecoration: "none",
+            boxShadow: `0 8px 20px ${theme.primary}40`,
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            border: "none",
+            cursor: "pointer",
+            animation: "fadeInUp 0.6s ease-out 0.3s backwards"
+          }}
+          onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
             e.currentTarget.style.transform = "translateY(-4px)";
             e.currentTarget.style.boxShadow = `0 12px 30px ${theme.primary}50`;
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow = `0 8px 20px ${theme.primary}40`;
           }}>
-          Dashboard öffnen
-        </Link>
+          {t("ui.openDashboard")}
+        </div>
       </div>
 
       <div style={{
@@ -113,38 +114,40 @@ export default function Root() {
         marginTop: "120px",
         marginBottom: "80px"
       }}>
-        {[
-          { title: "Aufgaben", desc: "Organisieren Sie Ihre täglichen To-Dos effizient.", icon: "📝" },
-          { title: "Finanzen", desc: "Behalten Sie Ihre Einnahmen und Ausgaben im Blick.", icon: "💰" },
-          { title: "Kontakte", desc: "Verwalten Sie Ihr Netzwerk zentral.", icon: "👥" },
-          { title: "Journal", desc: "Dokumentieren Sie Ihre Fortschritte.", icon: "📔" },
-          { title: "Bewerbungen", desc: "Tracken Sie Ihren Bewerbungsprozess.", icon: "💼" },
-          { title: "Wissen", desc: "Speichern Sie wichtige Informationen.", icon: "📚" }
-        ].map((feature, index) => (
-          <div key={index} style={{
-            background: theme.paper,
-            padding: "32px",
-            borderRadius: "24px",
-            border: `1px solid ${theme.divider}`,
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-            cursor: "pointer",
-            animation: `fadeInUp 0.6s ease-out ${0.4 + index * 0.1}s backwards`
-          }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-8px) scale(1.02)";
-              e.currentTarget.style.boxShadow = `0 20px 40px ${theme.primary}15`;
-              e.currentTarget.style.borderColor = theme.primary;
+        {onboardingFeatures.map((feature: OnboardingFeature, index: number) => (
+          <div key={index} tabIndex={0} onClick={() => router.push(feature.link)} style={{ textDecoration: 'none' }} role="link" onKeyDown={(e) => e.key === "Enter" && router.push(feature.link)}>
+            <div style={{
+              background: theme.paper,
+              padding: "32px",
+              borderRadius: "24px",
+              border: `1px solid ${theme.divider}`,
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              cursor: "pointer",
+              animation: `fadeInUp 0.6s ease-out ${0.4 + index * 0.1}s backwards`,
+              color: theme.text
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0) scale(1)";
-              e.currentTarget.style.boxShadow = "none";
-              e.currentTarget.style.borderColor = theme.divider;
-            }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "16px", transition: "transform 0.3s ease" }}>{feature.icon}</div>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "0 0 8px 0", color: theme.text }}>{feature.title}</h3>
-            <p style={{ margin: 0, color: theme.textSec, lineHeight: 1.5 }}>{feature.desc}</p>
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-8px) scale(1.02)";
+                e.currentTarget.style.boxShadow = `0 20px 40px ${theme.primary}15`;
+                e.currentTarget.style.borderColor = theme.primary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.borderColor = theme.divider;
+              }}>
+              <div style={{ fontSize: "2.5rem", marginBottom: "16px", transition: "transform 0.3s ease" }}>
+                {feature.icon}
+              </div>
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "0 0 8px 0", color: theme.text }}>
+                {feature.title}
+              </h3>
+              <p style={{ margin: 0, color: theme.textSec, lineHeight: 1.5 }}>
+                {feature.desc}
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -158,7 +161,7 @@ export default function Root() {
         width: "100%",
         textAlign: "center"
       }}>
-        <p>© 2025 Management Dashboard. Alle Rechte vorbehalten.</p>
+        <p>{t("ui.footer")}</p>
       </div>
 
       <style>{`

@@ -149,6 +149,7 @@ declare global {
    */
   interface UIConfig {
     [key: string]: string | null;
+    onboarding?: OnboardingFeature[];
   }
 
   /**
@@ -954,6 +955,12 @@ declare global {
     node?: any;
     children?: React.ReactNode;
     className?: string;
+  }
+  interface OnboardingFeature {
+    link: string;
+    title: string;
+    desc: string;
+    icon: string;
   }
 }
 

@@ -2,8 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Upload, Image as ImageIcon, Loader2, Check, X } from "lucide-react";
+import { API_URL } from "@/utils/env";
+import { useI18nStore } from "@/stores/i18nStore";
 
 export default function QuittungPage() {
+	const { t } = useI18nStore();
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [imageFile, setImageFile] = useState<File | null>(null);
 	const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
@@ -18,7 +21,6 @@ export default function QuittungPage() {
 		fetchExpenses();
 	}, []);
 
-	const API_URL = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4012');
 	async function fetchExpenses() {
 		try {
 			const response = await fetch(`${API_URL}/api/data/expense`);
@@ -27,7 +29,7 @@ export default function QuittungPage() {
 				setExpenses(data.filter((exp: ExpenseData) => !exp.isArchive));
 			}
 		} catch (err) {
-			console.error("Failed to fetch expenses:", err);
+			console.error(t("ui.errorDetails"), err);
 		}
 	}
 
@@ -67,10 +69,10 @@ export default function QuittungPage() {
 			if (result.success && result.data) {
 				setAnalyzedData(result.data);
 			} else {
-				setError(result.error || "Fehler bei der Analyse");
+				setError(result.error || t("ui.errorDetails"));
 			}
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Netzwerkfehler");
+			setError(err instanceof Error ? err.message : t("ui.errorDetails"));
 		} finally {
 			setIsAnalyzing(false);
 		}
@@ -93,7 +95,7 @@ export default function QuittungPage() {
 			});
 
 			if (response.ok) {
-				setSuccessMessage("Ausgabe erfolgreich gespeichert!");
+				setSuccessMessage(t("ui.copiedToClipboard"));
 				setSelectedImage(null);
 				setImageFile(null);
 				setAnalyzedData(null);
@@ -102,10 +104,10 @@ export default function QuittungPage() {
 				}
 				await fetchExpenses();
 			} else {
-				setError("Fehler beim Speichern");
+				setError(t("ui.errorDetails"));
 			}
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Netzwerkfehler");
+			setError(err instanceof Error ? err.message : t("ui.errorDetails"));
 		} finally {
 			setIsSaving(false);
 		}
@@ -137,7 +139,7 @@ export default function QuittungPage() {
 				marginBottom: "2rem",
 				color: "#f1f5f9"
 			}}>
-				Quittung hochladen
+				{t("ui.receipt")}
 			</h1>
 
 			{successMessage && (
@@ -182,7 +184,6 @@ export default function QuittungPage() {
 				gridTemplateColumns: "1fr 1fr",
 				alignItems: "stretch"
 			}}>
-				{/* Upload Section */}
 				<div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 					<h2 style={{
 						fontSize: "1.5rem",
@@ -190,7 +191,7 @@ export default function QuittungPage() {
 						marginBottom: "0",
 						color: "#f1f5f9"
 					}}>
-						Bild hochladen
+						{t("ui.uploadReceipt")}
 					</h2>
 					<div
 						style={{
@@ -225,7 +226,7 @@ export default function QuittungPage() {
 								<Upload size={48} color="#94a3b8" />
 							)}
 							<span style={{ color: "#94a3b8" }}>
-								{imageFile ? imageFile.name : "Bild auswählen"}
+								{imageFile ? imageFile.name : t("ui.selectImage")}
 							</span>
 						</label>
 					</div>
@@ -263,10 +264,10 @@ export default function QuittungPage() {
 									{isAnalyzing ? (
 										<>
 											<Loader2 size={20} className="spin" />
-											Analysiere...
+											{t("ui.analyzing")}
 										</>
 									) : (
-										"Analysieren"
+										t("ui.analyze")
 									)}
 								</button>
 								<button
@@ -281,14 +282,13 @@ export default function QuittungPage() {
 										fontWeight: "500",
 									}}
 								>
-									Zurücksetzen
+									{t("ui.reset")}
 								</button>
 							</div>
 						</div>
 					)}
 				</div>
 
-				{/* Preview Section */}
 				<div style={{ display: "flex", flexDirection: "column" }}>
 					<h2 style={{
 						fontSize: "1.5rem",
@@ -296,7 +296,7 @@ export default function QuittungPage() {
 						marginBottom: "0",
 						color: "#f1f5f9"
 					}}>
-						Vorschau
+						{t("ui.preview")}
 					</h2>
 
 					{analyzedData ? (
@@ -313,13 +313,13 @@ export default function QuittungPage() {
 							}}
 						>
 							<div style={{ marginBottom: "1rem", color: "#e2e8f0" }}>
-								<strong style={{ color: "#94a3b8" }}>Geschäft:</strong> {analyzedData.store}
+								<strong style={{ color: "#94a3b8" }}>{t("ui.store")}:</strong> {analyzedData.store}
 							</div>
 							<div style={{ marginBottom: "1rem", color: "#e2e8f0" }}>
-								<strong style={{ color: "#94a3b8" }}>Datum:</strong> {new Date(analyzedData.date).toLocaleString("de-DE")}
+								<strong style={{ color: "#94a3b8" }}>{t("ui.date")}:</strong> {new Date(analyzedData.date).toLocaleString("de-DE")}
 							</div>
 							<div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-								<strong style={{ color: "#94a3b8" }}>Artikel:</strong>
+								<strong style={{ color: "#94a3b8" }}>{t("ui.items")}:</strong>
 								<div style={{ marginTop: "0.5rem", flex: 1, overflowY: "auto" }}>
 									{analyzedData.items.length === 0 ? (
 										<div style={{
@@ -328,7 +328,7 @@ export default function QuittungPage() {
 											color: "#64748b",
 											fontStyle: "italic"
 										}}>
-											Keine Artikel gefunden
+											{t("ui.noEntries")}
 										</div>
 									) : (
 										analyzedData.items.map((item, idx) => (
@@ -363,7 +363,7 @@ export default function QuittungPage() {
 											color: "#f1f5f9"
 										}}
 									>
-										<span>Gesamt:</span>
+										<span>{t("ui.total")}:</span>
 										<span>
 											{analyzedData.items
 												.reduce((sum, item) => sum + item.value, 0)
@@ -396,10 +396,10 @@ export default function QuittungPage() {
 								{isSaving ? (
 									<>
 										<Loader2 size={20} className="spin" />
-										Speichere...
+										{t("ui.saving")}
 									</>
 								) : (
-									"Erstellen"
+									t("ui.create")
 								)}
 							</button>
 						</div>
@@ -419,7 +419,7 @@ export default function QuittungPage() {
 								marginTop: "1rem"
 							}}
 						>
-							Keine Daten zum Anzeigen. Bitte laden Sie ein Bild hoch und analysieren Sie es.
+							{t("ui.noData")}
 						</div>
 					)}
 				</div>

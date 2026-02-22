@@ -83,4 +83,17 @@ export const configRoutes: Route[] = [
 			}
 		},
 	},
+	{
+		method: "GET",
+		path: /^\/api\/config\/onboarding$/,
+		handler: async (_req, res) => {
+			try {
+				const config = await getConfigData();
+				const onboarding = config.onboarding || [];
+				sendJSON(res, onboarding);
+			} catch (error) {
+				sendError(res, 500, error instanceof Error ? error.message : "Failed to get onboarding config");
+			}
+		},
+	}
 ];

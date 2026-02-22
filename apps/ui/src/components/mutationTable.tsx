@@ -121,10 +121,10 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
             const item = section.items[index];
             const editData: Record<string, string> = {
               sectionId: sectionIdFromParams,
-              name: item.name || '',
-              url: item.url || '',
-              iconUrl: item.iconUrl || '',
-              icon: item.icon || '',
+              name: item.name ?? "",
+              url: item.url ?? "",
+              iconUrl: item.iconUrl ?? "",
+              icon: item.icon ?? "",
             };
             setFormData(editData);
             setItemNotFound(false);
@@ -188,7 +188,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       if (dataType === 'dashy') {
         const sectionId = formData.sectionId || dashySectionId;
         if (!sectionId) {
-          setSnack("Bitte wählen Sie eine Section aus", 'error');
+          setSnack(t("ui.selectSection"), 'error');
           isSavingRef.current = false;
           setIsSaving(false);
           return;

@@ -31,12 +31,14 @@ import {
 	LucideIcon
 } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { useI18nStore } from '@/stores/i18nStore';
 
 export default function DashyPage() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
 	const [data, setData] = useState<DashyData | null>(null);
 	const [loading, setLoading] = useState(true);
+	const { t } = useI18nStore();
 	const [searchQuery, setSearchQuery] = useState('');
 	const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
@@ -472,7 +474,7 @@ export default function DashyPage() {
 												))}
 											</div>
 											{(!Array.isArray(widget.data.items) || widget.data.items.length === 0) && (
-												<div style={{ color: theme.textSec, fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>Keine Einträge</div>
+												<div style={{ color: theme.textSec, fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>{t("ui.noEntries")}</div>
 											)}
 										</div>
 									)}
@@ -635,7 +637,7 @@ export default function DashyPage() {
 												))}
 											</div>
 											{section.items.filter(item => !item.isArchive).length === 0 && (
-												<div style={{ color: theme.textSec, fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>Keine Einträge</div>
+												<div style={{ color: theme.textSec, fontSize: '13px', fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>{t("ui.noEntries")}</div>
 											)}
 										</div>
 									)}

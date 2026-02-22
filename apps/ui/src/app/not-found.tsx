@@ -4,10 +4,12 @@ import Link from "next/link";
 import { FileQuestion, Home } from "lucide-react";
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
+import { useI18nStore } from '@/stores/i18nStore';
 
 export default function NotFound() {
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
+  const { t } = useI18nStore();
 
   return (
     <div style={{
@@ -67,7 +69,7 @@ export default function NotFound() {
           WebkitTextFillColor: "transparent",
           lineHeight: 1.2
         }}>
-          404
+          {t("ui.pageNotFoundStatus")}
         </h1>
 
         <h2 style={{
@@ -76,7 +78,7 @@ export default function NotFound() {
           margin: "0 0 16px 0",
           color: theme.text
         }}>
-          Seite nicht gefunden
+          {t("ui.pageNotFound")}
         </h2>
 
         <p style={{
@@ -85,7 +87,7 @@ export default function NotFound() {
           lineHeight: 1.6,
           margin: "0 0 48px 0"
         }}>
-          Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.
+          {t("ui.pageNotFoundDescription")}
         </p>
 
         <Link href="/" style={{
@@ -113,7 +115,7 @@ export default function NotFound() {
             e.currentTarget.style.boxShadow = `0 8px 20px ${theme.primary}40`;
           }}>
           <Home size={20} />
-          Zur Startseite
+          {t("ui.backToHome")}
         </Link>
       </div>
 

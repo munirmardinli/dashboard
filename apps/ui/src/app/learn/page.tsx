@@ -5,12 +5,14 @@ import { getTheme } from "@/utils/theme";
 import { useState, useMemo, useEffect } from "react";
 import { LearnAPI } from "@/utils/api";
 import { notFound } from "next/navigation";
+import { useI18nStore } from '@/stores/i18nStore';
 
 export default function RandomPie() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
 	const [data, setData] = useState<RandomPieData | null>(null);
 	const [loading, setLoading] = useState(true);
+	const { t } = useI18nStore();
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -57,7 +59,7 @@ export default function RandomPie() {
 				background: mode === 'dark' ? "#0f172a" : "#f8fafc",
 				color: theme.text
 			}}>
-				Lade...
+				{t("ui.loading")}
 			</div>
 		);
 	}

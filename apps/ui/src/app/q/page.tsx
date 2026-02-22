@@ -7,6 +7,7 @@ import CreateMode from "@/components/mutationTable";
 import { ConfigAPI } from "@/utils/api";
 import Loading from "@/app/loading";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
+import { useI18nStore } from "@/stores/i18nStore";
 
 const titleMap: Record<string, string> = {
 	privateTodos: "Privat Todos",
@@ -50,6 +51,7 @@ function QueryPageContent() {
 	const [validDataTypes, setValidDataTypes] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const isDesktop = useIsDesktop();
+		const { t } = useI18nStore();
 
 	useEffect(() => {
 		if (view && titleMap[view]) {
@@ -65,7 +67,7 @@ function QueryPageContent() {
 				const config = await ConfigAPI.getFullConfig();
 				setValidDataTypes(Object.keys(config.dataTypes || {}));
 			} catch (error) {
-				console.error("Failed to load data types:", error);
+				console.error(t("ui.error"), error);
 				setValidDataTypes([]);
 			} finally {
 				setIsLoading(false);

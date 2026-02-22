@@ -57,7 +57,7 @@ const NavigationContent = () => {
           const nav = await ConfigAPI.getNavigationConfig();
           if (nav?.mainItems?.length && nav.mainItems.length > 0) setNavigationConfig(nav);
         });
-      } catch (error) { console.error('Failed to load navigation config:', error); }
+      } catch (error) { console.error(t("ui.noData"), error); }
     };
     load();
     initializeSidebarFromCookie();
