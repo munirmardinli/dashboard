@@ -1,4 +1,4 @@
-import "./config/env.js";
+import "./utils/env.js";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { URL } from "node:url";
 
