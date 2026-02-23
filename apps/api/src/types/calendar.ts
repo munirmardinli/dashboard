@@ -23,6 +23,14 @@ declare global {
 		timezone: string;
 		events: ICSEvent[];
 	}
+
+	interface CalendarEvent {
+		title: string;
+		start: string;
+		end: string;
+		description?: string;
+		location?: string;
+	}
 }
 
 export { };

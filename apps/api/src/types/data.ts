@@ -1,7 +1,16 @@
 declare global {
-	/**
-		* Base interface for all data items
-		*/
+	interface DataTypeConfig {
+		filePath: string;
+		title?: string;
+	}
+
+	interface DashboardConfig {
+		dataTypes: Record<string, DataTypeConfig>;
+		navigation?: Record<string, unknown>;
+		onboarding?: unknown[];
+		translations?: Record<string, string>;
+	}
+
 	type GenericItem = {
 		id: string;
 		createdAt?: string;

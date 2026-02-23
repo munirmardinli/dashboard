@@ -962,6 +962,9 @@ declare global {
     desc: string;
     icon: string;
   }
+  interface MarkdownLiProps extends React.LiHTMLAttributes<HTMLLIElement> {
+    checked?: boolean;
+  }
 }
 
 export { };

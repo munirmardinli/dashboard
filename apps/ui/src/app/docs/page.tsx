@@ -205,24 +205,6 @@ export default function DocPage() {
   const theme = getTheme(mode);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const portfolioData = await PortfolioAPI.getPortfolioData();
-        if (portfolioData) {
-          setData(portfolioData);
-        } else {
-          setError(t("ui.noEntries"));
-        }
-      } catch (err) {
-        notFound();
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  useEffect(() => {
     setLoading(true);
 
     DocsAPI.getContent(p)
@@ -295,11 +277,50 @@ export default function DocPage() {
     }
   }, [frontmatter]);
 
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const portfolioData = await PortfolioAPI.getPortfolioData();
+        if (portfolioData) {
+          setData(portfolioData);
+        } else {
+          setError(t("ui.noEntries"));
+        }
+      } catch (err) {
+        //notFound();
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const formatDate = (d?: string) =>
+    d ? new Date(d).toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }) : null;
+
   if (loading) return <div style={{ color: theme.text }}>{t("ui.loading")}</div>;
 
   if (error || !data) {
-    return notFound();
+    return (
+      <div style={{
+        color: theme.text,
+        padding: '2rem',
+        textAlign: 'center',
+        border: `1px solid ${theme.divider}`,
+        borderRadius: '12px',
+        margin: '2rem'
+      }}>
+        <AlertCircle size={40} style={{ marginBottom: '1rem', color: '#ef4444' }} />
+        <p>{error || t("ui.noEntries")}</p>
+      </div>
+    );
   }
+
 
   if (!content) {
     return (
@@ -324,12 +345,6 @@ export default function DocPage() {
     );
   }
 
-  const formatDate = (d?: string) =>
-    d ? new Date(d).toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }) : null;
   return (
     <Suspense fallback={<div>{t("ui.applicationIsBeingReloaded")}</div>}>
       <div className="markdown-container" style={{ color: theme.text }}>
@@ -358,8 +373,8 @@ export default function DocPage() {
                 boxShadow: theme.shadowLg,
               }}>
                 <Image
-                  src={frontmatter.image}
-                  alt={frontmatter.title}
+                  src={frontmatter.image ?? ""}
+                  alt={frontmatter.title ?? ""}
                   fill
                   priority
                   style={{ objectFit: 'cover' }}
@@ -385,7 +400,7 @@ export default function DocPage() {
                     </span>
                     <Image
                       src={data.profile.image ?? ""}
-                      alt={data.profile.name}
+                      alt={data.profile.name ?? ""}
                       width={30}
                       height={30}
                       style={{
@@ -511,25 +526,91 @@ export default function DocPage() {
                 {children}
               </p>
             ),
-            ul: ({ children }) => (
-              <ul style={{
-                marginBottom: '1.25rem',
-                paddingLeft: '1.5rem',
-                color: theme.text,
-              }}>
-                {children}
-              </ul>
-            ),
-            li: ({ children }) => (
-              <li style={{
-                marginBottom: '0.4rem',
-                lineHeight: '1.8',
-                color: theme.text,
-                textAlign: 'justify'
-              }}>
-                {children}
-              </li>
-            ),
+            ul: ({ children, className }) => {
+              const isTaskList = className?.includes('contains-task-list');
+              return (
+                <ul style={{
+                  marginBottom: '1.25rem',
+                  paddingLeft: isTaskList ? '0.5rem' : '1.5rem',
+                  listStyleType: isTaskList ? 'none' : 'disc',
+                  color: theme.text,
+                }}>
+                  {children}
+                </ul>
+              );
+            },
+            input: ({ node, ...props }) => {
+              if (props.type === 'checkbox') return null;
+              return <input {...props} />;
+            },
+            li: ({ children, checked, className, ...props }: MarkdownLiProps) => {
+              let isChecked = checked;
+              if (typeof isChecked === 'undefined') {
+                const childrenArray = Array.isArray(children) ? children : [children];
+                const inputChild = childrenArray.find((child: any) =>
+                  child?.props?.type === 'checkbox' ||
+                  (child?.props?.className?.includes('task-list-item-checkbox'))
+                );
+                if (inputChild) {
+                  isChecked = inputChild.props.checked;
+                }
+              }
+
+              const isTaskListItem = className?.includes('task-list-item') || typeof isChecked !== 'undefined';
+
+              if (isTaskListItem) {
+                return (
+                  <li style={{
+                    listStyleType: 'none',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                    marginBottom: '8px',
+                    marginLeft: 0,
+                    transition: 'all 0.2s ease',
+                  }}>
+                    <div style={{
+                      marginTop: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      width: '18px',
+                      height: '18px',
+                      borderRadius: '4px',
+                      background: isChecked ? '#10b981' : 'transparent',
+                      border: `2px solid ${isChecked ? '#10b981' : theme.divider}`,
+                      transition: 'all 0.2s ease',
+                    }}>
+                      {isChecked ? (
+                        <Check size={12} color="#ffffff" strokeWidth={4} />
+                      ) : null}
+                    </div>
+                    <div style={{
+                      flex: 1,
+                      color: isChecked ? '#10b981' : theme.text,
+                      fontSize: '0.95rem',
+                      lineHeight: '1.5',
+                      fontWeight: isChecked ? 600 : 400,
+                      transition: 'color 0.2s ease',
+                    }}>
+                      {children}
+                    </div>
+                  </li>
+                );
+              }
+
+              return (
+                <li style={{
+                  color: theme.text,
+                  marginBottom: '4px',
+                  marginLeft: '0.5rem',
+                  listStyleType: 'disc'
+                }}>
+                  {children}
+                </li>
+              );
+            },
             code: ({ children, className, node, ...props }) => {
               const isInline = !className;
               const match = /language-(\w+)/.exec(className || '');

@@ -1,104 +1,35 @@
 import "./utils/env.js";
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { createServer } from "node:http";
 import { URL } from "node:url";
-
-import { routes } from "./routes/index.js";
 import { handleCORS, parseBody, sendError } from "./utils/http.js";
-import { CalendarService } from "./services/calendar/calendarService.js";
-import { Scheduler } from "./services/calendar/scheduler.js";
-import { ReminderScheduler } from "./services/reminders/reminderScheduler.js";
-import { TodoReminderScheduler } from "./services/reminders/todoReminderScheduler.js";
+import routers from "./routers/index.js";
 
 const PORT = process.env.PORT || "4012";
 
-let calendarScheduler: Scheduler;
-let reminderScheduler: ReminderScheduler;
-let todoReminderScheduler: TodoReminderScheduler;
+const allRoutes = routers.flatMap(r => r.getRoutes());
 
-try {
-	const calendarService = CalendarService.getInstance();
-	calendarScheduler = new Scheduler(calendarService);
-	reminderScheduler = new ReminderScheduler(calendarService);
-	todoReminderScheduler = new TodoReminderScheduler();
-
-	calendarScheduler.start();
-	reminderScheduler.start();
-	todoReminderScheduler.start();
-} catch (error) {
-	console.error("❌ Fehler beim Initialisieren der Services:", error);
-	if (error instanceof Error) {
-		console.error("Fehlermeldung:", error.message);
-		console.error("Stack:", error.stack);
-	}
-	process.exit(1);
-}
-
-const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+const server = createServer(async (req, res) => {
 	try {
 		handleCORS(req, res);
-
-
-		if (req.method === "OPTIONS") {
-			res.writeHead(200, {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-				"Access-Control-Allow-Headers": "Content-Type",
-				"Access-Control-Max-Age": "86400",
-			});
-			res.end();
-			return;
-		}
+		if (req.method === "OPTIONS") return res.end();
 
 		const url = new URL(req.url || "/", `http://${req.headers.host}`);
 		const pathname = url.pathname;
 		const method = req.method || "GET";
 
-		let body: unknown = null;
-		if (["POST", "PUT", "PATCH"].includes(method)) {
-			body = await parseBody(req);
-		}
-
-		const route = routes.find(
-			(r) => r.method === method && r.path.test(pathname)
-		);
+		const body = ["POST", "PUT", "PATCH"].includes(method) ? await parseBody(req) : null;
+		const route = allRoutes.find(r => r.method === method && r.path.test(pathname));
 
 		if (route) {
 			const match = pathname.match(route.path);
 			await route.handler(req, res, { params: match?.groups || {}, body, query: Object.fromEntries(url.searchParams) });
 		} else {
-			sendError(res, 404, "Route not found");
+			sendError(res, 404, "Not found");
 		}
 	} catch (error) {
-		console.error("Server error:", error);
-		sendError(res, 500, error instanceof Error ? error.message : "Internal server error");
+		const message = error instanceof Error ? error.message : String(error);
+		sendError(res, 500, message);
 	}
 });
 
-server.listen(Number(PORT), () => {
-	console.log("📅 Calendar Scheduler gestartet");
-	console.log("🔔 Reminder Scheduler gestartet");
-	console.log("📋 Todo Reminder Scheduler gestartet");
-	console.log(`🚀 API Server läuft auf Port ${PORT}`);
-});
-
-process.on("SIGTERM", () => {
-	console.log("SIGTERM received, shutting down gracefully...");
-	if (calendarScheduler) calendarScheduler.stop();
-	if (reminderScheduler) reminderScheduler.stop();
-	if (todoReminderScheduler) todoReminderScheduler.stop();
-	server.close(() => {
-		console.log("Server closed");
-		process.exit(0);
-	});
-});
-
-process.on("SIGINT", () => {
-	console.log("SIGINT received, shutting down gracefully...");
-	if (calendarScheduler) calendarScheduler.stop();
-	if (reminderScheduler) reminderScheduler.stop();
-	if (todoReminderScheduler) todoReminderScheduler.stop();
-	server.close(() => {
-		console.log("Server closed");
-		process.exit(0);
-	});
-});
+server.listen(Number(PORT), () => console.log(`🚀 Server on ${PORT}`));
