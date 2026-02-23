@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "gray-matter": "4.0.3",
-    "katex": "0.16.28",
+    "katex": "0.16.33",
     "lucide-react": "0.575.0",
     "mermaid": "11.12.2",
     "next": "16.1.6",
