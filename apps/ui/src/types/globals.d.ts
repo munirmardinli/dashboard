@@ -568,6 +568,17 @@ declare global {
     isArchive: boolean;
   }
 
+  interface Frontmatter {
+    title?: string;
+    description?: string;
+    image?: string;
+    authors?: string | string[];
+    created?: string;
+    updated?: string;
+    tags?: string | string[];
+    [key: string]: string | boolean | string[] | number | undefined | unknown;
+  }
+
   interface DocsState {
     docs: DocItem[];
     isLoading: boolean;

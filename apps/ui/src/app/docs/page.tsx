@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement } from 'react';
-import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -197,7 +196,7 @@ export default function DocPage() {
   const [data, setData] = useState<PortfolioData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [content, setContent] = useState<string>('');
-  const [frontmatter, setFrontmatter] = useState<Record<string, any>>({});
+  const [frontmatter, setFrontmatter] = useState<Frontmatter>({});
   const [loading, setLoading] = useState(true);
   const { t } = useI18nStore();
 
@@ -264,7 +263,7 @@ export default function DocPage() {
 
   useEffect(() => {
     if (frontmatter.title) {
-      document.title = `${frontmatter.title} – Docs`;
+      document.title = `${frontmatter.title}`;
     }
   }, [frontmatter]);
 
@@ -428,29 +427,20 @@ export default function DocPage() {
               borderTop: `1px solid ${theme.divider}40`,
               paddingTop: '16px'
             }}>
-              {frontmatter.date && (
+              {frontmatter.created && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '9px', fontWeight: 800, color: theme.textSec, opacity: 0.6, letterSpacing: '0.05em' }}>{t("ui.created")}</span>
-                  <span style={{ fontSize: '12px', color: theme.text, fontWeight: 500 }}>{formatDate(frontmatter.date)}</span>
+                  <span style={{ fontSize: '12px', color: theme.text, fontWeight: 500 }}>{formatDate(frontmatter.created)}</span>
                 </div>
               )}
 
-              {frontmatter.lastmod && (
+              {frontmatter.updated && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <span style={{ fontSize: '9px', fontWeight: 800, color: theme.textSec, opacity: 0.6, letterSpacing: '0.05em' }}>{t("ui.updated")}</span>
-                  <span style={{ fontSize: '12px', color: theme.text, fontWeight: 500 }}>{formatDate(frontmatter.lastmod)}</span>
+                  <span style={{ fontSize: '12px', color: theme.text, fontWeight: 500 }}>{formatDate(frontmatter.updated)}</span>
                 </div>
               )}
 
-              {frontmatter.rating && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '9px', fontWeight: 800, color: theme.textSec, opacity: 0.6, letterSpacing: '0.05em' }}>{t("ui.rating")}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ fontSize: '12px', color: theme.text, fontWeight: 700 }}>{frontmatter.rating}</span>
-                    <span style={{ color: '#facc15', fontSize: '11px' }}>★</span>
-                  </div>
-                </div>
-              )}
 
               {frontmatter.tags && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>

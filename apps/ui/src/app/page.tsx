@@ -29,8 +29,6 @@ export default function Root() {
   useEffect(() => {
     ConfigAPI.getOnboardingConfig().then(setOnboardingFeatures);
   }, []);
-
-  console.log(onboardingFeatures);
   return (
     <div style={{
       minHeight: "100vh",
