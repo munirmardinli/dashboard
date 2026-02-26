@@ -2,7 +2,6 @@ import { DashyRouter } from "./DashyRouter.js";
 import { DataRouter } from "./DataRouter.js";
 import { ConfigRouter } from "./ConfigRouter.js";
 import { CalendarRouter } from "./CalendarRouter.js";
-import { BlogRouter } from "./BlogRouter.js";
 import { PortfolioRouter } from "./PortfolioRouter.js";
 import { ReceiptRouter } from "./ReceiptRouter.js";
 import { DocsRouter } from "./DocsRouter.js";
@@ -16,7 +15,6 @@ const routers = [
 	new DataRouter(),
 	new ConfigRouter(),
 	new CalendarRouter(),
-	new BlogRouter(),
 	new PortfolioRouter(),
 	new ReceiptRouter(),
 	new DocsRouter(),
