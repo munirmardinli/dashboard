@@ -6,6 +6,7 @@ export class DocsService {
 	private cachedMeta: MetaData | null = null;
 	private lastCacheTime = 0;
 	private CACHE_TTL = 1000 * 60 * 5;
+	private titleCache: Record<string, string> = {};
 
 	async getMeta(): Promise<MetaData> {
 		if (this.cachedMeta && Date.now() - this.lastCacheTime < this.CACHE_TTL) {
@@ -15,6 +16,17 @@ export class DocsService {
 		try {
 			const tree = await github.getTree();
 			const docsTree = tree.filter(item => item.path.startsWith("dashboard/docs/") && item.path.endsWith(".md"));
+
+			const missingItems = docsTree.filter(item => !this.titleCache[item.sha]);
+			if (missingItems.length > 0) {
+				await Promise.all(missingItems.map(async item => {
+					const relativePath = item.path.replace("dashboard/docs/", "").replace(".md", "");
+					const content = await this.getContent(relativePath);
+					const key = relativePath.split("/").pop()! || "";
+					this.titleCache[item.sha] = this.extractTitle(content || "", key);
+				}));
+			}
+
 			const meta: MetaData = {};
 
 			for (const item of docsTree) {
@@ -31,8 +43,7 @@ export class DocsService {
 
 					if (isFile) {
 						if (part === "index") continue;
-						const title = part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, " ");
-						current[part] = title;
+						current[part] = this.titleCache[item.sha] || part;
 					} else {
 						if (!current[part]) {
 							current[part] = {
