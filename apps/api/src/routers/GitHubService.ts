@@ -53,4 +53,27 @@ export class GitHubService {
 			}),
 		});
 	}
+
+	async listDirectory(path: string): Promise<{ name: string; type: "file" | "dir"; path: string }[]> {
+		const items = await this.fetchGitHub<{ name: string; type: "file" | "dir"; path: string }[]>(path);
+		return items.map(item => ({
+			name: item.name,
+			type: item.type,
+			path: item.path.startsWith("dashboard/") ? item.path.slice(10) : item.path
+		}));
+	}
+
+	async getTree(recursive = true): Promise<{ path: string; type: "blob" | "tree"; sha: string }[]> {
+		const url = `https://api.github.com/repos/${this.owner}/${this.repo}/git/trees/${this.branch}?recursive=${recursive ? 1 : 0}`;
+		const response = await fetch(url, {
+			headers: {
+				Accept: "application/vnd.github.v3+json",
+				Authorization: `Bearer ${this.token}`,
+			},
+		});
+
+		if (!response.ok) throw new Error(`GitHub Error: ${response.status} ${response.statusText}`);
+		const result = await response.json();
+		return result.tree;
+	}
 }

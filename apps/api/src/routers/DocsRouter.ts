@@ -8,6 +8,7 @@ export class DocsRouter {
 	getRoutes(): Route[] {
 		return [
 			{ method: "GET", path: /^\/api\/docs\/meta$/, handler: this.getMeta.bind(this) },
+			{ method: "GET", path: /^\/api\/docs\/list$/, handler: this.listDirectory.bind(this) },
 			{ method: "GET", path: /^\/api\/docs\/content$/, handler: this.getContent.bind(this) },
 			{ method: "GET", path: /^\/api\/docs\/assets\/images(?:\/(?<subPath>.*))?$/, handler: this.getImage.bind(this) },
 			{ method: "GET", path: /^\/api\/docs\/assets\/pdf(?:\/(?<subPath>.*))?$/, handler: this.getPDF.bind(this) },
@@ -16,6 +17,11 @@ export class DocsRouter {
 
 	async getMeta(_req: IncomingMessage, res: ServerResponse): Promise<void> {
 		sendJSON(res, await service.getMeta());
+	}
+
+	async listDirectory(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
+		const p = ctx.query["p"] || "";
+		sendJSON(res, await service.listDirectory(p));
 	}
 
 	async getContent(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {

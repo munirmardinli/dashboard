@@ -33,5 +33,13 @@ declare global {
 	interface CalendarRouteParams { calendarName?: string; }
 	interface ImageRouteParams { filepath?: string; }
 	interface DocsRouteParams { subPath?: string; }
+
+	interface DocFolder {
+		title: string;
+		[key: string]: string | DocFolder;
+	}
+
+	type MetaData = Record<string, string | DocFolder>;
 }
+
 export { }
