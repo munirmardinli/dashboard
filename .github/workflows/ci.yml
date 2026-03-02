@@ -100,13 +100,13 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
           TURBO_TELEMETRY_DISABLED: 1
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ui-dist
           path: apps/ui/out
           retention-days: 1
       - name: Upload API build artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: api-dist
           path: apps/api/dist
