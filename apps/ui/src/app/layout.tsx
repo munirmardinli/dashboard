@@ -16,6 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const mode = useThemeStore((s) => s.mode);
   const language = useI18nStore((s) => s.language);
   const direction = useThemeStore((s) => s.direction);
+  const { t } = useI18nStore();
   const theme = getTheme(mode);
   useEffect(() => {
     initializeThemeFromCookie();
@@ -83,8 +84,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <title>Management Dashboard - Todos, Kalender & Passwörter</title>
-        <meta name="description" content="Verwalten Sie Ihre Todos, Kalendereinträge, Passwörter und Kontakte effizient mit unserem Management Dashboard. Organisieren Sie Ihr Leben an einem Ort." />
+        <title>{t("ui.title")}</title>
+        <meta name="description" content={t("ui.description")} />
       </head>
       <body style={{ margin: 0, padding: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }} suppressHydrationWarning>
         <main className="main-content">

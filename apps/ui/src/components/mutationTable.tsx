@@ -37,7 +37,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isEdit, setIsEdit] = useState(false);
-  const [todoId, setTodoId] = useState<string | null>(null);
+  const [queryId, setQueryId] = useState<string | null>(null);
   const [dashySectionId, setDashySectionId] = useState<string>('');
   const [dashyItemIndex, setDashyItemIndex] = useState<number>(-1);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -52,7 +52,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const [, startTransition] = useTransition();
   const handleSaveRef = useRef<(() => Promise<void>) | null>(null);
 
-  const [, setOptimisticItems] = useOptimistic(items, (state, newItem: GenericJsonItem) => isEdit && todoId ? state.map(i => i.id === todoId ? newItem : i) : [...state, newItem]);
+  const [, setOptimisticItems] = useOptimistic(items, (state, newItem: GenericJsonItem) => isEdit && queryId ? state.map(i => i.id === queryId ? newItem : i) : [...state, newItem]);
 
   useEffect(() => {
     const init = async () => {
@@ -142,7 +142,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       else if (items.length > 0) {
         const item = items.find(t => t.id === actualId);
         if (item) {
-          setIsEdit(true); setTodoId(item.id!);
+          setIsEdit(true); setQueryId(item.id!);
           const editData: Record<string, string> = {};
           config?.update.forEach(f => {
             const val = (item as Record<string, unknown>)[f.key];
@@ -216,12 +216,12 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           if (f.key === "items" && processed[f.key]) processed[f.key] = JSON.parse(String(processed[f.key]));
         });
 
-        if (isEdit && todoId) {
-          const updated = { ...items.find(i => i.id === todoId)!, ...processed, updatedAt: new Date().toISOString() };
+        if (isEdit && queryId) {
+          const updated = { ...items.find(i => i.id === queryId)!, ...processed, updatedAt: new Date().toISOString() };
           startTransition(() => {
             setOptimisticItems(updated);
           });
-          await DataAPI.updateItem(dataType, todoId, updated);
+          await DataAPI.updateItem(dataType, queryId, updated);
           try { useSoundStore.getState().playEvent("update"); } catch { }
         } else {
           const newItem = {
@@ -254,9 +254,9 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         router.push(`/q?view=${dataType}`);
       } catch (e) { setSnack(String(e), 'error'); }
     } else {
-      if (!isEdit || !todoId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
+      if (!isEdit || !queryId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
       try {
-        await DataAPI.archiveItem(dataType, todoId);
+        await DataAPI.archiveItem(dataType, queryId);
         setItems(await DataAPI.getItems(dataType));
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }

@@ -10,7 +10,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 
-export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) => {
+export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
   const [allItems, setAllItems] = useState<GenericJsonItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -262,7 +262,7 @@ export const TodoTable: FC<TodoTableProps> = ({ dataType, displayFields = [] }) 
             <tbody>
               {paginatedItems.map((item, index) => (
                 <tr
-                  key={item.id}
+                  key={index}
                   onClick={() => handleEdit(item.id)}
                   style={{
                     cursor: 'pointer', borderBottom: `1px solid ${theme.divider}`, transition: 'all 0.2s',

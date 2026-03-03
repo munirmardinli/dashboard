@@ -3,7 +3,6 @@
 import { useThemeStore } from "@/stores/themeStore";
 import { useSidebarStore } from "@/stores/sidebarStore";
 import { getTheme } from "@/utils/theme";
-import Link from "next/link";
 import { useRouter } from 'next/navigation'
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -15,7 +14,7 @@ export default function Root() {
   const activePath = useSidebarStore((state) => state.activePath);
   const theme = getTheme(mode);
   const router = useRouter();
-  const [dashboardUrl, setDashboardUrl] = useState("/q/?view=privateTodos");
+  const [dashboardUrl, setDashboardUrl] = useState("/q/?view=dashy");
   const [onboardingFeatures, setOnboardingFeatures] = useState<OnboardingFeature[]>([]);
 
   const { t } = useI18nStore();

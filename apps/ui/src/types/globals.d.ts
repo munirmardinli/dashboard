@@ -329,9 +329,9 @@ declare global {
   }
 
   /**
-   * Props for todo table components
+   * Props for queries table components
    */
-  interface TodoTableProps {
+  interface QueriesTableProps {
     dataType: string;
     searchFields?: string[];
     displayFields?: DisplayField[];
@@ -549,7 +549,7 @@ declare global {
 
   /**
    * Gemeinsames Interface für Reminder-Status
-   * Wird für Events, Todos und andere Reminder-Items verwendet
+   * Wird für Events, Queries und andere Reminder-Items verwendet
    */
   interface ReminderStatus {
     itemId: string;

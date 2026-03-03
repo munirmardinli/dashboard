@@ -2,7 +2,7 @@
 import { notFound, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 
-import { TodoTable } from "@/components/queryTable";
+import { QueryTable } from "@/components/queryTable";
 import CreateMode from "@/components/mutationTable";
 import { ConfigAPI } from "@/utils/api";
 import Loading from "@/app/loading";
@@ -10,12 +10,7 @@ import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useI18nStore } from "@/stores/i18nStore";
 
 const titleMap: Record<string, string> = {
-	privateTodos: "Privat Todos",
-	workTodos: "Arbeit Todos",
-	application: "Bewerbungen",
 	expense: "Ausgaben",
-	books: "Bücher",
-	theory: "Theorie",
 	hobbys: "Hobbys",
 	work: "Arbeit Kalender",
 	sonstiges: "Sonstiges",
@@ -36,8 +31,6 @@ const titleMap: Record<string, string> = {
 	socialMedia: "Social Media Passwörter",
 	study: "Study Passwörter",
 	works: "Arbeit Passwörter",
-	privateJournal: "Privates Journal",
-	schoolJournal: "Schulbegleitung",
 	privatContact: "Privat Kontakte",
 	workContact: "Arbeit Kontakte",
 	dashy: "Dashy",
@@ -87,7 +80,7 @@ function QueryPageContent() {
 	return (
 		<div style={{ flexGrow: 1, width: '100%' }} role="region">
 			<div style={{ maxWidth: '1280px', margin: '0 auto', padding: isDesktop ? '32px 16px' : '16px 8px' }}>
-				<TodoTable dataType={view} />
+				<QueryTable dataType={view} />
 			</div>
 		</div>
 	);
