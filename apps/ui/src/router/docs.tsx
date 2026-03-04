@@ -183,7 +183,7 @@ function MermaidDiagram({ chart }: { chart: string }) {
         border: `1px solid ${theme.divider}`,
         overflowX: 'auto',
         backdropFilter: 'blur(8px)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        boxShadow: theme.shadowXs,
       }}
     />
   );
@@ -735,7 +735,7 @@ export default function DocPage() {
                       background: `${border}05`,
                       borderRadius: '12px',
                       border: `1px solid ${border}20`,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                      boxShadow: theme.shadowXs,
                       backdropFilter: 'blur(12px)',
                       width: '100%',
                     }}
@@ -802,7 +802,7 @@ export default function DocPage() {
                   display: 'flex',
                   gap: '12px',
                   alignItems: 'flex-start',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  boxShadow: theme.shadowXs,
                   backdropFilter: 'blur(8px)',
                   width: '100%',
                 }}>

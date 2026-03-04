@@ -119,7 +119,7 @@ const NavigationContent = () => {
                         borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         background: isSelected ? `${theme.primary}1a` : 'transparent',
                         color: isSelected ? theme.primary : theme.text,
-                        borderLeft: isSelected && depth === 0 ? `4px solid ${theme.primary}` : '4px solid transparent',
+                        borderLeft: isSelected && depth === 0 ? `4px solid ${theme.primary}` : `4px solid transparent`,
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
@@ -299,7 +299,7 @@ const NavigationContent = () => {
                             }}
                             style={{
                               padding: '12px', borderRadius: '12px', border: `1px solid ${language === item.code ? theme.primary : theme.divider}`,
-                              background: language === item.code ? `${theme.primary}0d` : 'transparent', cursor: 'pointer',
+                              background: language === item.code ? `${theme.primary}1a` : 'transparent', cursor: 'pointer',
                               display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s ease'
                             }}
                           >

@@ -140,12 +140,12 @@ export const DateTimePicker: FC<DateTimePickerProps> = ({
 						<Calendar size={18} />
 					</div>
 				</div>
-				{helperText && <div style={{ color: error ? '#ef4444' : theme.textSec, fontSize: '0.75rem', marginTop: '4px' }}>{helperText}</div>}
+				{helperText && <div style={{ color: error ? theme.error : theme.textSec, fontSize: '0.75rem', marginTop: '4px' }}>{helperText}</div>}
 			</div>
 			{isOpen && (
 				<div style={{
 					position: 'absolute', top: '100%', left: 0, zIndex: 1000, marginTop: '8px', padding: '16px',
-					background: theme.paper, borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+					background: theme.paper, borderRadius: '16px', boxShadow: theme.shadowLg,
 					border: `1px solid ${theme.divider}`, width: '320px', backdropFilter: 'blur(20px)'
 				}}>
 					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -219,7 +219,7 @@ export const DateTimePicker: FC<DateTimePickerProps> = ({
 										day === selectedDate.getDate() &&
 											currentMonth === selectedDate.getMonth() &&
 											currentYear === selectedDate.getFullYear()
-											? '#fff'
+											? theme.white
 											: (day ? theme.text : 'transparent')
 								}}
 							>
@@ -244,7 +244,7 @@ export const DateTimePicker: FC<DateTimePickerProps> = ({
 					</div>
 					<div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', gap: '8px' }}>
 						<button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec }}><X size={20} /></button>
-						<button onClick={() => setIsOpen(false)} style={{ background: theme.primary, border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', cursor: 'pointer' }}><Check size={16} /></button>
+						<button onClick={() => setIsOpen(false)} style={{ background: theme.primary, border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.white, cursor: 'pointer' }}><Check size={16} /></button>
 					</div>
 				</div>
 			)}

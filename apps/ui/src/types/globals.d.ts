@@ -780,14 +780,26 @@ declare global {
     textSec: string;
     divider: string;
     gradient: string;
+    shadowXs: string;
     shadowSm: string;
     shadowMd: string;
     shadowLg: string;
+    shadowPaper: string;
     shadowPrimary: string;
     fontFamily: string;
     fontSizeHero: string;
     fontSizeH1: string;
     fontSizeBody: string;
+    error: string;
+    errorBg: string;
+    success: string;
+    successBg: string;
+    warning: string;
+    warningBg: string;
+    info: string;
+    infoBg: string;
+    white: string;
+    brandGradient: string;
   }
 
   interface DocFolder {

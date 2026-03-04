@@ -69,7 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${theme.divider}; borderRadius: 4px; }
+        ::-webkit-scrollbar-thumb { background: ${theme.divider}; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: ${theme.textSec}; }
       `;
     document.head.appendChild(style);
@@ -106,30 +106,30 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             }}>
               <div style={{
                 width: '24px', height: '24px', borderRadius: '50%',
-                background: snack.severity === 'error' ? '#ef4444' : snack.severity === 'success' ? '#10b981' : snack.severity === 'warning' ? '#f59e0b' : '#3b82f6',
+                background: snack.severity === 'error' ? theme.error : snack.severity === 'success' ? theme.success : snack.severity === 'warning' ? theme.warning : theme.primary,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0,
               }}>
                 {snack.severity === 'success' && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.white} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 )}
                 {snack.severity === 'error' && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.white} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>
                 )}
                 {snack.severity === 'warning' && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.white} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
                 )}
                 {snack.severity === 'info' && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.white} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -153,7 +153,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             </div>
             <div style={{
               height: '3px', width: '100%',
-              background: snack.severity === 'error' ? '#ef4444' : snack.severity === 'success' ? '#10b981' : snack.severity === 'warning' ? '#f59e0b' : '#3b82f6',
+              background: snack.severity === 'error' ? theme.error : snack.severity === 'success' ? theme.success : snack.severity === 'warning' ? theme.warning : theme.primary,
               animation: 'progressBar 4s linear forwards',
             }}></div>
             <style>{`

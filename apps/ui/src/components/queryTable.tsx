@@ -161,7 +161,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     if (field.type === 'date') return (
       <span style={{
         display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', fontSize: isDesktop ? '0.9rem' : '0.8rem',
-        background: isOverdue(String(value), item.isArchive) ? '#fee2e2' : '#f3f4f6', color: isOverdue(String(value), item.isArchive) ? '#991b1b' : '#374151',
+        background: isOverdue(String(value), item.isArchive) ? theme.errorBg : theme.divider, color: isOverdue(String(value), item.isArchive) ? theme.error : theme.textSec,
         fontWeight: 500
       }}>
         <Clock size={14} /> {isClient ? formatDate(String(value)) : String(value)}
@@ -173,7 +173,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
         {String(value)}
       </span>
     );
-    if (field.type === 'chip') return <span style={{ padding: '6px 12px', borderRadius: '20px', background: '#e5e7eb', fontSize: isDesktop ? '0.9rem' : '0.8rem', color: '#374151' }}>{String(value)}</span>;
+    if (field.type === 'chip') return <span style={{ padding: '6px 12px', borderRadius: '20px', background: theme.divider, fontSize: isDesktop ? '0.9rem' : '0.8rem', color: theme.textSec }}>{String(value)}</span>;
     if (field.type === 'url') {
       return (
         <a
@@ -205,10 +205,10 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     <div style={{ width: "100%", position: "relative" }}>
       <div style={{
         borderRadius: isDesktop ? '12px' : '8px', overflow: 'hidden', background: theme.bg,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: `1px solid ${theme.divider}`
+        boxShadow: theme.shadowXs, border: `1px solid ${theme.divider}`
       }}>
         <div style={{ padding: isDesktop ? '24px' : '16px 12px', borderBottom: `1px solid ${theme.divider}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: isDesktop ? '20px' : '12px', flexWrap: 'wrap', background: theme.bg }}>
-          <div style={{ display: 'flex', alignItems: 'center', background: theme.paper, borderRadius: isDesktop ? '8px' : '6px', padding: isDesktop ? '12px 16px' : '10px 12px', border: `1px solid ${searchError ? '#ef4444' : theme.divider}`, width: isDesktop ? '300px' : '100%', maxWidth: '300px', boxShadow: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: theme.paper, borderRadius: isDesktop ? '8px' : '6px', padding: isDesktop ? '12px 16px' : '10px 12px', border: `1px solid ${searchError ? theme.error : theme.divider}`, width: isDesktop ? '300px' : '100%', maxWidth: '300px', boxShadow: 'none' }}>
             <Search size={isDesktop ? 22 : 18} color={theme.textSec} />
             <input
               ref={searchInputRef} type="search" placeholder={t("ui.searchPlaceholder")} value={searchTerm}
@@ -226,7 +226,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             title={t("ui.tooltipAddNewItem")}
             style={{
               display: 'flex', alignItems: 'center', gap: isDesktop ? '10px' : '6px', padding: isDesktop ? '12px 28px' : '10px 20px', borderRadius: isDesktop ? '8px' : '6px', border: 'none',
-              background: theme.primary, color: '#fff', fontWeight: 600, cursor: 'pointer',
+              background: theme.primary, color: theme.white, fontWeight: 600, cursor: 'pointer',
               boxShadow: `0 2px 8px ${theme.primary}30`, transition: 'all 0.2s', fontSize: isDesktop ? '1rem' : '0.875rem',
               flex: '0 0 auto'
             }}

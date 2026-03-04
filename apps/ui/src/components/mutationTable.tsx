@@ -296,7 +296,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       background: 'transparent',
       color: theme.text,
       fontSize: '1rem',
-      border: `1px solid ${error ? '#d32f2f' : (isFocused ? theme.primary : theme.divider)}`,
+      border: `1px solid ${error ? theme.error : (isFocused ? theme.primary : theme.divider)}`,
       borderRadius: '4px',
       outline: 'none',
       transition: 'border-color 200ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -310,7 +310,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       top: (isFocused || hasValue) ? '-9px' : (field.type === 'textarea' ? '26px' : '16px'),
       transform: (isFocused || hasValue) ? 'translateY(0)' : 'translateY(0)',
       fontSize: (isFocused || hasValue) ? '0.75rem' : '1rem',
-      color: error ? '#d32f2f' : (isFocused ? theme.primary : theme.textSec),
+      color: error ? theme.error : (isFocused ? theme.primary : theme.textSec),
       background: (isFocused || hasValue) ? theme.paper : 'transparent',
       padding: '0 4px',
       transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -319,7 +319,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       zIndex: 1,
     };
     const helperTextStyle = {
-      color: error ? '#d32f2f' : theme.textSec,
+      color: error ? theme.error : theme.textSec,
       fontSize: '0.75rem',
       marginTop: '4px',
       marginLeft: '14px',
@@ -342,7 +342,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                 padding: '10px 20px', borderRadius: '8px', border: 'none',
                 background: theme.primary, color: '#fff',
                 cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                boxShadow: theme.shadowXs,
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
@@ -364,7 +364,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                 borderRadius: '12px',
                 border: `1px solid ${theme.divider}`,
                 background: theme.paper,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                boxShadow: theme.shadowXs,
                 overflow: 'hidden',
                 transition: 'all 0.2s ease',
               }}
@@ -404,8 +404,8 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                       transition: 'all 0.2s ease',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#ef444410';
-                      e.currentTarget.style.color = '#ef4444';
+                      e.currentTarget.style.background = `${theme.error}1a`;
+                      e.currentTarget.style.color = theme.error;
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'none';
@@ -437,7 +437,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                           zIndex: 1,
                           fontWeight: 400,
                         }}>
-                          {subLabel} {subField.required && <span style={{ color: '#d32f2f' }}>*</span>}
+                          {subLabel} {subField.required && <span style={{ color: theme.error }}>*</span>}
                         </label>
                         <input
                           type={subField.key === 'value' && !showPassword[`${field.key}-${idx}-value`] ? 'password' : subField.type}
@@ -478,7 +478,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                                   setTimeout(() => setCopiedFields(p => ({ ...p, [`${field.key}-${idx}-value`]: false })), 2000);
                                 }
                               }}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[`${field.key}-${idx}-value`] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[`${field.key}-${idx}-value`] ? theme.success : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
                               title={t("ui.copyPassword")}
                             >
                               {copiedFields[`${field.key}-${idx}-value`] ? <Check size={20} /> : <Copy size={20} />}
@@ -519,7 +519,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     if (field.type === "datetime" || field.type === "date" || field.type === "time") {
       return (
         <div key={field.key} style={containerStyle}>
-          <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
+          <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: theme.error }}>*</span>}</label>
           <DateTimePicker
             value={formData[field.key] as string || ""}
             onChange={(val) => handleInputChange(field.key, val)}
@@ -544,7 +544,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       const isSectionIdField = dataType === 'dashy' && field.key === 'sectionId';
       return (
         <div key={field.key} style={containerStyle}>
-          <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}</label>
+          <label style={floatingLabelStyle}>{label} {field.required && <span style={{ color: theme.error }}>*</span>}</label>
           <div style={{ position: 'relative' }}>
             <select
               value={formData[field.key] ?? ""}
@@ -583,14 +583,14 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
             top: (isFocused || hasValue) ? "-9px" : "16px",
             background: (isFocused || hasValue) ? theme.paper : "transparent",
           }}>
-            {label} {field.required && <span style={{ color: '#d32f2f' }}>*</span>}
+            {label} {field.required && <span style={{ color: theme.error }}>*</span>}
           </label>
 
           <div
             onFocus={() => setFocusedFields(p => ({ ...p, [field.key]: true }))}
             onBlur={() => setFocusedFields(p => ({ ...p, [field.key]: false }))}
             style={{
-              border: `1px solid ${error ? '#d32f2f' : (isFocused ? theme.primary : theme.divider)}`,
+              border: `1px solid ${error ? theme.error : (isFocused ? theme.primary : theme.divider)}`,
               borderRadius: "4px",
               padding: "8px",
               background: "transparent",
@@ -785,7 +785,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                     setTimeout(() => setCopiedFields(p => ({ ...p, [field.key]: false })), 2000);
                   }
                 }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? theme.success : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
                 title={t("ui.copyPassword")}
               >
                 {copiedFields[field.key] ? <Check size={20} /> : <Copy size={20} />}
@@ -812,7 +812,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                     setTimeout(() => setCopiedFields(p => ({ ...p, [field.key]: false })), 2000);
                   }
                 }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? '#22c55e' : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedFields[field.key] ? theme.success : theme.textSec, padding: 0, display: 'flex', alignItems: 'center' }}
                 title={t("ui.copyPassword")}
               >
                 {copiedFields[field.key] ? <Check size={20} /> : <Copy size={20} />}
@@ -842,7 +842,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         <div style={{
           background: theme.paper,
           borderRadius: isDesktop ? '8px' : '6px',
-          boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+          boxShadow: theme.shadowPaper,
           padding: isDesktop ? '24px' : '16px',
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: isDesktop ? '16px' : '12px' }}>
@@ -868,8 +868,8 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '12px 24px', borderRadius: '8px', border: 'none',
-                  background: '#d32f2f', color: '#fff',
-                  boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)',
+                  background: theme.error, color: theme.white,
+                  boxShadow: theme.shadowXs,
                   cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
                 }}
                 title={t("ui.deleteButton")}
@@ -885,7 +885,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
                 display: 'flex', alignItems: 'center', gap: '8px',
                 padding: '12px 24px', borderRadius: '8px', border: 'none',
                 background: theme.primary, color: '#fff',
-                boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)',
+                boxShadow: theme.shadowXs,
                 cursor: (!isFormValid || isSaving) ? 'not-allowed' : 'pointer',
                 opacity: (!isFormValid || isSaving) ? 0.6 : 1,
                 fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const

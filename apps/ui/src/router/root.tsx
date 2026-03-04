@@ -50,7 +50,7 @@ export default function Root() {
 						fontSize: theme.fontSizeHero,
 						fontWeight: 800,
 						margin: "0 0 24px 0",
-						background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+						background: theme.brandGradient,
 						WebkitBackgroundClip: "text",
 						WebkitTextFillColor: "transparent",
 						lineHeight: 1.2,
@@ -80,7 +80,7 @@ export default function Root() {
 						style={{
 							display: "inline-block",
 							background: theme.primary,
-							color: "#ffffff",
+							color: theme.white,
 							padding: "16px 48px",
 							borderRadius: "16px",
 							fontSize: "1.125rem",

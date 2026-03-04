@@ -88,7 +88,7 @@ function QueryPageContent() {
 					fontSize: theme.fontSizeHero,
 					fontWeight: "800",
 					marginBottom: "2rem",
-					background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+					background: theme.brandGradient,
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",
 					lineHeight: "1.2"

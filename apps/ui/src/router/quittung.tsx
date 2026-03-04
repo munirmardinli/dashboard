@@ -143,7 +143,7 @@ export default function QuittungPage() {
 				fontSize: theme.fontSizeHero,
 				fontWeight: "800",
 				marginBottom: "2rem",
-				background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+				background: theme.brandGradient,
 				WebkitBackgroundClip: "text",
 				WebkitTextFillColor: "transparent",
 				lineHeight: "1.2"
@@ -156,8 +156,8 @@ export default function QuittungPage() {
 					style={{
 						padding: "1rem",
 						marginBottom: "1rem",
-						backgroundColor: "#059669",
-						color: "white",
+						backgroundColor: theme.success,
+						color: theme.white,
 						borderRadius: "0.5rem",
 						display: "flex",
 						alignItems: "center",
@@ -174,8 +174,8 @@ export default function QuittungPage() {
 					style={{
 						padding: "1rem",
 						marginBottom: "1rem",
-						backgroundColor: "#dc2626",
-						color: "white",
+						backgroundColor: theme.error,
+						color: theme.white,
 						borderRadius: "0.5rem",
 						display: "flex",
 						alignItems: "center",
@@ -198,17 +198,17 @@ export default function QuittungPage() {
 						fontSize: "1.5rem",
 						fontWeight: "bold",
 						marginBottom: "0",
-						color: "#f1f5f9"
+						color: theme.text,
 					}}>
 						{t("ui.uploadReceipt")}
 					</h2>
 					<div
 						style={{
-							border: "2px dashed #475569",
+							border: `2px dashed ${theme.divider}`,
 							borderRadius: "0.5rem",
 							padding: "2rem",
 							textAlign: "center",
-							backgroundColor: "#1e293b",
+							backgroundColor: theme.paperSec,
 						}}
 					>
 						<input
@@ -230,11 +230,11 @@ export default function QuittungPage() {
 							}}
 						>
 							{selectedImage ? (
-								<ImageIcon size={48} color="#94a3b8" />
+								<ImageIcon size={48} color={theme.textSec} />
 							) : (
-								<Upload size={48} color="#94a3b8" />
+								<Upload size={48} color={theme.textSec} />
 							)}
-							<span style={{ color: "#94a3b8" }}>
+							<span style={{ color: theme.textSec }}>
 								{imageFile ? imageFile.name : t("ui.selectImage")}
 							</span>
 						</label>
@@ -248,7 +248,7 @@ export default function QuittungPage() {
 								style={{
 									width: "100%",
 									borderRadius: "0.5rem",
-									border: "1px solid #334155",
+									border: `1px solid ${theme.divider}`,
 								}}
 							/>
 							<div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
@@ -258,8 +258,8 @@ export default function QuittungPage() {
 									style={{
 										flex: 1,
 										padding: "0.75rem",
-										backgroundColor: isAnalyzing ? "#64748b" : "#3b82f6",
-										color: "white",
+										backgroundColor: isAnalyzing ? theme.textSec : theme.primary,
+										color: theme.white,
 										border: "none",
 										borderRadius: "0.5rem",
 										cursor: isAnalyzing ? "not-allowed" : "pointer",
@@ -283,8 +283,8 @@ export default function QuittungPage() {
 									onClick={handleReset}
 									style={{
 										padding: "0.75rem",
-										backgroundColor: "#dc2626",
-										color: "white",
+										backgroundColor: theme.error,
+										color: theme.white,
 										border: "none",
 										borderRadius: "0.5rem",
 										cursor: "pointer",
@@ -303,7 +303,7 @@ export default function QuittungPage() {
 						fontSize: "1.5rem",
 						fontWeight: "bold",
 						marginBottom: "0",
-						color: "#f1f5f9"
+						color: theme.text
 					}}>
 						{t("ui.preview")}
 					</h2>
@@ -328,13 +328,13 @@ export default function QuittungPage() {
 								<strong style={{ color: theme.textSec }}>{t("ui.date")}:</strong> {new Date(analyzedData.date).toLocaleString("de-DE")}
 							</div>
 							<div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-								<strong style={{ color: "#94a3b8" }}>{t("ui.items")}:</strong>
+								<strong style={{ color: theme.textSec }}>{t("ui.items")}:</strong>
 								<div style={{ marginTop: "0.5rem", flex: 1, overflowY: "auto" }}>
 									{analyzedData.items.length === 0 ? (
 										<div style={{
 											padding: "2rem",
 											textAlign: "center",
-											color: "#64748b",
+											color: theme.textSec,
 											fontStyle: "italic"
 										}}>
 											{t("ui.noEntries")}
@@ -347,8 +347,8 @@ export default function QuittungPage() {
 													display: "flex",
 													justifyContent: "space-between",
 													padding: "0.5rem",
-													borderBottom: "1px solid #334155",
-													color: "#e2e8f0"
+													borderBottom: `1px solid ${theme.divider}`,
+													color: theme.text
 												}}
 											>
 												<span>{item.key}</span>
@@ -367,9 +367,9 @@ export default function QuittungPage() {
 											padding: "0.75rem 0.5rem",
 											fontWeight: "bold",
 											fontSize: "1.1rem",
-											borderTop: "2px solid #475569",
+											borderTop: `2px solid ${theme.divider}`,
 											marginTop: "0.5rem",
-											color: "#f1f5f9"
+											color: theme.text
 										}}
 									>
 										<span>{t("ui.total")}:</span>
@@ -390,8 +390,8 @@ export default function QuittungPage() {
 									width: "100%",
 									marginTop: "1rem",
 									padding: "0.75rem",
-									backgroundColor: isSaving ? "#64748b" : "#059669",
-									color: "white",
+									backgroundColor: isSaving ? theme.textSec : theme.success,
+									color: theme.white,
 									border: "none",
 									borderRadius: "0.5rem",
 									cursor: isSaving ? "not-allowed" : "pointer",
@@ -415,12 +415,12 @@ export default function QuittungPage() {
 					) : (
 						<div
 							style={{
-								border: "1px dashed #475569",
+								border: `1px dashed ${theme.divider}`,
 								borderRadius: "0.5rem",
 								padding: "2rem",
 								textAlign: "center",
-								color: "#64748b",
-								backgroundColor: "#1e293b",
+								color: theme.textSec,
+								backgroundColor: theme.paperSec,
 								flex: 1,
 								display: "flex",
 								alignItems: "center",

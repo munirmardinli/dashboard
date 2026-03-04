@@ -134,9 +134,7 @@ export default function DashyPage() {
 	return (
 		<>
 			<style dangerouslySetInnerHTML={{
-				__html: `
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-        
+				__html: `        
         .dashy-card {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
@@ -214,30 +212,7 @@ export default function DashyPage() {
 						marginBottom: '40px',
 						padding: '10px 0'
 					}}>
-						<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-							<Link href="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-								<h1 className="dashy-title" style={{
-									fontSize: theme.fontSizeHero,
-									fontWeight: '800',
-									margin: 0,
-									letterSpacing: '-0.04em',
-									background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
-									WebkitBackgroundClip: 'text',
-									WebkitTextFillColor: 'transparent',
-									lineHeight: '1.2',
-									transition: 'opacity 0.2s'
-								}}
-									onMouseEnter={(e) => {
-										e.currentTarget.style.opacity = '0.8';
-									}}
-									onMouseLeave={(e) => {
-										e.currentTarget.style.opacity = '1';
-									}}>
-									{data.title}
-								</h1>
-							</Link>
-						</div>
-
+						<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }} />
 						<div className="dashy-search search-container" style={{
 							position: 'relative',
 							width: '400px',
@@ -261,17 +236,17 @@ export default function DashyPage() {
 									fontWeight: '400',
 									outline: 'none',
 									transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-									boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+									boxShadow: theme.shadowSm
 								}}
 								onFocus={(e) => {
 									e.currentTarget.style.borderColor = alpha(theme.primary, 0.4);
 									e.currentTarget.style.backgroundColor = alpha(theme.bg, 0.8);
-									e.currentTarget.style.boxShadow = `0 0 0 4px ${alpha(theme.primary, 0.1)}, 0 4px 6px -1px rgba(0, 0, 0, 0.1)`;
+									e.currentTarget.style.boxShadow = `0 0 0 4px ${alpha(theme.primary, 0.1)}, ${theme.shadowSm}`;
 								}}
 								onBlur={(e) => {
 									e.currentTarget.style.borderColor = theme.divider;
 									e.currentTarget.style.backgroundColor = theme.paper;
-									e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+									e.currentTarget.style.boxShadow = theme.shadowSm;
 								}}
 							/>
 							<div style={{
@@ -335,7 +310,7 @@ export default function DashyPage() {
 										borderRadius: '16px',
 										padding: '20px',
 										border: `1px solid ${theme.divider}`,
-										boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+										boxShadow: theme.shadowSm,
 									}}
 								>
 									<div
@@ -498,7 +473,7 @@ export default function DashyPage() {
 										borderRadius: '16px',
 										padding: '20px',
 										border: `1px solid ${theme.divider}`,
-										boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+										boxShadow: theme.shadowSm,
 									}}
 								>
 									<div

@@ -143,7 +143,7 @@ export default function PortfolioPage() {
 					fontWeight: 800,
 					marginBottom: "20px",
 					lineHeight: 1.1,
-					background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+					background: theme.brandGradient,
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",
 					letterSpacing: "-0.03em"
@@ -175,7 +175,7 @@ export default function PortfolioPage() {
 						padding: "14px 32px",
 						borderRadius: "100px",
 						background: theme.primary,
-						color: "#fff",
+						color: theme.white,
 						textDecoration: "none",
 						fontWeight: 600,
 						fontSize: "1rem",
@@ -225,7 +225,7 @@ export default function PortfolioPage() {
 							display: "flex",
 							flexDirection: "column",
 							transition: "transform 0.3s ease, box-shadow 0.3s ease",
-							boxShadow: "0 4px 6px rgba(0,0,0,0.02)"
+							boxShadow: theme.shadowSm
 						}}>
 							<div style={{
 								position: "relative",
@@ -283,7 +283,7 @@ export default function PortfolioPage() {
 											padding: "12px",
 											borderRadius: "14px",
 											background: theme.primary,
-											color: "#fff",
+											color: theme.white,
 											textDecoration: "none",
 											fontSize: "0.95rem",
 											fontWeight: 600,
@@ -627,7 +627,7 @@ export default function PortfolioPage() {
 							padding: "18px",
 							borderRadius: "16px",
 							background: theme.primary,
-							color: "#fff",
+							color: theme.white,
 							fontWeight: 700,
 							fontSize: "1.1rem",
 							border: "none",
@@ -733,20 +733,6 @@ export default function PortfolioPage() {
 					</div>
 				</div>
 			</section>
-
-			<div style={{
-				padding: "60px 0",
-				color: theme.textSec,
-				fontSize: "0.9rem",
-				borderTop: `1px solid ${theme.divider}`,
-				textAlign: "center",
-				background: theme.bg
-			}}>
-				<div style={{ maxWidth: "600px", margin: "0 auto" }}>
-					<p style={{ marginBottom: "8px", fontWeight: 500 }}>© {new Date().getFullYear()} {data.profile.name}. {data.ui?.footer?.rights ?? ""}</p>
-					<p style={{ opacity: 0.7 }}>{data.ui?.footer?.created ?? ""}</p>
-				</div>
-			</div>
 		</div>
 	);
 }

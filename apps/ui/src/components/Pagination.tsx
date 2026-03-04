@@ -41,7 +41,7 @@ export const MuiPagination: FC<PaginationProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         background: page === currentPage ? theme.primary : 'transparent',
-        color: page === currentPage ? '#fff' : theme.text,
+        color: page === currentPage ? theme.white : theme.text,
         transition: 'all 0.2s',
         boxShadow: page === currentPage ? `0 2px 8px ${theme.primary}40` : 'none'
       }}
@@ -72,7 +72,7 @@ export const MuiPagination: FC<PaginationProps> = ({
         background: `${theme.bg}cc`,
         backdropFilter: 'blur(20px)',
         borderTop: `1px solid ${theme.divider}`,
-        boxShadow: '0 -8px 32px rgba(0,0,0,0.1)'
+        boxShadow: theme.shadowXs
       }}
     >
       <span style={{
