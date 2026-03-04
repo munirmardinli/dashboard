@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Upload, Image as ImageIcon, Loader2, Check, X } from "lucide-react";
 import { useI18nStore } from "@/stores/i18nStore";
+import { useThemeStore } from "@/stores/themeStore";
+import { getTheme } from "@/utils/theme";
+import { globalVars } from "@/utils/globalyVar";
 
 export default function QuittungPage() {
 	const { t } = useI18nStore();
@@ -123,20 +126,27 @@ export default function QuittungPage() {
 		}
 	}
 
+	const mode = useThemeStore((s) => s.mode);
+	const theme = getTheme(mode);
+
 	return (
 		<div style={{
 			padding: "2rem",
 			maxWidth: "1200px",
 			margin: "0 auto",
-			backgroundColor: "#0f172a",
+			backgroundColor: theme.bg,
 			minHeight: "100vh",
-			color: "#e2e8f0"
+			color: theme.text,
+			fontFamily: theme.fontFamily,
 		}}>
 			<h1 style={{
-				fontSize: "2rem",
-				fontWeight: "bold",
+				fontSize: theme.fontSizeHero,
+				fontWeight: "800",
 				marginBottom: "2rem",
-				color: "#f1f5f9"
+				background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+				WebkitBackgroundClip: "text",
+				WebkitTextFillColor: "transparent",
+				lineHeight: "1.2"
 			}}>
 				{t("ui.receipt")}
 			</h1>
@@ -301,21 +311,21 @@ export default function QuittungPage() {
 					{analyzedData ? (
 						<div
 							style={{
-								border: "1px solid #334155",
+								border: `1px solid ${theme.divider}`,
 								borderRadius: "0.5rem",
 								padding: "1.5rem",
-								backgroundColor: "#1e293b",
+								backgroundColor: theme.paper,
 								flex: 1,
 								display: "flex",
 								flexDirection: "column",
 								marginTop: "1rem"
 							}}
 						>
-							<div style={{ marginBottom: "1rem", color: "#e2e8f0" }}>
-								<strong style={{ color: "#94a3b8" }}>{t("ui.store")}:</strong> {analyzedData.store}
+							<div style={{ marginBottom: "1rem", color: theme.text }}>
+								<strong style={{ color: theme.textSec }}>{t("ui.store")}:</strong> {analyzedData.store}
 							</div>
-							<div style={{ marginBottom: "1rem", color: "#e2e8f0" }}>
-								<strong style={{ color: "#94a3b8" }}>{t("ui.date")}:</strong> {new Date(analyzedData.date).toLocaleString("de-DE")}
+							<div style={{ marginBottom: "1rem", color: theme.text }}>
+								<strong style={{ color: theme.textSec }}>{t("ui.date")}:</strong> {new Date(analyzedData.date).toLocaleString("de-DE")}
 							</div>
 							<div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
 								<strong style={{ color: "#94a3b8" }}>{t("ui.items")}:</strong>

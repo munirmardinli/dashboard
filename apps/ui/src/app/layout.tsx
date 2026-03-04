@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -8,7 +8,6 @@ import Loading from "@/app/loading";
 import { initializeLanguageFromCookie, useI18nStore } from "@/stores/i18nStore";
 import { FontCampany } from "@/utils/font";
 import { getTheme } from "@/utils/theme";
-import { globalVars } from "@/utils/globalyVar";
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { isLoading } = useGlobalLoadingStore();
@@ -92,6 +91,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <main className="main-content">
           {children}
         </main>
+        <Footer />
         {isLoading && <Loading />}
         {snack.open && (
           <div style={{
@@ -181,4 +181,38 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </body>
     </html>
   );
+}
+
+const Footer = () => {
+  const { t } = useI18nStore();
+  const mode = useThemeStore((s) => s.mode);
+  const theme = getTheme(mode);
+  return (
+    <div>
+      <div style={{
+        marginTop: "auto",
+        padding: "40px 0",
+        color: theme.textSec,
+        fontSize: "0.875rem",
+        borderTop: `1px solid ${theme.divider}`,
+        width: "100%",
+        textAlign: "center"
+      }}>
+        <p>{t("ui.footer")}</p>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
+  )
 }

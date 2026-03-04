@@ -194,9 +194,9 @@ export default function DashyPage() {
       `}} />
 			<div style={{
 				minHeight: '100vh',
-				background: theme.gradient,
+				background: theme.bg,
 				color: theme.text,
-				fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, sans-serif",
+				fontFamily: theme.fontFamily,
 				padding: 0,
 				margin: 0,
 				position: 'relative',
@@ -217,16 +217,14 @@ export default function DashyPage() {
 						<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
 							<Link href="/" style={{ textDecoration: 'none', cursor: 'pointer' }}>
 								<h1 className="dashy-title" style={{
-									fontSize: '36px',
+									fontSize: theme.fontSizeHero,
 									fontWeight: '800',
 									margin: 0,
 									letterSpacing: '-0.04em',
-									background: mode === 'dark'
-										? `linear-gradient(135deg, ${theme.text} 0%, ${theme.textSec} 100%)`
-										: `linear-gradient(135deg, ${theme.text} 0%, ${theme.textSec} 100%)`,
+									background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
 									WebkitBackgroundClip: 'text',
 									WebkitTextFillColor: 'transparent',
-									lineHeight: '1.1',
+									lineHeight: '1.2',
 									transition: 'opacity 0.2s'
 								}}
 									onMouseEnter={(e) => {
@@ -644,19 +642,6 @@ export default function DashyPage() {
 								</div>
 							);
 						})}
-					</div>
-
-					<div style={{
-						marginTop: '60px',
-						padding: '30px 20px',
-						borderTop: `1px solid ${theme.divider}`,
-						textAlign: 'center',
-						fontSize: '13px',
-						color: theme.textSec,
-						letterSpacing: '0.01em',
-						fontWeight: '400'
-					}}>
-						{data.footer?.text}
 					</div>
 				</div>
 			</div>

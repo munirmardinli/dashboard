@@ -1,6 +1,7 @@
-"use client"
 import { notFound, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { useThemeStore } from "@/stores/themeStore";
+import { getTheme } from "@/utils/theme";
 
 import { QueryTable } from "@/components/queryTable";
 import CreateMode from "@/components/mutationTable";
@@ -46,6 +47,8 @@ function QueryPageContent() {
 	const [isLoading, setIsLoading] = useState(true);
 	const isDesktop = useIsDesktop();
 	const { t } = useI18nStore();
+	const mode = useThemeStore((s) => s.mode);
+	const theme = getTheme(mode);
 
 	useEffect(() => {
 		if (view && titleMap[view]) {
@@ -79,8 +82,19 @@ function QueryPageContent() {
 	}
 
 	return (
-		<div style={{ flexGrow: 1, width: '100%' }} role="region">
+		<div style={{ flexGrow: 1, width: '100%', background: theme.bg, minHeight: '100vh', fontFamily: theme.fontFamily }} role="region">
 			<div style={{ maxWidth: '1280px', margin: '0 auto', padding: isDesktop ? '32px 16px' : '16px 8px' }}>
+				<h1 style={{
+					fontSize: theme.fontSizeHero,
+					fontWeight: "800",
+					marginBottom: "2rem",
+					background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
+					WebkitBackgroundClip: "text",
+					WebkitTextFillColor: "transparent",
+					lineHeight: "1.2"
+				}}>
+					{view && titleMap[view] ? titleMap[view] : "Management Dashboard"}
+				</h1>
 				<QueryTable dataType={view} />
 			</div>
 		</div>

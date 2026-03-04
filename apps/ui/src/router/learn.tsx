@@ -56,7 +56,7 @@ export default function RandomPie() {
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
-				background: mode === 'dark' ? "#0f172a" : "#f8fafc",
+				background: theme.bg,
 				color: theme.text
 			}}>
 				{t("ui.loading")}
@@ -113,8 +113,9 @@ export default function RandomPie() {
 			alignItems: "center",
 			justifyContent: "center",
 			padding: "20px",
-			fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+			fontFamily: theme.fontFamily,
 			position: "relative",
+			background: theme.bg,
 			overflow: "hidden",
 		}}>
 			<div style={{
@@ -155,9 +156,9 @@ export default function RandomPie() {
 			}}>
 				<h1 style={{
 					marginBottom: "3rem",
-					fontSize: "3rem",
+					fontSize: theme.fontSizeHero,
 					fontWeight: "900",
-					background: "linear-gradient(to right, #818cf8, #e879f9, #38bdf8)",
+					background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",
 					textAlign: "center",

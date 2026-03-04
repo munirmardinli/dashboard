@@ -45,7 +45,7 @@ export function useNavigation() {
 		fetchNavigation();
 	}, [fetchNavigation]);
 
-	const transformDocsToNavItem = useCallback((key: string, value: string | DocFolder, parentPath = ''): TranslationNavigationItem => {
+	const transformDocsToNavItem = useCallback((key: string, value: string | DocFolder, parentPath = ''): TranslationNavigationItem | null => {
 		const currentPath = parentPath ? `${parentPath}/${key}` : key;
 
 		if (typeof value === 'string') {
@@ -57,23 +57,31 @@ export function useNavigation() {
 			};
 		}
 
+		if (value.isArchive) return null;
+
 		const subItems: TranslationNavigationItem[] = [];
 
 		if (value.pages) {
 			Object.entries(value.pages).forEach(([pKey, pTitle]) => {
-				subItems.push({
-					key: `${currentPath}/${pKey}`,
-					title: pTitle,
-					icon: '📄',
-					path: `/?q=docs&p=${currentPath}/${pKey}`
-				});
+				const isArchived = value.pagesMeta?.[pKey]?.isArchive;
+				if (!isArchived) {
+					subItems.push({
+						key: `${currentPath}/${pKey}`,
+						title: pTitle,
+						icon: '📄',
+						path: `/?q=docs&p=${currentPath}/${pKey}`
+					});
+				}
 			});
 		}
 
 		Object.entries(value).forEach(([vKey, vValue]) => {
-			if (vKey === 'title' || vKey === 'pages') return;
-			subItems.push(transformDocsToNavItem(vKey, vValue as string | DocFolder, currentPath));
+			if (vKey === 'title' || vKey === 'pages' || vKey === 'isArchive' || vKey === 'pagesMeta') return;
+			const item = transformDocsToNavItem(vKey, vValue as string | DocFolder, currentPath);
+			if (item) subItems.push(item);
 		});
+
+		if (subItems.length === 0 && !value.pages) return null;
 
 		return {
 			key: currentPath,
@@ -110,7 +118,9 @@ export function useNavigation() {
 				title: t("ui.documentation"),
 				icon: '📚',
 				type: 'dropdown',
-				subItems: Object.entries(docsMeta).map(([key, value]) => transformDocsToNavItem(key, value))
+				subItems: Object.entries(docsMeta)
+					.map(([key, value]) => transformDocsToNavItem(key, value))
+					.filter((item): item is TranslationNavigationItem => item !== null)
 			};
 			items.push(docsRoot);
 		}

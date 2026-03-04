@@ -209,6 +209,12 @@ export default function DocPage() {
       .then(data => {
         if (data) {
           const parsed = matter(data);
+          if (parsed.data?.isArchive) {
+            setContent('');
+            setFrontmatter({});
+            setLoading(false);
+            return;
+          }
           setFrontmatter(parsed.data || {});
           let rawContent = parsed.content;
 
@@ -345,14 +351,20 @@ export default function DocPage() {
 
   return (
     <Suspense fallback={<div>{t("ui.applicationIsBeingReloaded")}</div>}>
-      <div className="markdown-container" style={{ color: theme.text }}>
+      <div className="markdown-container" style={{
+        color: theme.text,
+        maxWidth: '1000px',
+        margin: '0 auto',
+        padding: '40px 20px',
+        width: '100%'
+      }}>
         {frontmatter.title && (
           <div style={{ marginBottom: '2.5rem' }}>
             <h1 style={{
-              fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+              fontSize: theme.fontSizeHero,
               fontWeight: 800,
               marginBottom: '1.5rem',
-              background: 'linear-gradient(to right, #818cf8, #e879f9)',
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '-0.02em',

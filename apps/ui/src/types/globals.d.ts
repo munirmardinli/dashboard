@@ -784,12 +784,18 @@ declare global {
     shadowMd: string;
     shadowLg: string;
     shadowPrimary: string;
+    fontFamily: string;
+    fontSizeHero: string;
+    fontSizeH1: string;
+    fontSizeBody: string;
   }
 
   interface DocFolder {
     title: string;
+    isArchive?: boolean;
     pages?: Record<string, string>;
-    [key: string]: string | DocFolder | Record<string, string> | undefined;
+    pagesMeta?: Record<string, { isArchive?: boolean }>;
+    [key: string]: string | DocFolder | Record<string, string> | Record<string, { isArchive?: boolean }> | boolean | undefined;
   }
 
   type MetaData = Record<string, string | DocFolder>;

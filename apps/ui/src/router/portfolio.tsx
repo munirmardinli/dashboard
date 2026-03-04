@@ -45,7 +45,7 @@ export default function PortfolioPage() {
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
-				fontFamily: "system-ui, -apple-system, sans-serif",
+				fontFamily: theme.fontFamily,
 			}}>
 				{t("ui.loading")}
 			</div>
@@ -61,7 +61,7 @@ export default function PortfolioPage() {
 			minHeight: "100vh",
 			background: theme.bg,
 			color: theme.text,
-			fontFamily: "system-ui, -apple-system, sans-serif",
+			fontFamily: theme.fontFamily,
 			scrollBehavior: "smooth"
 		}}>
 			<nav style={{
@@ -106,7 +106,7 @@ export default function PortfolioPage() {
 				alignItems: "center",
 				textAlign: "center",
 				padding: "40px 20px",
-				background: `radial-gradient(circle at 50% 40%, ${theme.primary}15 0%, transparent 70%)`
+				background: theme.bg
 			}}>
 				<div style={{
 					position: "relative",
@@ -139,11 +139,11 @@ export default function PortfolioPage() {
 				</span>
 
 				<h1 style={{
-					fontSize: "4rem",
+					fontSize: theme.fontSizeHero,
 					fontWeight: 800,
 					marginBottom: "20px",
 					lineHeight: 1.1,
-					background: `linear-gradient(135deg, ${theme.text} 0%, ${theme.primary} 100%)`,
+					background: "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
 					WebkitBackgroundClip: "text",
 					WebkitTextFillColor: "transparent",
 					letterSpacing: "-0.03em"
