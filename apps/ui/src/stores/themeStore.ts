@@ -1,9 +1,10 @@
 "use client";
 import { create } from "zustand";
 import { applyTheme } from "@/utils/theme";
+import { globalVars } from "@/utils/globalyVar";
 
-const COOKIE_NAME = "themeMode";
-const RTL_COOKIE_NAME = "isRTL";
+const COOKIE_NAME = globalVars.COOKIE_NAME;
+const RTL_COOKIE_NAME = globalVars.RTL_COOKIE_NAME;
 const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 const DEFAULT_THEME: ThemeMode = (process.env.NEXT_PUBLIC_DEFAULT_THEME_MODE as ThemeMode) || 'light';
 

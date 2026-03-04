@@ -38,13 +38,14 @@ const titleMap: Record<string, string> = {
 
 function QueryPageContent() {
 	const searchParams = useSearchParams();
-	const view = searchParams?.get("view");
+	const q = searchParams?.get("q");
+	const view = searchParams?.get("view") || (q !== 'q' ? q : null);
 	const create = searchParams?.get("create");
 	const id = searchParams?.get("id");
 	const [validDataTypes, setValidDataTypes] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const isDesktop = useIsDesktop();
-		const { t } = useI18nStore();
+	const { t } = useI18nStore();
 
 	useEffect(() => {
 		if (view && titleMap[view]) {

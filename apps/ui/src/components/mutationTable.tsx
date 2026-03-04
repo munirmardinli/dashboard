@@ -177,9 +177,13 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     }
   }, [dataType]);
 
-  const getLabel = useCallback((key: string, mode: 'create' | 'update' = isEdit ? 'update' : 'create') => {
-    return (translations.dataTypes?.[dataType]?.[mode] as FormField[])?.find(f => f.key === key)?.label || '';
-  }, [dataType, translations.dataTypes, isEdit]);
+  const getLabel = useCallback(
+    (key: string, mode: FormMode = isEdit ? "update" : "create") => {
+      return (translations.dataTypes?.[dataType]?.[mode] as FormField[])
+        ?.find(f => f.key === key)?.label || '';
+    },
+    [dataType, translations.dataTypes, isEdit]
+  );
 
   const handleSave = async () => {
     if (isSavingRef.current) return;
@@ -208,7 +212,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           try { useSoundStore.getState().playEvent("create"); } catch { }
         }
         setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
-        router.push(`/q?view=${dataType}`);
+        router.push(`/?q=${dataType}`);
       } else {
         const processed: Record<string, unknown> = { ...formData };
         (isEdit ? config!.update : config!.create).forEach(f => {
@@ -239,7 +243,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         }
         setItems(await DataAPI.getItems(dataType));
         setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
-        router.push(`/q?view=${dataType}`);
+        router.push(`/?q=${dataType}`);
       }
     } catch (e) { setSnack(String(e), 'error'); } finally { isSavingRef.current = false; setIsSaving(false); }
   };
@@ -251,7 +255,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         await DashyAPI.deleteItem(dashySectionId, dashyItemIndex);
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }
-        router.push(`/q?view=${dataType}`);
+        router.push(`/?q=${dataType}`);
       } catch (e) { setSnack(String(e), 'error'); }
     } else {
       if (!isEdit || !queryId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
@@ -260,7 +264,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         setItems(await DataAPI.getItems(dataType));
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }
-        router.push(`/q?view=${dataType}`);
+        router.push(`/?q=${dataType}`);
       } catch (e) { setSnack(String(e), 'error'); }
     }
   };

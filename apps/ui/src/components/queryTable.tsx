@@ -136,10 +136,10 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     if (dataType === 'dashy') {
       const item = allItems.find(i => i.id === id) as DashyItemWithMeta | undefined;
       if (item) {
-        startTransition(() => router.push(`/q?view=${dataType}&id=${id}&sectionId=${item.sectionId}&itemIndex=${item.itemIndex}`));
+        startTransition(() => router.push(`/?q=${dataType}&id=${id}&sectionId=${item.sectionId}&itemIndex=${item.itemIndex}`));
       }
     } else {
-      startTransition(() => router.push(`/q?view=${dataType}&id=${id}`));
+      startTransition(() => router.push(`/?q=${dataType}&id=${id}`));
     }
   };
 
@@ -222,7 +222,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             {isDesktop && <span style={{ fontSize: '0.8rem', color: theme.textSec, border: `1px solid ${theme.divider}`, borderRadius: '4px', padding: '4px 8px', background: theme.bg }}>⌘J</span>}
           </div>
           <button
-            onClick={() => startTransition(() => router.push(`/q?view=${dataType}&create=true`))}
+            onClick={() => startTransition(() => router.push(`/?q=${dataType}&create=true`))}
             title={t("ui.tooltipAddNewItem")}
             style={{
               display: 'flex', alignItems: 'center', gap: isDesktop ? '10px' : '6px', padding: isDesktop ? '12px 28px' : '10px 20px', borderRadius: isDesktop ? '8px' : '6px', border: 'none',

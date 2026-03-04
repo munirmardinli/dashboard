@@ -1,4 +1,4 @@
-import { API_URL } from "@/utils/env";
+import { globalVars } from './globalyVar';
 
 async function fetchAPI<T>(
 	endpoint: string,
@@ -7,8 +7,8 @@ async function fetchAPI<T>(
 	try {
 
 		const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-		const url = API_URL
-			? `${API_URL.replace(/\/$/, '')}${normalizedEndpoint}`
+		const url = globalVars.API_URL
+			? `${globalVars.API_URL.replace(/\/$/, '')}${normalizedEndpoint}`
 			: normalizedEndpoint;
 
 		const response = await fetch(url, {
@@ -184,7 +184,7 @@ export const DocsAPI = {
 
 	async getContent(path: string): Promise<string | null> {
 		try {
-			const response = await fetch(`${API_URL}/api/docs/content?p=${path}`);
+			const response = await fetch(`${globalVars.API_URL}/api/docs/content?p=${path}`);
 			if (!response.ok) return null;
 			return await response.text();
 		} catch {

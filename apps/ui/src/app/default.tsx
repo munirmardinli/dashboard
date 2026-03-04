@@ -7,7 +7,6 @@ import {
   Menu, ChevronUp, ChevronDown, Globe, Settings, Shield, Cookie, Palette, X
 } from 'lucide-react';
 
-import { ConfigAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
 import { useSnackStore } from '@/stores/snackbarStore';
 import { useSoundStore } from '@/stores/soundStore';
@@ -16,6 +15,7 @@ import { useSidebarStore, initializeSidebarFromCookie } from '@/stores/sidebarSt
 import Loading from '@/app/loading';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
+import { useNavigation } from '@/hooks/useNavigation';
 
 const DRAWER_WIDTH = 280;
 
@@ -24,7 +24,7 @@ const NavigationContent = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isDesktop = useIsDesktop();
-  const [navigationConfig, setNavigationConfig] = useState<NavigationConfig | null>(null);
+  const { navigationItems, handleNavigation } = useNavigation();
   const { isOpen: mobileDrawerOpen, setIsOpen: setMobileDrawerOpen, toggleSidebar, setActivePath } = useSidebarStore();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
@@ -51,15 +51,6 @@ const NavigationContent = () => {
   }, [translations]);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        startTransition(async () => {
-          const nav = await ConfigAPI.getNavigationConfig();
-          if (nav?.mainItems?.length && nav.mainItems.length > 0) setNavigationConfig(nav);
-        });
-      } catch (error) { console.error(t("ui.noData"), error); }
-    };
-    load();
     initializeSidebarFromCookie();
   }, []);
 
@@ -69,12 +60,6 @@ const NavigationContent = () => {
     }, 0);
     return () => clearTimeout(timer);
   }, [translations, language, loadTranslations]);
-
-  const handleNavigation = useCallback((path: string) => {
-    startTransition(() => router.push(path));
-    setActivePath(path);
-    if (!isDesktop) setMobileDrawerOpen(false);
-  }, [router, isDesktop, setMobileDrawerOpen, setActivePath]);
 
   const handleExpandToggle = useCallback((key: string) => {
     setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
@@ -114,7 +99,7 @@ const NavigationContent = () => {
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {navigationConfig?.mainItems?.map((item) => {
+            {navigationItems.map((item) => {
               const renderNavItem = (navItem: TranslationNavigationItem, depth: number) => {
                 const isDropdown = navItem.type === 'dropdown';
                 const isExpanded = expandedItems[navItem.key];

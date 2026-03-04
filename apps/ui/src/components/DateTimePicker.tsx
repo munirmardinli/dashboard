@@ -5,10 +5,10 @@ import { ChevronLeft, ChevronRight, Check, X, Calendar } from "lucide-react";
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
+import { globalVars } from "@/utils/globalyVar";
 
 const getDigitMap = (language: string): Record<string, string> => {
-	return language === 'ar' ? { '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤', '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩' }
-		: { '0': '0', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9' };
+	return globalVars.DIGIT_MAP[language] || globalVars.DIGIT_MAP.default;
 };
 
 const formatNumber = (num: number, language: string): string => {

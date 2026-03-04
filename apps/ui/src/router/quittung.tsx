@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Upload, Image as ImageIcon, Loader2, Check, X } from "lucide-react";
-import { API_URL } from "@/utils/env";
 import { useI18nStore } from "@/stores/i18nStore";
 
 export default function QuittungPage() {
@@ -23,7 +22,7 @@ export default function QuittungPage() {
 
 	async function fetchExpenses() {
 		try {
-			const response = await fetch(`${API_URL}/api/data/expense`);
+			const response = await fetch(`${globalVars.API_URL}/api/data/expense`);
 			if (response.ok) {
 				const data = await response.json();
 				setExpenses(data.filter((exp: ExpenseData) => !exp.isArchive));
@@ -56,7 +55,7 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const response = await fetch(`${API_URL}/api/receipt/analyze`, {
+			const response = await fetch(`${globalVars.API_URL}/api/receipt/analyze`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -86,7 +85,7 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const response = await fetch(`${API_URL}/api/data/expense`, {
+			const response = await fetch(`${globalVars.API_URL}/api/data/expense`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -20,7 +20,6 @@ import { useSnackStore } from "@/stores/snackbarStore";
 import { DocsAPI, PortfolioAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
 import Image from 'next/image';
-import { API_URL } from '@/utils/env';
 
 function CodeBlock({ children, className, node, ...props }: {
   children: ReactNode;
@@ -857,7 +856,7 @@ export default function DocPage() {
               let finalSrc: string = src;
               if (src.includes('assets/images/')) {
                 const filename = src.split('assets/images/').pop();
-                finalSrc = `${API_URL}/api/docs/assets/images?p=${filename}`;
+                finalSrc = `${globalVars.API_URL}/api/docs/assets/images?p=${filename}`;
               }
               return (
                 <img
@@ -880,7 +879,7 @@ export default function DocPage() {
               let finalHref = href;
               if (href.includes('assets/pdf/')) {
                 const filename = href.split('assets/pdf/').pop();
-                finalHref = `${API_URL}/api/docs/assets/pdf?p=${filename}`;
+                finalHref = `${globalVars.API_URL}/api/docs/assets/pdf?p=${filename}`;
               }
               return (
                 <a

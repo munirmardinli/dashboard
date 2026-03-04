@@ -976,6 +976,16 @@ declare global {
   interface MarkdownLiProps extends React.LiHTMLAttributes<HTMLLIElement> {
     checked?: boolean;
   }
+  var globalVars: {
+    API_URL: string,
+    PATHS: Record<string, string>,
+    DOCS_PATH: string,
+    COOKIE_NAME: string,
+    RTL_COOKIE_NAME: string,
+    DIGIT_MAP: Record<string, Record<string, string>>,
+    DEFAULT_VIEW: string,
+  }
+  type FormMode = "create" | "update";
 }
 
 export { };

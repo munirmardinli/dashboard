@@ -8,6 +8,7 @@ import Loading from "@/app/loading";
 import { initializeLanguageFromCookie, useI18nStore } from "@/stores/i18nStore";
 import { FontCampany } from "@/utils/font";
 import { getTheme } from "@/utils/theme";
+import { globalVars } from "@/utils/globalyVar";
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { isLoading } = useGlobalLoadingStore();
