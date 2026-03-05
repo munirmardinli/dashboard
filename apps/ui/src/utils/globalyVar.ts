@@ -1,5 +1,5 @@
 export const globalVars = {
-	DEFAULT_VIEW: "dashy",
+	DEFAULT_VIEW: "/?q=dashy",
 	API_URL: process.env.NEXT_PUBLIC_API_URL ??
 		(process.env.NODE_ENV === "production"
 			? ""

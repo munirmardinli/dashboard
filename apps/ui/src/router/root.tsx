@@ -9,6 +9,8 @@ import { useSidebarStore } from "@/stores/sidebarStore";
 import { getTheme } from "@/utils/theme";
 import { useI18nStore } from "@/stores/i18nStore";
 import { ConfigAPI } from "@/utils/api";
+import { globalVars } from "@/utils/globalyVar";
+
 
 export default function Root() {
 	const mode = useThemeStore((state) => state.mode);
@@ -21,9 +23,7 @@ export default function Root() {
 	const { t } = useI18nStore();
 
 	useEffect(() => {
-		if (activePath) {
-			setDashboardUrl(activePath);
-		}
+		setDashboardUrl(activePath || globalVars.DEFAULT_VIEW);
 	}, [activePath]);
 
 	useEffect(() => {
