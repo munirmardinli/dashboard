@@ -16,7 +16,7 @@ export default function NotFound() {
       minHeight: "100vh",
       background: theme.bg,
       color: theme.text,
-      fontFamily: "system-ui, -apple-system, sans-serif",
+      fontFamily: theme.fontFamily,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",

@@ -6,8 +6,15 @@ import { useSoundStore } from "@/stores/soundStore";
 import { initializeThemeFromCookie, useThemeStore } from "@/stores/themeStore";
 import Loading from "@/app/loading";
 import { initializeLanguageFromCookie, useI18nStore } from "@/stores/i18nStore";
-import { FontCampany } from "@/utils/font";
 import { getTheme } from "@/utils/theme";
+import { Roboto_Condensed } from "next/font/google";
+
+const robotoCondensed = Roboto_Condensed({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
+  variable: "--font-roboto-condensed",
+});
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { isLoading } = useGlobalLoadingStore();
@@ -77,7 +84,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   }, [direction, language, theme]);
 
   return (
-    <html lang={language} suppressHydrationWarning dir={direction} className={FontCampany.className}>
+    <html lang={language} suppressHydrationWarning dir={direction} className={robotoCondensed.variable}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
