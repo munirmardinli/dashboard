@@ -175,7 +175,18 @@ export const Navigation: FC = () => {
                 return (
                   <li key={`${depth}-${itemIndex}`} style={{ marginBottom: '2px' }}>
                     <div
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isDropdown ? isExpanded : undefined}
+                      aria-current={isSelected ? 'page' : undefined}
                       onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path, navItem.type as 'doc' | 'data' | 'nav')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (isDropdown) handleExpandToggle(navItem.key);
+                          else if (navItem.path) handleNavigation(navItem.path, navItem.type as 'doc' | 'data' | 'nav');
+                        }
+                      }}
                       style={{
                         display: 'flex', alignItems: 'center', padding: `8px 16px 8px ${paddingLeft}`,
                         borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s ease-in-out',
@@ -223,7 +234,16 @@ export const Navigation: FC = () => {
       </div>
       <div style={{ padding: '16px' }}>
         <div
+          role="button"
+          tabIndex={0}
+          aria-label={t("settings.title")}
           onClick={() => setSettingsOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setSettingsOpen(true);
+            }
+          }}
           style={{
             display: 'flex', alignItems: 'center', padding: '12px 16px', borderRadius: '16px',
             cursor: 'pointer', color: theme.textSec, transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',

@@ -74,6 +74,7 @@ export default function Root() {
 
 					<div
 						role="link"
+						aria-label={t("ui.openDashboard")}
 						onClick={() => router.push(dashboardUrl)}
 						onKeyDown={(e) => e.key === "Enter" && router.push(dashboardUrl)}
 						tabIndex={0}
@@ -114,7 +115,7 @@ export default function Root() {
 					marginBottom: "80px"
 				}}>
 					{onboardingFeatures.map((feature: OnboardingFeature, index: number) => (
-						<div key={index} tabIndex={0} onClick={() => router.push(feature.link)} style={{ textDecoration: 'none' }} role="link" onKeyDown={(e) => e.key === "Enter" && router.push(feature.link)}>
+						<div key={index} tabIndex={0} onClick={() => router.push(feature.link)} style={{ textDecoration: 'none' }} role="link" aria-label={feature.title} onKeyDown={(e) => e.key === "Enter" && router.push(feature.link)}>
 							<div style={{
 								background: theme.paper,
 								padding: "32px",

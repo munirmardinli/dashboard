@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Suspense, useEffect, useState } from 'react';
 import { DashyAPI } from '@/utils/api';
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme, alpha } from '@/utils/theme';
@@ -32,6 +31,7 @@ import {
 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { useI18nStore } from '@/stores/i18nStore';
+import Loading from '../app/loading';
 
 export default function DashyPage() {
 	const mode = useThemeStore((state) => state.mode);
@@ -132,7 +132,7 @@ export default function DashyPage() {
 	) || [];
 
 	return (
-		<>
+		<Suspense fallback={<Loading />}>
 			<style dangerouslySetInnerHTML={{
 				__html: `        
         .dashy-card {
@@ -220,6 +220,7 @@ export default function DashyPage() {
 						}}>
 							<input
 								type="text"
+								aria-label={data.header.searchPlaceholder}
 								placeholder={data.header.searchPlaceholder}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
@@ -314,7 +315,17 @@ export default function DashyPage() {
 									}}
 								>
 									<div
+										role="button"
+										tabIndex={0}
+										aria-expanded={isExpanded}
+										aria-controls={`widget-content-${widget.id}`}
 										onClick={() => toggleSection(widget.id)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												toggleSection(widget.id);
+											}
+										}}
 										style={{
 											display: 'flex',
 											alignItems: 'center',
@@ -341,7 +352,7 @@ export default function DashyPage() {
 										</h4>
 									</div>
 									{isExpanded && (
-										<div style={{
+										<div id={`widget-content-${widget.id}`} style={{
 											paddingTop: '12px',
 											borderTop: `1px solid ${theme.divider}`
 										}}>
@@ -350,12 +361,13 @@ export default function DashyPage() {
 												gridTemplateColumns: 'repeat(3, 1fr)',
 												gap: '12px'
 											}}>
-												{Array.isArray(widget.data.items) && widget.data.items.map((item: any, idx: number) => (
+												{Array.isArray(widget.data.items) && widget.data.items.map((item, idx: number) => (
 													<a
 														key={idx}
 														href={item.url}
 														target="_blank"
 														rel="noopener noreferrer"
+														aria-label={`Öffne ${item.name} in neuem Tab`}
 														style={{
 															display: 'flex',
 															flexDirection: 'column',
@@ -477,7 +489,17 @@ export default function DashyPage() {
 									}}
 								>
 									<div
+										role="button"
+										tabIndex={0}
+										aria-expanded={isExpanded}
+										aria-controls={`section-content-${section.id}`}
 										onClick={() => toggleSection(section.id)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												toggleSection(section.id);
+											}
+										}}
 										style={{
 											display: 'flex',
 											alignItems: 'center',
@@ -504,7 +526,7 @@ export default function DashyPage() {
 										</h4>
 									</div>
 									{isExpanded && (
-										<div style={{
+										<div id={`section-content-${section.id}`} style={{
 											paddingTop: '12px',
 											borderTop: `1px solid ${theme.divider}`
 										}}>
@@ -519,6 +541,7 @@ export default function DashyPage() {
 														href={item.url}
 														target="_blank"
 														rel="noopener noreferrer"
+														aria-label={`Öffne ${item.name} in neuem Tab`}
 														style={{
 															display: 'flex',
 															flexDirection: 'column',
@@ -620,6 +643,6 @@ export default function DashyPage() {
 					</div>
 				</div>
 			</div>
-		</>
+		</Suspense>
 	);
 }

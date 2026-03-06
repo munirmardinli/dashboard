@@ -549,7 +549,7 @@ export default function DocPage() {
               let isChecked = checked;
               if (typeof isChecked === 'undefined') {
                 const childrenArray = Array.isArray(children) ? children : [children];
-                const inputChild = childrenArray.find((child: any) =>
+                const inputChild = childrenArray.find((child) =>
                   child?.props?.type === 'checkbox' ||
                   (child?.props?.className?.includes('task-list-item-checkbox'))
                 );

@@ -115,7 +115,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
       const searchFields = config?.searchFields?.length ? config.searchFields : (allItems.length ? Object.keys(allItems[0]).filter(k => !['id', 'createdAt', 'updatedAt', 'isArchive'].includes(k)) : ['title', 'description', 'category']);
       items = items.filter(item => searchFields.some(field => searchInValue(getFieldValue(item, field), searchTerm)));
     }
-    items.sort((a: any, b: any) => {
+    items.sort((a, b) => {
       const aVal = a[sortField], bVal = b[sortField];
       if (aVal === bVal) return 0;
       if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
@@ -156,7 +156,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const isOverdue = (dueDate: string, isArchive: boolean) => dueDate && new Date(dueDate) < new Date() && !isArchive;
 
   const renderCellContent = (item: DataItem, field: DisplayField) => {
-    const value = (item as any)[field.key];
+    const value = (item)[field.key];
     if (!value) return null;
     if (field.type === 'date') return (
       <span style={{
