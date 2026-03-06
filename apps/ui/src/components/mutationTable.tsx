@@ -13,7 +13,6 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
-import { TinyMCEEditor } from "./TinyMCEEditor";
 
 export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const router = useRouter();
@@ -596,110 +595,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               background: "transparent",
             }}
           >
-            <TinyMCEEditor
-              value={formData[field.key] ?? ""}
-              onChange={(content) => handleInputChange(field.key, content)}
-              placeholder={placeholder}
-              apiKey={process.env.NEXT_PUBLIC_TINY_MCE_API_KEY!}
-              init={{
-                language: "de",
-                branding: false,
-                menubar: false,
-                statusbar: false,
-                height: 350,
-                plugins: [
-                  "link",
-                  "lists",
-                  "table",
-                  "code",
-                  "autoresize",
-                  "checklist",
-                  "autosave",
-                  "codesample",
-                  "directionality",
-                  "help"
-                ],
-                toolbar:
-                  "undo redo | bold italic underline strikethrough | " +
-                  "subscript superscript | numlist bullist checklist | " +
-                  "alignleft aligncenter alignright alignjustify | " +
-                  "blockquote | link table | codesample | " +
-                  "ltr rtl | code | help",
-                style_formats: [
-                  { title: "Absatz", block: "p" },
-                  { title: "Überschrift 1", block: "h1" },
-                  { title: "Überschrift 2", block: "h2" },
-                  { title: "Überschrift 3", block: "h3" },
-                ],
-
-                block_formats:
-                  "Absatz=p; Überschrift 1=h1; Überschrift 2=h2; Überschrift 3=h3",
-                skin: mode === "dark" ? "oxide-dark" : "oxide",
-                content_css: mode === "dark" ? "dark" : "",
-                content_style:
-                  `
-                  body {
-                    background: ${theme.paper};
-                    color: ${theme.text};
-                    font-family: Inter, sans-serif;
-                    font-size: 14px;
-                  }
-                  p, h1, h2, h3, span, td, th, div {
-                    color: ${theme.text};
-                  }
-                  a { color: ${theme.primary}; }
-                  table, td, th {
-                    border-color: ${theme.divider} !important;
-                  }
-                  `,
-                setup: (editor) => {
-                  editor.on("init", () => {
-                    const container = editor.getContainer() as HTMLElement | null;
-                    if (container) {
-                      container.style.border = 'none';
-                    }
-
-                    const editorHeader = editor.getContainer().querySelector(".tox-editor-header") as HTMLElement | null;
-                    if (editorHeader) {
-                      editorHeader.style.background = theme.paper;
-                      editorHeader.style.backgroundColor = theme.paper;
-                      editorHeader.style.borderColor = theme.divider;
-                    }
-
-                    const menubar = editor.getContainer().querySelector(".tox-menubar") as HTMLElement | null;
-                    if (menubar) {
-                      menubar.style.background = theme.paper;
-                    }
-
-                    const toolbarContainer = editor.getContainer().querySelector(".tox-toolbar-overlord") as HTMLElement | null;
-                    if (toolbarContainer) {
-                      toolbarContainer.style.background = theme.paper;
-                    }
-
-                    const toolbar = editor.getContainer().querySelector(".tox-toolbar") as HTMLElement | null;
-                    if (toolbar) {
-                      toolbar.style.background = theme.paper;
-                      toolbar.style.borderColor = theme.divider;
-                    }
-
-                    const toolbarPrimary = editor.getContainer().querySelector(".tox-toolbar__primary") as HTMLElement | null;
-                    if (toolbarPrimary) {
-                      toolbarPrimary.style.background = 'transparent';
-                      toolbarPrimary.style.backgroundColor = 'transparent';
-                      toolbarPrimary.style.backgroundImage = 'none';
-                    }
-
-                    const editArea = editor.getContainer().querySelector(".tox-edit-area") as HTMLElement | null;
-                    if (editArea) {
-                      editArea.style.background = theme.paper;
-                      editArea.style.borderColor = theme.divider;
-                    }
-                    const iframe = editor.iframeElement as HTMLIFrameElement | null;
-                    if (iframe) iframe.style.background = theme.paper;
-                  });
-                },
-              }}
-            />
           </div>
           {error ? (
             <p style={helperTextStyle}>{error}</p>

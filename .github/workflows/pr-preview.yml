@@ -49,8 +49,6 @@ jobs:
 
       - name: Setup environment files
         uses: ./.github/actions/setup-env
-        with:
-          tiny-mce-api-key: ${{ secrets.NEXT_PUBLIC_TINY_MCE_API_KEY }}
 
       - name: Build application
         id: build

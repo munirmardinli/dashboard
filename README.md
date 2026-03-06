@@ -30,6 +30,7 @@ dashboard/
 ## 🚀 Technology Stack
 
 ### Frontend (UI)
+
 - **Framework**: Next.js 16.0.3 with webpack
 - **React**: 19.2.0
 - **TypeScript**: v5
@@ -38,12 +39,14 @@ dashboard/
 - **Build Tool**: Webpack (custom configuration)
 
 ### Backend (API)
+
 - **Runtime**: Node.js with TypeScript
 - **Package Type**: ESM modules
 - **Tools**: tsx for development
 - **Libraries**: iCal Generator for calendar integration
 
 ### Development Tools
+
 - **Monorepo**: Turborepo 2.6.1
 - **Package Manager**: npm 11.6.3
 - **Node Version**: >=18.0.0
@@ -80,6 +83,7 @@ dashboard/
 ## 🛠️ Available Scripts
 
 ### Root Level (Turborepo)
+
 ```bash
 # Start all development servers
 npm run dev
@@ -95,6 +99,7 @@ npm run type-check
 ```
 
 ### UI Application (`apps/ui`)
+
 ```bash
 # Development server with webpack
 cd apps/ui
@@ -111,6 +116,7 @@ npm run type-check
 ```
 
 ### API Server (`apps/api`)
+
 ```bash
 # Development server with tsx watch
 cd apps/api
@@ -129,6 +135,7 @@ npm run type-check
 ## 📁 Project Structure
 
 ### UI Application (`apps/ui`)
+
 ```
 apps/ui/
 ├── src/
@@ -146,6 +153,7 @@ apps/ui/
 ```
 
 ### API Server (`apps/api`)
+
 ```
 apps/api/
 ├── src/
@@ -161,10 +169,10 @@ apps/api/
 ### Environment Variables
 
 #### UI Application (`.env.local`)
+
 ```bash
 # API Base URL
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4012
-NEXT_PUBLIC_TINY_MCE_API_KEY=your_tiny_mce_api_key_here
 NEXT_PUBLIC_DEFAULT_LANGUAGE=de
 NEXT_PUBLIC_DEFAULT_THEME_MODE=dark
 NEXT_PUBLIC_ACTIVE_SOUND=true
@@ -172,6 +180,7 @@ TZ=Europe/Berlin
 ```
 
 #### API Server (`.env`)
+
 ```bash
 # Server configuration
 PORT=4012
@@ -183,6 +192,7 @@ GEMINI_MODEL=
 ```
 
 ### Turborepo Configuration
+
 The project uses Turborepo for efficient task orchestration across workspaces. See `turbo.json` for pipeline configuration.
 
 ## 🚀 Deployment
@@ -203,6 +213,7 @@ docker-compose down
 ```
 
 ### Vercel (UI)
+
 The UI application is optimized for Vercel deployment:
 
 ```bash
@@ -217,6 +228,7 @@ vercel
 ### Manual Deployment
 
 #### UI Application
+
 ```bash
 cd apps/ui
 npm run build
@@ -224,6 +236,7 @@ npm start
 ```
 
 #### API Server
+
 ```bash
 cd apps/api
 npm run build
@@ -233,6 +246,7 @@ npm start
 ## 🐳 Docker Configuration
 
 The project includes Docker Compose configuration with:
+
 - Resource limits
 - Health monitoring
 - Automatic container recreation (Watchtower)
@@ -242,20 +256,26 @@ See `compose.yml` for complete configuration.
 ## Key Features Explained
 
 ### Menu Management System
+
 The application provides a comprehensive menu management interface with:
+
 - Category-based organization (appetizers, mains, drinks, etc.)
 - Item-level details (title, description, price, allergens)
 - Dynamic data fetching with type-safe hooks
 
 ### Type-Safe Data Fetching
+
 Custom `useFetch` hook with:
+
 - Full TypeScript type safety
 - Automatic error handling
 - Loading states
 - Integration with Zustand stores
 
 ### State Management
+
 Centralized state management using Zustand:
+
 - Menu data store
 - Loading states
 - UI interaction states
@@ -275,6 +295,7 @@ Centralized state management using Zustand:
 5. Open a Pull Request
 
 ### Development Guidelines
+
 - Use TypeScript for all new code
 - Follow existing code structure and patterns
 - Write meaningful commit messages
@@ -288,12 +309,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Munir Mardinli**
+
 - GitHub: [@munirmardinli](https://github.com/munirmardinli)
 - Project: [Dashboard Management System](https://github.com/munirmardinli/dashboard)
 
 ## 🆘 Support
 
 For questions or issues:
+
 - Open an issue in the [GitHub repository](https://github.com/munirmardinli/dashboard/issues)
 - Check the [Next.js Documentation](https://nextjs.org/docs)
 - Review the [React Documentation](https://react.dev/)
@@ -301,6 +324,7 @@ For questions or issues:
 ## 🔄 Changelog
 
 ### v0.1.0
+
 - Initial release with monorepo structure
 - Next.js 16 UI application
 - Node.js API server

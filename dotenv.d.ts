@@ -6,11 +6,6 @@ declare namespace NodeJS {
 			*/
 		NEXT_PUBLIC_API_URL: string;
 		/**
-			* The TinyMCE API key
-			* @example 1234567890
-			*/
-		NEXT_PUBLIC_TINY_MCE_API_KEY: string;
-		/**
 			* The port where the API server runs
 			* @example 4012
 			*/

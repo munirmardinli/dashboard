@@ -102,14 +102,21 @@ export const Navigation: FC = () => {
 
                 let displayTitle = navItem.title;
                 if (!navItem.key.startsWith('docs')) {
+                  const basename = navItem.key.split('/').pop() || navItem.key;
                   const navTranslations = Array.isArray(translations.navigation) ? translations.navigation : [];
-                  const translationObj = navTranslations.find((n: any) => n.key === navItem.key);
+                  const translationObj = navTranslations.find((n: { key: string; title: string }) => n.key === navItem.key || n.key === basename);
+
                   if (translationObj && translationObj.title) {
                     displayTitle = translationObj.title;
                   } else {
-                    const simpleT = t(`navigation.${navItem.key}`);
-                    if (simpleT !== `navigation.${navItem.key}`) {
+                    const simpleT = t(`navigation.${basename}`);
+                    if (simpleT !== `navigation.${basename}`) {
                       displayTitle = simpleT;
+                    } else {
+                      const fullT = t(`navigation.${navItem.key}`);
+                      if (fullT !== `navigation.${navItem.key}`) {
+                        displayTitle = fullT;
+                      }
                     }
                   }
                 }
@@ -117,7 +124,7 @@ export const Navigation: FC = () => {
                 return (
                   <li key={`${depth}-${itemIndex}`} style={{ marginBottom: '4px' }}>
                     <div
-                      onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path, navItem.type as any)}
+                      onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path, navItem.type as 'doc' | 'data' | 'nav')}
                       style={{
                         display: 'flex', alignItems: 'center', padding: `12px 16px 12px ${paddingLeft}`,
                         borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
