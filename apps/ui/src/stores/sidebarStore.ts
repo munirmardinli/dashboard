@@ -18,9 +18,15 @@ function setCookie(name: string, value: string): void {
 	document.cookie = `${name}=${value}; max-age=${COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
 }
 
+function formatPath(path: string | null | undefined): string | null {
+	if (!path) return null;
+	if (path.startsWith("/") || path.startsWith("?")) return path;
+	return `/?q=${path}`;
+}
+
 export const useSidebarStore = create<SidebarState>((set) => ({
 	isOpen: false,
-	activePath: typeof window !== "undefined" ? getCookie(PATH_COOKIE) || null : null,
+	activePath: typeof window !== "undefined" ? formatPath(getCookie(PATH_COOKIE)) : null,
 	setIsOpen: (value: boolean) => {
 		set({ isOpen: value });
 	},
@@ -28,15 +34,16 @@ export const useSidebarStore = create<SidebarState>((set) => ({
 		set((state) => ({ isOpen: !state.isOpen }));
 	},
 	setActivePath: (path: string) => {
-		setCookie(PATH_COOKIE, path);
-		set({ activePath: path });
+		const formattedPath = formatPath(path) || "/";
+		setCookie(PATH_COOKIE, formattedPath);
+		set({ activePath: formattedPath });
 	},
 }));
 
 export function initializeSidebarFromCookie(): void {
 	if (typeof window === "undefined") return;
 
-	const storedPath = getCookie(PATH_COOKIE);
+	const storedPath = formatPath(getCookie(PATH_COOKIE));
 	const currentState = useSidebarStore.getState();
 
 	if (storedPath && storedPath !== currentState.activePath) {

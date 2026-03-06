@@ -19,6 +19,7 @@ import { useSearchParams } from 'next/navigation';
 import { useSnackStore } from "@/stores/snackbarStore";
 import { DocsAPI, PortfolioAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
+import { globalVars } from '@/utils/globalyVar';
 import Image from 'next/image';
 
 function CodeBlock({ children, className, node, ...props }: {

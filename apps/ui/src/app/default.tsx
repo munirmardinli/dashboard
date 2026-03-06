@@ -61,8 +61,59 @@ export const Navigation: FC = () => {
   }, [translations, language, loadTranslations]);
 
   const handleExpandToggle = useCallback((key: string) => {
-    setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
+    setExpandedItems(prev => {
+      if (prev[key]) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      const next: Record<string, boolean> = {};
+      const parts = key.split('/');
+      let currentPath = '';
+      for (const part of parts) {
+        currentPath = currentPath ? `${currentPath}/${part}` : part;
+        next[currentPath] = true;
+      }
+      return next;
+    });
   }, []);
+
+  const { activePath } = useSidebarStore();
+
+  useEffect(() => {
+    let pathObjKey = '';
+    const currentView = searchParams?.get('view') || searchParams?.get('q');
+    const p = searchParams?.get('p');
+    if (searchParams?.get('q') === 'docs' && p) {
+      pathObjKey = `docs/${p}`;
+    } else if (currentView) {
+      pathObjKey = activePath || currentView;
+    } else if (pathname && pathname !== '/') {
+      pathObjKey = pathname.slice(1);
+    } else if (activePath) {
+      pathObjKey = activePath;
+    }
+
+    if (pathObjKey) {
+      setExpandedItems(prev => {
+        const next: Record<string, boolean> = {};
+        const parts = pathObjKey.split('/');
+        let currentPath = '';
+        let changed = false;
+
+        for (let i = 0; i < parts.length - 1; i++) {
+          currentPath = currentPath ? `${currentPath}/${parts[i]}` : parts[i];
+          if (!prev[currentPath]) changed = true;
+          next[currentPath] = true;
+        }
+
+        if (changed || Object.keys(prev).length !== Object.keys(next).length) {
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [searchParams, pathname, activePath]);
 
 
 
@@ -98,7 +149,7 @@ export const Navigation: FC = () => {
                   (navItem.path && (`${pathname}?${searchParams?.toString()}` === navItem.path || pathname === navItem.path)) ||
                   (!navItem.type && currentView === navItem.key)
                 );
-                const paddingLeft = depth === 0 ? '16px' : `${32 + (depth * 16)}px`;
+                const paddingLeft = `${16 + (depth * 14)}px`;
 
                 let displayTitle = navItem.title;
                 if (!navItem.key.startsWith('docs')) {
@@ -122,34 +173,40 @@ export const Navigation: FC = () => {
                 }
 
                 return (
-                  <li key={`${depth}-${itemIndex}`} style={{ marginBottom: '4px' }}>
+                  <li key={`${depth}-${itemIndex}`} style={{ marginBottom: '2px' }}>
                     <div
                       onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path, navItem.type as 'doc' | 'data' | 'nav')}
                       style={{
-                        display: 'flex', alignItems: 'center', padding: `12px 16px 12px ${paddingLeft}`,
-                        borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        background: isSelected ? `${theme.primary}1a` : 'transparent',
-                        color: isSelected ? theme.primary : theme.text,
-                        borderLeft: isSelected && depth === 0 ? `4px solid ${theme.primary}` : `4px solid transparent`,
+                        display: 'flex', alignItems: 'center', padding: `8px 16px 8px ${paddingLeft}`,
+                        borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s ease-in-out',
+                        background: isSelected ? `${theme.primary}20` : 'transparent',
+                        color: isSelected ? theme.primary : (depth === 0 ? theme.text : theme.textSec),
+                        fontWeight: isSelected ? 600 : (depth === 0 ? 500 : 400),
+                        borderLeft: isSelected ? `3px solid ${theme.primary}` : `3px solid transparent`,
+                        userSelect: 'none'
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
                           e.currentTarget.style.background = `${theme.text}08`;
-                          e.currentTarget.style.transform = 'translateX(4px)';
+                          e.currentTarget.style.color = theme.text;
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) {
                           e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.transform = 'translateX(0)';
+                          e.currentTarget.style.color = depth === 0 ? theme.text : theme.textSec;
                         }
                       }}
                     >
-                      {navItem.icon && <span style={{ marginRight: '16px', display: 'flex', fontSize: depth === 0 ? '1.2rem' : '1rem' }}>{navItem.icon}</span>}
-                      <span style={{ flex: 1, fontWeight: (isDropdown ? isExpanded : isSelected) ? 600 : (depth === 0 ? 500 : 400), fontSize: depth === 0 ? '1rem' : '0.875rem' }}>
+                      {navItem.icon && <span style={{ marginRight: '10px', display: 'flex', fontSize: depth === 0 ? '1.1rem' : '0.95rem' }}>{navItem.icon}</span>}
+                      <span style={{ flex: 1, fontSize: depth === 0 ? '0.95rem' : '0.875rem', lineHeight: '1.3' }}>
                         {displayTitle}
                       </span>
-                      {isDropdown && (isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                      {isDropdown && (
+                        <span style={{ opacity: 0.6 }}>
+                          {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        </span>
+                      )}
                     </div>
                     {isDropdown && isExpanded && (
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>

@@ -26,7 +26,4 @@ if (typeof globalThis !== 'undefined') {
 	(globalThis).globalVars = globalVars;
 }
 
-export function initGlobalVars() {
-	// No longer strictly needed but kept for compatibility
-
-}
+export function initGlobalVars() {}

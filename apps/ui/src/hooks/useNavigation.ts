@@ -24,7 +24,7 @@ export function useNavigation() {
 		}
 
 		startTransition(() => router.push(targetPath));
-		setActivePath(path);
+		setActivePath(targetPath);
 		if (!isDesktop) setMobileDrawerOpen(false);
 	}, [router, isDesktop, setMobileDrawerOpen, setActivePath]);
 
