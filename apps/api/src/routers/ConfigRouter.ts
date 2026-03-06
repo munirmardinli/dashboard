@@ -15,7 +15,7 @@ export class ConfigRouter {
 		return [
 			{ method: "GET", path: /^\/api\/config$/, handler: this.get.bind(this) },
 			{ method: "GET", path: /^\/api\/config\/translations\/(?<language>[a-z]{2})$/, handler: this.getTranslations.bind(this) },
-			{ method: "GET", path: /^\/api\/config\/dataType\/(?<dataType>[a-zA-Z0-9-]+)$/, handler: this.getDataType.bind(this) },
+			{ method: "GET", path: /^\/api\/config\/dataType\/(?<dataType>[a-zA-Z0-9-/]+)$/, handler: this.getDataType.bind(this) },
 			{ method: "GET", path: /^\/api\/config\/navigation$/, handler: this.getNavigation.bind(this) },
 			{ method: "GET", path: /^\/api\/config\/onboarding$/, handler: this.getOnboarding.bind(this) },
 		];

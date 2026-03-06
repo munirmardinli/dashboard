@@ -2,23 +2,26 @@
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { ConfigAPI, DocsAPI } from '@/utils/api';
-import { useI18nStore } from '@/stores/i18nStore';
+import { DocsAPI } from '@/utils/api';
 import { useSidebarStore } from '@/stores/sidebarStore';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 
 export function useNavigation() {
-	const [navigationConfig, setNavigationConfig] = useState<NavigationConfig | null>(null);
-	const [docsMeta, setDocsMeta] = useState<MetaData | null>(null);
+	const [unifiedMeta, setUnifiedMeta] = useState<MetaData | null>(null);
 	const [loading, setLoading] = useState(true);
-	const { t } = useI18nStore();
 	const router = useRouter();
 	const isDesktop = useIsDesktop();
 	const { setIsOpen: setMobileDrawerOpen, setActivePath } = useSidebarStore();
 	const [, startTransition] = useTransition();
 
-	const handleNavigation = useCallback((path: string) => {
-		const targetPath = path.startsWith('/') ? path : `/?q=${path}`;
+	const handleNavigation = useCallback((path: string, type: 'doc' | 'data' | 'nav' = 'nav') => {
+		let targetPath = '';
+		if (type === 'doc') {
+			const cleanPath = path.startsWith('docs/') ? path.slice(5) : path;
+			targetPath = `/?q=docs&p=${cleanPath}`;
+		} else {
+			targetPath = path.startsWith('/') ? path : `/?q=${path}`;
+		}
 
 		startTransition(() => router.push(targetPath));
 		setActivePath(path);
@@ -28,12 +31,8 @@ export function useNavigation() {
 	const fetchNavigation = useCallback(async () => {
 		setLoading(true);
 		try {
-			const [nav, docs] = await Promise.all([
-				ConfigAPI.getNavigationConfig(),
-				DocsAPI.getMeta()
-			]);
-			setNavigationConfig(nav);
-			setDocsMeta(docs);
+			const meta = await DocsAPI.getMeta();
+			setUnifiedMeta(meta);
 		} catch (error) {
 			console.error("Failed to fetch navigation data:", error);
 		} finally {
@@ -45,47 +44,48 @@ export function useNavigation() {
 		fetchNavigation();
 	}, [fetchNavigation]);
 
-	const transformDocsToNavItem = useCallback((key: string, value: string | DocFolder, parentPath = ''): TranslationNavigationItem | null => {
+	const transformMetaToNavItem = useCallback((key: string, value: MetaDataValue, parentPath = ''): TranslationNavigationItem | null => {
 		const currentPath = parentPath ? `${parentPath}/${key}` : key;
 
-		if (typeof value === 'string') {
+		if ('type' in value && (value.type === 'doc' || value.type === 'data')) {
+			const leaf = value as MetaDataLeaf;
 			return {
 				key: currentPath,
-				title: value,
-				icon: '',
-				path: `/?q=docs&p=${currentPath}`
+				title: leaf.title || key,
+				icon: leaf.type === 'doc' ? '' : '',
+				path: leaf.path || currentPath,
+				type: leaf.type
 			};
 		}
 
-		if (value.isArchive) return null;
-
 		const subItems: TranslationNavigationItem[] = [];
+		const folder = value as MetaDataFolder;
 
-		if (value.pages) {
-			Object.entries(value.pages).forEach(([pKey, pTitle]) => {
-				const isArchived = value.pagesMeta?.[pKey]?.isArchive;
-				if (!isArchived) {
-					subItems.push({
-						key: `${currentPath}/${pKey}`,
-						title: pTitle,
-						icon: '📄',
-						path: `/?q=docs&p=${currentPath}/${pKey}`
-					});
-				}
+		const sortedEntries = Object.entries(folder)
+			.filter(([vKey]) => vKey !== 'title' && vKey !== 'type' && vKey !== 'path')
+			.sort(([keyA, valA], [keyB, valB]) => {
+				const isFolderA = !('type' in (valA as object));
+				const isFolderB = !('type' in (valB as object));
+
+				if (isFolderA && !isFolderB) return -1;
+				if (!isFolderA && isFolderB) return 1;
+
+				const titleA = (isFolderA ? (valA as MetaDataFolder).title : (valA as MetaDataLeaf).title) || keyA;
+				const titleB = (isFolderB ? (valB as MetaDataFolder).title : (valB as MetaDataLeaf).title) || keyB;
+
+				return titleA.localeCompare(titleB);
 			});
-		}
 
-		Object.entries(value).forEach(([vKey, vValue]) => {
-			if (vKey === 'title' || vKey === 'pages' || vKey === 'isArchive' || vKey === 'pagesMeta') return;
-			const item = transformDocsToNavItem(vKey, vValue as string | DocFolder, currentPath);
+		sortedEntries.forEach(([vKey, vValue]) => {
+			const item = transformMetaToNavItem(vKey, vValue as MetaDataValue, currentPath);
 			if (item) subItems.push(item);
 		});
 
-		if (subItems.length === 0 && !value.pages) return null;
+		if (subItems.length === 0) return null;
 
 		return {
 			key: currentPath,
-			title: value.title || key,
+			title: folder.title || key,
 			icon: '',
 			type: 'dropdown',
 			subItems
@@ -93,40 +93,30 @@ export function useNavigation() {
 	}, []);
 
 	const unifiedNavigation = useCallback((): TranslationNavigationItem[] => {
-		const transformPath = (path: string | undefined): string | undefined => {
-			if (!path) return undefined;
-			return path.startsWith('/') ? path : `/?q=${path}`;
-		};
-
-		const transformItems = (items: TranslationNavigationItem[]): TranslationNavigationItem[] => {
-			return items.map(item => ({
-				...item,
-				path: transformPath(item.path),
-				subItems: item.subItems ? transformItems(item.subItems) : undefined
-			}));
-		};
-
 		const items: TranslationNavigationItem[] = [];
 
-		if (navigationConfig?.mainItems) {
-			items.push(...transformItems(navigationConfig.mainItems));
-		}
+		if (unifiedMeta) {
+			const sortedRoot = Object.entries(unifiedMeta).sort(([keyA, valA], [keyB, valB]) => {
+				const isFolderA = !('type' in (valA as object));
+				const isFolderB = !('type' in (valB as object));
 
-		if (docsMeta) {
-			const docsRoot: TranslationNavigationItem = {
-				key: 'docs-root',
-				title: t("ui.documentation"),
-				icon: '📚',
-				type: 'dropdown',
-				subItems: Object.entries(docsMeta)
-					.map(([key, value]) => transformDocsToNavItem(key, value))
-					.filter((item): item is TranslationNavigationItem => item !== null)
-			};
-			items.push(docsRoot);
+				if (isFolderA && !isFolderB) return -1;
+				if (!isFolderA && isFolderB) return 1;
+
+				const titleA = (isFolderA ? (valA as MetaDataFolder).title : (valA as MetaDataLeaf).title) || keyA;
+				const titleB = (isFolderB ? (valB as MetaDataFolder).title : (valB as MetaDataLeaf).title) || keyB;
+
+				return titleA.localeCompare(titleB);
+			});
+
+			sortedRoot.forEach(([key, value]) => {
+				const item = transformMetaToNavItem(key, value as MetaDataValue);
+				if (item) items.push(item);
+			});
 		}
 
 		return items;
-	}, [navigationConfig, docsMeta, transformDocsToNavItem, t]);
+	}, [unifiedMeta, transformMetaToNavItem]);
 
 	return {
 		navigationItems: unifiedNavigation(),

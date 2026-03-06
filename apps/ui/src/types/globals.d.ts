@@ -195,12 +195,37 @@ declare global {
   /**
    * Translation navigation item structure
    */
+  interface MetaDataLeaf {
+    title: string;
+    type: 'doc' | 'data';
+    path: string;
+  }
+
+  interface MetaDataFolder {
+    title: string;
+    [key: string]: string | MetaDataValue;
+  }
+
+  type MetaDataValue = MetaDataLeaf | MetaDataFolder;
+
+  type MetaData = Record<string, MetaDataValue>;
+
+  interface FolderItemProps {
+    title: string;
+    pages?: Record<string, string>;
+    parentKey: string;
+    theme: Theme;
+    currentPage: string;
+    nestedItems?: MetaData;
+  }
+
+  /** Navigation item structure */
   interface TranslationNavigationItem {
     key: string;
     title: string;
     icon: string;
     path?: string;
-    type?: "dropdown";
+    type?: "dropdown" | "doc" | "data";
     subItems?: TranslationNavigationItem[];
   }
 
@@ -802,24 +827,6 @@ declare global {
     brandGradient: string;
   }
 
-  interface DocFolder {
-    title: string;
-    isArchive?: boolean;
-    pages?: Record<string, string>;
-    pagesMeta?: Record<string, { isArchive?: boolean }>;
-    [key: string]: string | DocFolder | Record<string, string> | Record<string, { isArchive?: boolean }> | boolean | undefined;
-  }
-
-  type MetaData = Record<string, string | DocFolder>;
-
-  interface FolderItemProps {
-    title: string;
-    pages?: Record<string, string>;
-    parentKey: string;
-    theme: Theme;
-    currentPage: string;
-    nestedItems?: MetaData;
-  }
 
   /** Portfolio 
    *  

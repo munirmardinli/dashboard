@@ -10,7 +10,7 @@ export class RandomPieRouter {
 	}
 
 	async get(_req: IncomingMessage, res: ServerResponse): Promise<void> {
-		const { content } = await github.getFile("learn/randomPie.json");
+		const { content } = await github.getFile("learn/learn.json");
 		sendJSON(res, JSON.parse(content));
 	}
 }

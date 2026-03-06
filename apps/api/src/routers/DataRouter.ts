@@ -7,10 +7,10 @@ const dataService = new DataService();
 export class DataRouter {
 	getRoutes(): Route[] {
 		return [
-			{ method: "GET", path: /^\/api\/data\/(?<dataType>[^/]+)$/, handler: this.getAll.bind(this) },
-			{ method: "POST", path: /^\/api\/data\/(?<dataType>[^/]+)$/, handler: this.create.bind(this) },
-			{ method: "PUT", path: /^\/api\/data\/(?<dataType>[^/]+)\/(?<id>[^/]+)$/, handler: this.update.bind(this) },
-			{ method: "DELETE", path: /^\/api\/data\/(?<dataType>[^/]+)\/(?<id>[^/]+)$/, handler: this.archive.bind(this) },
+			{ method: "GET", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)$/, handler: this.getAll.bind(this) },
+			{ method: "POST", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)$/, handler: this.create.bind(this) },
+			{ method: "PUT", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)\/(?<id>[^/]+)$/, handler: this.update.bind(this) },
+			{ method: "DELETE", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)\/(?<id>[^/]+)$/, handler: this.archive.bind(this) },
 		];
 	}
 

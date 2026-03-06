@@ -64,20 +64,7 @@ export const Navigation: FC = () => {
     setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const getNavigationTitle = useCallback((key: string): string => {
-    if (!translations.navigation?.mainItems || !Array.isArray(translations.navigation.mainItems)) return '';
-    const findTitle = (items: TranslationNavigationItem[]): string | null => {
-      for (const item of items) {
-        if (item.key === key) return item.title;
-        if (item.subItems) {
-          const found = findTitle(item.subItems);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    return findTitle(translations.navigation.mainItems as TranslationNavigationItem[]) || '';
-  }, [translations.navigation]);
+
 
   const languageMenuItems = useMemo(() => [
     { code: "de" as const, flag: "🇩🇪", menuLabel: () => t("language.menu.de") },
@@ -98,21 +85,39 @@ export const Navigation: FC = () => {
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px' }}>
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {navigationItems.map((item) => {
-              const renderNavItem = (navItem: TranslationNavigationItem, depth: number) => {
+            {navigationItems.map((item, index) => {
+              const renderNavItem = (navItem: TranslationNavigationItem, depth: number, itemIndex: number) => {
                 const isDropdown = navItem.type === 'dropdown';
                 const isExpanded = expandedItems[navItem.key];
-                const currentView = searchParams?.get('view');
+                const currentView = searchParams?.get('view') || searchParams?.get('q');
+                const p = searchParams?.get('p');
+
                 const isSelected = !isDropdown && (
-                  currentView === navItem.key ||
-                  (navItem.path && (`${pathname}?${searchParams?.toString()}` === navItem.path || pathname === navItem.path))
+                  (navItem.type === 'doc' && searchParams?.get('q') === 'docs' && p === (navItem.path?.startsWith('docs/') ? navItem.path.slice(5) : navItem.path)) ||
+                  (navItem.type === 'data' && (currentView === navItem.path || currentView === navItem.key)) ||
+                  (navItem.path && (`${pathname}?${searchParams?.toString()}` === navItem.path || pathname === navItem.path)) ||
+                  (!navItem.type && currentView === navItem.key)
                 );
                 const paddingLeft = depth === 0 ? '16px' : `${32 + (depth * 16)}px`;
 
+                let displayTitle = navItem.title;
+                if (!navItem.key.startsWith('docs')) {
+                  const navTranslations = Array.isArray(translations.navigation) ? translations.navigation : [];
+                  const translationObj = navTranslations.find((n: any) => n.key === navItem.key);
+                  if (translationObj && translationObj.title) {
+                    displayTitle = translationObj.title;
+                  } else {
+                    const simpleT = t(`navigation.${navItem.key}`);
+                    if (simpleT !== `navigation.${navItem.key}`) {
+                      displayTitle = simpleT;
+                    }
+                  }
+                }
+
                 return (
-                  <li key={navItem.key} style={{ marginBottom: '4px' }}>
+                  <li key={`${depth}-${itemIndex}`} style={{ marginBottom: '4px' }}>
                     <div
-                      onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path)}
+                      onClick={() => isDropdown ? handleExpandToggle(navItem.key) : navItem.path && handleNavigation(navItem.path, navItem.type as any)}
                       style={{
                         display: 'flex', alignItems: 'center', padding: `12px 16px 12px ${paddingLeft}`,
                         borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -135,19 +140,19 @@ export const Navigation: FC = () => {
                     >
                       {navItem.icon && <span style={{ marginRight: '16px', display: 'flex', fontSize: depth === 0 ? '1.2rem' : '1rem' }}>{navItem.icon}</span>}
                       <span style={{ flex: 1, fontWeight: (isDropdown ? isExpanded : isSelected) ? 600 : (depth === 0 ? 500 : 400), fontSize: depth === 0 ? '1rem' : '0.875rem' }}>
-                        {getNavigationTitle(navItem.key) || navItem.title}
+                        {displayTitle}
                       </span>
                       {isDropdown && (isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
                     </div>
                     {isDropdown && isExpanded && (
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                        {navItem.subItems?.map((subItem: TranslationNavigationItem) => renderNavItem(subItem, depth + 1))}
+                        {navItem.subItems?.map((subItem, subIndex) => renderNavItem(subItem, depth + 1, subIndex))}
                       </ul>
                     )}
                   </li>
                 );
               };
-              return renderNavItem(item, 0);
+              return renderNavItem(item, 0, index);
             })}
           </ul>
         </nav>
