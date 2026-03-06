@@ -17,7 +17,7 @@ import QueryPage from "@/router/q";
 import QuittungPage from "@/router/quittung";
 import RootPage from "@/router/root";
 
-function RouterContent() {
+export default function Root() {
   const searchParams = useSearchParams();
   const q = searchParams?.get('q');
   const mode = useThemeStore((state) => state.mode);
@@ -44,14 +44,20 @@ function RouterContent() {
 
   if (q && viewComponent) {
     return (
-      <div style={{ display: 'flex', minHeight: '100vh', background: theme.bg }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: isDesktop ? 'row' : 'column',
+        minHeight: '100vh',
+        background: theme.bg
+      }}>
         <Navigation />
         <div style={{
           flex: 1,
           marginLeft: isDesktop ? '280px' : '0',
           width: isDesktop ? 'calc(100% - 280px)' : '100%',
-          transition: 'margin-left 0.3s ease',
-          paddingTop: isDesktop ? '0' : '64px'
+          transition: 'all 0.3s ease',
+          paddingTop: isDesktop ? '0' : '0',
+          position: 'relative'
         }}>
           {viewComponent}
         </div>
@@ -59,13 +65,9 @@ function RouterContent() {
     );
   }
 
-  return viewComponent;
-}
-
-export default function Root() {
   return (
     <Suspense fallback={<Loading />}>
-      <RouterContent />
+      {viewComponent}
     </Suspense>
   );
 }

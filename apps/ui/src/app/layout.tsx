@@ -1,5 +1,5 @@
 "use client";
-import { FC, ReactNode, useEffect } from "react";
+import { ReactNode, Suspense, useEffect } from "react";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -96,7 +96,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body style={{ margin: 0, padding: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }} suppressHydrationWarning>
         <main className="main-content">
-          {children}
+          <Suspense fallback={<Loading />}>
+            {children}
+          </Suspense>
         </main>
         <Footer />
         {isLoading && <Loading />}

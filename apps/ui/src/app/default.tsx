@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState, useEffect, useCallback, useTransition, Suspense, useMemo } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import {
   Menu, ChevronUp, ChevronDown, Globe, Settings, Shield, Cookie, Palette, X
@@ -19,8 +19,7 @@ import { useNavigation } from '@/hooks/useNavigation';
 
 const DRAWER_WIDTH = 280;
 
-const NavigationContent = () => {
-  const router = useRouter();
+export const Navigation: FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isDesktop = useIsDesktop();
@@ -179,7 +178,7 @@ const NavigationContent = () => {
   );
 
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       {isDesktop && (
         <div style={{
           width: DRAWER_WIDTH, position: 'fixed', top: 0, left: 0, bottom: 0,
@@ -198,7 +197,8 @@ const NavigationContent = () => {
             position: 'sticky', top: 0, zIndex: 1100,
             backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             background: `${theme.paper}cc`,
-            borderBottom: `1px solid ${theme.divider}`, padding: '8px 16px', display: 'flex', alignItems: 'center'
+            borderBottom: `1px solid ${theme.divider}`, padding: '8px 16px', display: 'flex', alignItems: 'center',
+            width: '100%'
           }}>
             <button
               onClick={() => toggleSidebar()}
@@ -212,6 +212,7 @@ const NavigationContent = () => {
               <span style={{ fontWeight: 700, fontSize: '1.25rem', color: theme.text }}>{t("ui.navigationTitle")}</span>
             </div>
           </div>
+          <div style={{ height: '64px' }} /> {/* Spacer for sticky header */}
           {mobileDrawerOpen && (
             <div style={{ position: 'fixed', inset: 0, zIndex: 1300 }}>
               <div onClick={() => setMobileDrawerOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} />
@@ -233,13 +234,14 @@ const NavigationContent = () => {
         <div style={{ position: 'fixed', inset: 0, zIndex: 1400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
           <div onClick={() => setSettingsOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} />
           <div style={{
-            position: 'relative', width: '100%', maxWidth: '1000px', height: '85vh',
+            position: 'relative', width: '100%', maxWidth: isDesktop ? '1000px' : 'calc(100vw - 32px)', height: isDesktop ? '85vh' : '90vh',
             background: theme.paper,
             backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
             borderRadius: '24px',
             boxShadow: `0 24px 60px ${theme.primary}15`,
             border: `1px solid ${theme.divider}`,
-            display: 'flex', flexDirection: 'column', overflow: 'hidden'
+            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            margin: 'auto'
           }}>
             <div style={{ padding: '16px 24px', borderBottom: `1px solid ${theme.divider}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -368,12 +370,6 @@ const NavigationContent = () => {
           </div>
         </div>
       )}
-    </>
+    </Suspense>
   );
 };
-
-export const Navigation: FC = () => (
-  <Suspense fallback={<Loading />}>
-    <NavigationContent />
-  </Suspense>
-);
