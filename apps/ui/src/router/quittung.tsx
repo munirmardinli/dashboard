@@ -362,7 +362,7 @@ export default function QuittungPage() {
 											{t("ui.analyzing")}
 										</>
 									) : (
-										t("ui.analyze")
+										t("ui.analyzing")
 									)}
 								</button>
 								<button

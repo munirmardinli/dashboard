@@ -73,11 +73,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     document.body.style.color = theme.text;
     const style = document.createElement('style');
     style.innerHTML = `
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${theme.divider}; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: ${theme.textSec}; }
+        * { box-sizing: border-box; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 0; height: 0; display: none; }
       `;
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };
