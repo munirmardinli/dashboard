@@ -87,7 +87,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang={language} suppressHydrationWarning dir={direction} className={robotoCondensed.variable}>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2" user-scalable="yes"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2" user-scalable="yes" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -95,7 +95,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <meta name="description" content={t("ui.description")} />
       </head>
       <body style={{ margin: 0, padding: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }} suppressHydrationWarning>
-        <main className="main-content">
+        <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '50px' }}>
           <Suspense fallback={<Loading />}>
             {children}
           </Suspense>
@@ -197,17 +197,23 @@ const Footer = () => {
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   return (
-    <div>
+    <div style={{
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      width: "100%",
+      backgroundColor: theme.bg,
+      zIndex: 1300
+    }}>
       <div style={{
-        marginTop: "auto",
-        padding: "40px 0",
+        padding: "12px 0",
         color: theme.textSec,
         fontSize: "0.875rem",
         borderTop: `1px solid ${theme.divider}`,
         width: "100%",
         textAlign: "center"
       }}>
-        <p>{t("ui.footer")}</p>
+        <p style={{ margin: 0 }}>{t("ui.footer")}</p>
       </div>
 
       <style>{`

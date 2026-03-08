@@ -1,11 +1,48 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Upload, Image as ImageIcon, Loader2, Check, X } from "lucide-react";
+import { Upload, Image as ImageIcon, Loader2, Check, X, Camera } from "lucide-react";
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import { globalVars } from "@/utils/globalyVar";
+
+function compressImage(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const MAX_PX = 2048;
+		const QUALITY = 0.85;
+		const url = URL.createObjectURL(file);
+		const img = new Image();
+		img.onload = () => {
+			URL.revokeObjectURL(url);
+			let { width, height } = img;
+			if (width > MAX_PX || height > MAX_PX) {
+				if (width > height) {
+					height = Math.round((height * MAX_PX) / width);
+					width = MAX_PX;
+				} else {
+					width = Math.round((width * MAX_PX) / height);
+					height = MAX_PX;
+				}
+			}
+			const canvas = document.createElement("canvas");
+			canvas.width = width;
+			canvas.height = height;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return reject(new Error("Canvas nicht verfügbar"));
+			ctx.drawImage(img, 0, 0, width, height);
+			resolve(canvas.toDataURL("image/jpeg", QUALITY));
+		};
+		img.onerror = () => reject(new Error("Bild konnte nicht geladen werden"));
+		img.src = url;
+	});
+}
+
+function formatBytes(bytes: number) {
+	if (bytes < 1024) return `${bytes} B`;
+	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default function QuittungPage() {
 	const { t } = useI18nStore();
@@ -14,10 +51,12 @@ export default function QuittungPage() {
 	const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
 	const [, setExpenses] = useState<ExpenseData[]>([]);
 	const [isAnalyzing, setIsAnalyzing] = useState(false);
+	const [isCompressing, setIsCompressing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const cameraInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		fetchExpenses();
@@ -35,18 +74,23 @@ export default function QuittungPage() {
 		}
 	}
 
-	function handleImageSelect(event: React.ChangeEvent<HTMLInputElement>) {
+	async function handleImageSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0];
-		if (file) {
-			setImageFile(file);
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setSelectedImage(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-			setAnalyzedData(null);
-			setError(null);
-			setSuccessMessage(null);
+		if (!file) return;
+
+		setImageFile(file);
+		setAnalyzedData(null);
+		setError(null);
+		setSuccessMessage(null);
+		setIsCompressing(true);
+
+		try {
+			const compressed = await compressImage(file);
+			setSelectedImage(compressed);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Bild konnte nicht verarbeitet werden");
+		} finally {
+			setIsCompressing(false);
 		}
 	}
 
@@ -121,9 +165,8 @@ export default function QuittungPage() {
 		setAnalyzedData(null);
 		setError(null);
 		setSuccessMessage(null);
-		if (fileInputRef.current) {
-			fileInputRef.current.value = "";
-		}
+		if (fileInputRef.current) fileInputRef.current.value = "";
+		if (cameraInputRef.current) cameraInputRef.current.value = "";
 	}
 
 	const mode = useThemeStore((s) => s.mode);
@@ -214,30 +257,73 @@ export default function QuittungPage() {
 						<input
 							ref={fileInputRef}
 							type="file"
-							accept="image/jpeg,image/png,image/heic,image/heif"
+							accept="image/jpeg,image/png,image/heic,image/heif,image/webp,image/*"
 							onChange={handleImageSelect}
 							style={{ display: "none" }}
 							id="receipt-upload"
 						/>
-						<label
-							htmlFor="receipt-upload"
-							style={{
-								cursor: "pointer",
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								gap: "1rem",
-							}}
-						>
-							{selectedImage ? (
+						<input
+							ref={cameraInputRef}
+							type="file"
+							accept="image/*"
+							capture="environment"
+							onChange={handleImageSelect}
+							style={{ display: "none" }}
+							id="receipt-camera"
+						/>
+						<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", width: "100%" }}>
+							{isCompressing ? (
+								<>
+									<Loader2 size={48} color={theme.primary} className="spin" />
+									<span style={{ color: theme.textSec }}>Bild wird komprimiert…</span>
+								</>
+							) : selectedImage ? (
 								<ImageIcon size={48} color={theme.textSec} />
 							) : (
 								<Upload size={48} color={theme.textSec} />
 							)}
-							<span style={{ color: theme.textSec }}>
-								{imageFile ? imageFile.name : t("ui.selectImage")}
+							<span style={{ color: theme.textSec, fontSize: "0.9rem", textAlign: "center" }}>
+								{imageFile
+									? `${imageFile.name} (${formatBytes(imageFile.size)})`
+									: t("ui.selectImage")}
 							</span>
-						</label>
+							<div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
+								<label
+									htmlFor="receipt-upload"
+									style={{
+										cursor: "pointer",
+										padding: "0.5rem 1rem",
+										borderRadius: "0.5rem",
+										background: theme.paperSec,
+										border: `1px solid ${theme.divider}`,
+										color: theme.text,
+										fontSize: "0.85rem",
+										display: "flex",
+										alignItems: "center",
+										gap: "0.4rem",
+									}}
+								>
+									<Upload size={14} /> Datei wählen
+								</label>
+								<label
+									htmlFor="receipt-camera"
+									style={{
+										cursor: "pointer",
+										padding: "0.5rem 1rem",
+										borderRadius: "0.5rem",
+										background: theme.primary,
+										border: "none",
+										color: theme.white,
+										fontSize: "0.85rem",
+										display: "flex",
+										alignItems: "center",
+										gap: "0.4rem",
+									}}
+								>
+									<Camera size={14} /> Foto aufnehmen
+								</label>
+							</div>
+						</div>
 					</div>
 
 					{selectedImage && (
@@ -254,15 +340,15 @@ export default function QuittungPage() {
 							<div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
 								<button
 									onClick={handleAnalyze}
-									disabled={isAnalyzing}
+									disabled={isAnalyzing || isCompressing}
 									style={{
 										flex: 1,
 										padding: "0.75rem",
-										backgroundColor: isAnalyzing ? theme.textSec : theme.primary,
+										backgroundColor: (isAnalyzing || isCompressing) ? theme.textSec : theme.primary,
 										color: theme.white,
 										border: "none",
 										borderRadius: "0.5rem",
-										cursor: isAnalyzing ? "not-allowed" : "pointer",
+										cursor: (isAnalyzing || isCompressing) ? "not-allowed" : "pointer",
 										display: "flex",
 										alignItems: "center",
 										justifyContent: "center",

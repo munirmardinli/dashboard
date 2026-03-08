@@ -83,10 +83,11 @@ function QueryPageContent() {
 
 	return (
 		<div style={{ flexGrow: 1, width: '100%', background: theme.bg, minHeight: '100vh', fontFamily: theme.fontFamily }} role="region">
-			<div style={{ maxWidth: '1280px', margin: '0 auto', padding: isDesktop ? '32px 16px' : '16px 8px' }}>
+			<div style={{ maxWidth: '1280px', margin: '0 auto', padding: isDesktop ? '32px 16px' : '0 16px' }}>
 				<h1 style={{
 					fontSize: theme.fontSizeHero,
 					fontWeight: "800",
+					marginTop: 0,
 					marginBottom: "2rem",
 					background: theme.brandGradient,
 					WebkitBackgroundClip: "text",

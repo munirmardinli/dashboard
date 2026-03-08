@@ -85,7 +85,7 @@ export default function DashyPage() {
 				backgroundColor: theme.bg,
 				color: theme.text
 			}}>
-				Lade...
+				{t('ui.loading')}
 			</div>
 		);
 	}
@@ -197,6 +197,7 @@ export default function DashyPage() {
 				fontFamily: theme.fontFamily,
 				padding: 0,
 				margin: 0,
+				marginTop: 0,
 				position: 'relative',
 				overflowX: 'hidden'
 			}}>
@@ -212,7 +213,7 @@ export default function DashyPage() {
 						marginBottom: '40px',
 						padding: '10px 0'
 					}}>
-						<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }} />
+						<div style={{ display: 'flex', flexDirection: 'column', gap: '4px'}} />
 						<div className="dashy-search search-container" style={{
 							position: 'relative',
 							width: '400px',

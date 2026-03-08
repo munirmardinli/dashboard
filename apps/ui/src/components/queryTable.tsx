@@ -302,7 +302,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             {isRTL() ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
           </button>
           <span style={{ fontSize: '1rem', color: theme.text, fontWeight: 500 }}>
-            {formatNum(startItem)}-{formatNum(endItem)} {isClient ? t("ui.paginationFrom") : ""} {formatNum(filteredItems.length)}
+            {isDesktop && `${formatNum(startItem)}-${formatNum(endItem)} ${isClient ? t("ui.paginationFrom") : ""} ${formatNum(filteredItems.length)}`}
           </span>
           <button
             onClick={() => startTransition(() => setCurrentPage(Math.min(totalPages, currentPage + 1)))}

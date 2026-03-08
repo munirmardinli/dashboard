@@ -727,68 +727,78 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   };
   const fields = isEdit ? config.update : config.create;
   return (
-    <div style={{ padding: isDesktop ? '24px' : '12px', background: theme.bg }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ marginBottom: isDesktop ? '24px' : '16px', padding: isDesktop ? '0 24px' : '0 16px' }}>
-          <h1 style={{ fontSize: isDesktop ? '1.5rem' : '1.25rem', fontWeight: 400, color: theme.text, margin: 0 }}>
-            {isEdit ? `${t("ui.editSuffix")} ${t(`pathNames.${dataType}`)}` : `${t("ui.createSuffix")} ${t(`pathNames.${dataType}`)}`}
-          </h1>
-        </div>
+    <div style={{ padding: isDesktop ? '24px' : '12px', background: theme.bg, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 100px)' }}>
+      <div style={{ maxWidth: '900px', width: '100%', margin: '0 auto' }}>
         <div style={{
           background: theme.paper,
-          borderRadius: isDesktop ? '8px' : '6px',
-          boxShadow: theme.shadowPaper,
-          padding: isDesktop ? '24px' : '16px',
+          borderRadius: '16px',
+          border: `1px solid ${theme.divider}`,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+          padding: isDesktop ? '32px' : '24px',
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: isDesktop ? '16px' : '12px' }}>
             {fields.map(f => renderField(f))}
           </div>
           <div style={{ height: '1px', background: theme.divider, margin: isDesktop ? '32px 0 24px' : '24px 0 16px' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
-            <button
-              onClick={() => router.back()}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 24px', borderRadius: '8px', border: `1px solid ${theme.divider}`,
-                background: 'transparent', color: theme.text,
-                cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
-              }}
-            >
-              <X size={18} /> {t("ui.closeButton")}
-            </button>
-
-            {isEdit && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: '16px',
+            alignItems: 'center',
+          }}>
+            {/* Links: Abbrechen */}
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
               <button
-                onClick={handleDelete}
+                onClick={() => router.back()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '12px 24px', borderRadius: '8px', border: `1px solid ${theme.divider}`,
+                  background: 'transparent', color: theme.text,
+                  cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
+                }}
+              >
+                <X size={18} /> {t("ui.closeButton")}
+              </button>
+            </div>
+
+            {/* Mitte: Löschen (nur im Edit-Modus) */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {isEdit && (
+                <button
+                  onClick={handleDelete}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '12px 24px', borderRadius: '8px', border: 'none',
+                    background: theme.error, color: theme.white,
+                    boxShadow: theme.shadowXs,
+                    cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
+                  }}
+                  title={t("ui.deleteButton")}
+                >
+                  <Trash size={18} /> {t("ui.deleteButton")}
+                </button>
+              )}
+            </div>
+
+            {/* Rechts: Speichern / Erstellen */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleSave}
+                disabled={!isFormValid || isSaving}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '12px 24px', borderRadius: '8px', border: 'none',
-                  background: theme.error, color: theme.white,
+                  background: theme.primary, color: '#fff',
                   boxShadow: theme.shadowXs,
-                  cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
+                  cursor: (!isFormValid || isSaving) ? 'not-allowed' : 'pointer',
+                  opacity: (!isFormValid || isSaving) ? 0.6 : 1,
+                  fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
                 }}
-                title={t("ui.deleteButton")}
+                title={isEdit ? t("ui.saveButton") : t("ui.createButton")}
               >
-                <Trash size={18} /> {t("ui.deleteButton")}
+                <Save size={18} /> {isEdit ? t("ui.saveButton") : t("ui.createButton")}
               </button>
-            )}
-
-            <button
-              onClick={handleSave}
-              disabled={!isFormValid || isSaving}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '12px 24px', borderRadius: '8px', border: 'none',
-                background: theme.primary, color: '#fff',
-                boxShadow: theme.shadowXs,
-                cursor: (!isFormValid || isSaving) ? 'not-allowed' : 'pointer',
-                opacity: (!isFormValid || isSaving) ? 0.6 : 1,
-                fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase' as const
-              }}
-              title={isEdit ? t("ui.saveButton") : t("ui.createButton")}
-            >
-              <Save size={18} /> {isEdit ? t("ui.saveButton") : t("ui.createButton")}
-            </button>
+            </div>
           </div>
         </div>
       </div>

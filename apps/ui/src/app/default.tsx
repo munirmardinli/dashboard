@@ -232,7 +232,7 @@ export const Navigation: FC = () => {
           </ul>
         </nav>
       </div>
-      <div style={{ padding: '16px' }}>
+      <div style={{ padding: '16px', paddingBottom: '60px' }}>
         <div
           role="button"
           tabIndex={0}
