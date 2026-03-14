@@ -30,7 +30,11 @@ const server = createServer(async (req, res) => {
 			sendError(res, 404, "Not found");
 		}
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
+		// Log full error details on the server for debugging purposes
+		console.error("Unhandled error while processing request:", error);
+
+		// Send a generic error message to the client to avoid leaking internal details
+		const message = "Internal server error";
 		sendError(res, 500, message);
 	}
 });
