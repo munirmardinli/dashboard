@@ -14,8 +14,8 @@ x-limits: &resource-limits
 services:
   dashboard:
     image: docker.io/mardinlimunir/dashboard:latest
-    container_name: dashboard
-    hostname: dashboard
+    container_name: dashboard-example
+    hostname: dashboard-example
     <<: *resource-limits
     ports:
       - target: 80
@@ -34,7 +34,7 @@ services:
       TWILIO_WHATSAPP_TO: ${TWILIO_WHATSAPP_TO:?Twilio WhatsApp destination number is required}
     labels:
       <<: *default-labels
-      monitoring: dashboard
+      monitoring: dashboard-example
 
 networks:
   frontend:

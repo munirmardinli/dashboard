@@ -3,9 +3,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "apps/**"
   pull_request:
     branches:
       - main
+    paths:
+      - "apps/**"
 
 env:
   NPM_VERSION: "25"
@@ -127,6 +131,7 @@ jobs:
           path: apps/api/dist
 
   docker-prod:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     steps:

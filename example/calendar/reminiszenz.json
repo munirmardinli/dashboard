@@ -1,0 +1,13 @@
+[
+	{
+		"id": "3e1e9fc7-3a21-4be2-b0e6-7bdcc46ee6c9",
+		"description": null,
+		"end": "2023-08-24T17:30:00+00:00",
+		"location": null,
+		"priority": 9,
+		"reminder": "DAY_1_BEFORE",
+		"start": "2023-08-24T16:30:00+00:00",
+		"title": "Test Reminiszenz",
+		"isArchive": false
+	}
+]

@@ -1,0 +1,3858 @@
+{
+	"version": "1.0.0",
+	"locale": "de",
+	"ui": {
+		"title": "Dashboard",
+		"description": "Verwalten Sie Ihre Todos, Kalendereinträge, Passwörter und Kontakte effizient mit unserem Management Dashboard. Organisieren Sie Ihr Leben an einem Ort.",
+		"isDrawerTitle": "Navigation",
+		"navigationTitle": "Management Dashboard",
+		"confrimPrefix": "Möchten Sie dieses",
+		"confrimSuffix": "wirklich löschen?",
+		"addSuffix": "hinzufügen",
+		"addButton": "Hinzufügen",
+		"createPrefix": "Neues",
+		"createSuffix": "erstellen",
+		"editPrefix": "Bearbeiten",
+		"editSuffix": "bearbeiten",
+		"ArrayItemDescriptionPrefix": "Fügen Sie",
+		"with": "mit",
+		"and": "und",
+		"ArrayItemDescriptionSuffix": "hinzu",
+		"timeSuffix": "Zeit",
+		"dateSuffix": "Datum",
+		"closeButton": "Abbrechen",
+		"deleteButton": "Löschen",
+		"fieldRequired": "{field} ist Pflicht",
+		"fieldOptional": "{field} ist optional",
+		"invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+		"invalidUrl": "Bitte geben Sie eine gültige URL ein.",
+		"invalidTel": "Bitte geben Sie eine gültige Telefonnummer ein.",
+		"invalidPassword": "Das Passwort enthält ungültige Zeichen.",
+		"invalidAddress": "Bitte geben Sie eine gültige Adresse ein.",
+		"invalidText": "Der Text enthält ungültige Zeichen.",
+		"showPassword": "Passwort anzeigen",
+		"hidePassword": "Passwort ausblenden",
+		"saveButton": "Speichern",
+		"saveButtonLoading": "Speichern...",
+		"createButton": "Erstellen",
+		"paginationFrom": "von",
+		"paginatiNoItems": "0 Einträge",
+		"searchPlaceholder": "Suchmaske",
+		"noFoundEvents": "Keine Ergebnisse gefunden",
+		"failedToLoad": "Fehler beim Laden",
+		"sortedBy": "Sortiert nach",
+		"onlyLatinGermanArabicCharacters": "Nur lateinische, deutsche und arabische Zeichen sind erlaubt",
+		"editing": "Bearbeiten",
+		"item": "Eintrag",
+		"itemNotFound": "Eintrag nicht gefunden",
+		"successfully": "Erfolgreich",
+		"deleted": "gelöscht",
+		"updated": "aktualisiert",
+		"added": "hinzugefügt",
+		"loading": "Lädt...",
+		"pleaseFillAllRequiredFields": "Bitte füllen Sie alle erforderlichen Felder aus.",
+		"required": "Pflichtfeld",
+		"onlyNumbersAllowed": "Nur Zahlen sind erlaubt",
+		"feedbackSuccessfullySent": "Feedback erfolgreich gesendet!",
+		"error": "Fehler",
+		"networkError": "Netzwerkfehler beim Senden des Feedbacks.",
+		"reportError": "Fehler melden",
+		"describeTheError": "Beschreiben Sie den aufgetretenen Fehler",
+		"firstNameRequired": "Vorname ist erforderlich",
+		"lastNameRequired": "Nachname ist erforderlich",
+		"mailRequired": "E-Mail ist erforderlich",
+		"messageRequired": "Nachricht ist erforderlich",
+		"sending": "Wird gesendet...",
+		"sendFeedback": "Feedback senden",
+		"successfullySent": "erfolgreich gesendet",
+		"toHomePage": "Zur Startseite",
+		"homePage": "Startseite",
+		"message": "Nachricht",
+		"firstName": "Vorname",
+		"lastName": "Nachname",
+		"mail": "E-Mail",
+		"speedDialBasic": "Schnellwahl",
+		"errorWhileReloadingApplication": "Fehler beim Neuladen der Anwendung",
+		"errorWhileNavigatingToHomePage": "Fehler beim Navigieren zur Startseite",
+		"errorWhileCreatingBugReport": "Fehler beim Erstellen des Fehlerberichts",
+		"createBugReport": "Fehlerbericht erstellen",
+		"ifTheProblemPersistsContactTheSupport": "Wenn das Problem weiterhin besteht, kontaktieren Sie bitte den Support.",
+		"errorDetails": "Fehlerdetails",
+		"unknownError": "Unbekannter Fehler",
+		"errorId": "Fehler-ID",
+		"tryAgain": "Erneut versuchen",
+		"applicationIsBeingReloaded": "Anwendung wird neu geladen...",
+		"accessDenied": "Zugriff verweigert",
+		"authenticationRequired": "401 - Authentifizierung erforderlich",
+		"pleaseLoginToAccess": "Bitte melden Sie sich an, um auf diese Seite zuzugreifen.",
+		"errorWhileNavigatingToLoginPage": "Fehler beim Navigieren zur Login-Seite",
+		"ariaNavigation": "Navigation",
+		"ariaOpenNavigationDrawer": "Navigationsmenü öffnen",
+		"ariaCloseNavigationDrawer": "Navigationsmenü schließen",
+		"ariaSearch": "Suche",
+		"ariaAddNewItem": "Neuen Eintrag hinzufügen",
+		"ariaTable": "Datentabelle",
+		"ariaSortBy": "Sortieren nach",
+		"ariaRowClickable": "Zeile auswählbar",
+		"ariaGoToPreviousPage": "Zur vorherigen Seite",
+		"ariaGoToNextPage": "Zur nächsten Seite",
+		"ariaGoToFirstPage": "Zur ersten Seite",
+		"ariaGoToLastPage": "Zur letzten Seite",
+		"ariaPagination": "Seitennavigation",
+		"ariaPaginationStatus": "Seitenergebnisstatus",
+		"ariaForm": "Formular",
+		"ariaSaveItem": "Eintrag speichern",
+		"ariaCreateItem": "Eintrag erstellen",
+		"ariaDeleteItem": "Eintrag löschen",
+		"ariaCancel": "Abbrechen",
+		"ariaAddArrayItem": "Element zur Liste hinzufügen",
+		"ariaRemoveArrayItem": "Element aus der Liste entfernen",
+		"ariaDateField": "Datumsfeld",
+		"ariaTimeField": "Zeitfeld",
+		"ariaApplicationTitle": "Todo Management Dashboard",
+		"ariaApplicationLabel": "Todo Management Anwendung",
+		"ariaMainContent": "Hauptinhalt",
+		"ariaDataView": "Datenansicht",
+		"ariaCreateForm": "Formular zum Erstellen",
+		"ariaEditForm": "Formular zum Bearbeiten",
+		"ariaKeyboardShortcut": "Tastenkürzel",
+		"sortedAscending": "aufsteigend sortiert",
+		"sortedDescending": "absteigend sortiert",
+		"notSorted": "nicht sortiert",
+		"ariaLoading": "Wird geladen",
+		"ariaLoadingMessage": "Ladevorgang wird ausgeführt",
+		"ariaErrorPage": "Fehlerseite",
+		"ariaErrorTitle": "Ein Fehler ist aufgetreten",
+		"ariaErrorDescription": "Es ist ein unerwarteter Fehler aufgetreten",
+		"ariaNotFoundPage": "Seite nicht gefunden",
+		"ariaNotFoundTitle": "404 - Seite nicht gefunden",
+		"ariaNotFoundDescription": "Die angeforderte Seite konnte nicht gefunden werden",
+		"ariaErrorForm": "Fehlerberichtsformular",
+		"ariaErrorFormTitle": "Fehlerbericht erstellen",
+		"ariaErrorFormDescription": "Bitte beschreiben Sie den aufgetretenen Fehler",
+		"ariaContactForm": "Kontaktformular",
+		"ariaContactFormTitle": "Kontakt",
+		"ariaContactFormDescription": "Kontaktformular zum Senden von Nachrichten",
+		"ariaSkeletonLoading": "Ladeanzeige",
+		"ariaSkeletonCard": "Ladekarte",
+		"ariaSkeletonTable": "Ladetabelle",
+		"ariaSkeletonRow": "Ladezeile",
+		"ariaPaginationItem": "Seite",
+		"ariaCurrentPage": "Aktuelle Seite",
+		"ariaTableEmpty": "Tabelle ist leer",
+		"ariaTableRowCount": "Zeilen in Tabelle",
+		"ariaTableColumnCount": "Spalten in Tabelle",
+		"ariaSearchResults": "Suchergebnisse",
+		"ariaNoSearchResults": "Keine Suchergebnisse gefunden",
+		"ariaSearchResultsCount": "Anzahl der Suchergebnisse",
+		"ariaFormField": "Formularfeld",
+		"ariaFormFieldRequired": "Pflichtfeld",
+		"ariaFormFieldOptional": "Optionales Feld",
+		"ariaFormFieldError": "Feldfehler",
+		"ariaFormFieldHelp": "Feldhilfe",
+		"ariaFormValidationError": "Validierungsfehler",
+		"ariaFormValidationSuccess": "Validierung erfolgreich",
+		"ariaButtonPrimary": "Hauptaktion",
+		"ariaButtonSecondary": "Sekundäraktion",
+		"ariaButtonDisabled": "Schaltfläche deaktiviert",
+		"ariaLinkExternal": "Externer Link",
+		"ariaLinkInternal": "Interner Link",
+		"ariaIconDecorative": "Dekoratives Symbol",
+		"ariaIconInteractive": "Interaktives Symbol",
+		"ariaMenuOpen": "Menü geöffnet",
+		"ariaMenuClosed": "Menü geschlossen",
+		"ariaDialogOpen": "Dialog geöffnet",
+		"ariaDialogClosed": "Dialog geschlossen",
+		"ariaModalOpen": "Modal geöffnet",
+		"ariaModalClosed": "Modal geschlossen",
+		"ariaTooltipVisible": "Tooltip sichtbar",
+		"ariaTooltipHidden": "Tooltip verborgen",
+		"ariaExpandCollapse": "Aufklappen/Zuklappen",
+		"ariaExpanded": "Aufgeklappt",
+		"ariaCollapsed": "Zugeklappt",
+		"ariaSelected": "Ausgewählt",
+		"ariaUnselected": "Nicht ausgewählt",
+		"ariaChecked": "Aktiviert",
+		"ariaUnchecked": "Deaktiviert",
+		"ariaRequiredField": "Pflichtfeld",
+		"ariaOptionalField": "Optionales Feld",
+		"ariaInvalidField": "Ungültiges Feld",
+		"ariaValidField": "Gültiges Feld",
+		"skipToMainContent": "Zum Hauptinhalt springen",
+		"skipToNavigation": "Zur Navigation springen",
+		"skipToSearch": "Zur Suche springen",
+		"skipToFooter": "Zur Fußzeile springen",
+		"ariaSkipLinks": "Schnellzugriff-Links",
+		"ariaLandmarkMain": "Hauptinhalt",
+		"ariaLandmarkNavigation": "Navigation",
+		"ariaLandmarkSearch": "Suchbereich",
+		"ariaLandmarkFooter": "Fußzeile",
+		"ariaLandmarkBanner": "Banner",
+		"ariaLandmarkComplementary": "Zusätzliche Informationen",
+		"keyboardShortcutEsc": "Escape zum Schließen",
+		"keyboardShortcutEnter": "Enter zum Aktivieren",
+		"keyboardShortcutArrowKeys": "Pfeiltasten zum Navigieren",
+		"keyboardShortcutTab": "Tab zum Navigieren",
+		"keyboardShortcutShiftTab": "Shift+Tab zum Zurücknavigieren",
+		"focusVisible": "Fokus sichtbar",
+		"focusHidden": "Fokus verborgen",
+		"ok": "OK",
+		"tooltipOpenNavigationDrawer": "Navigation öffnen",
+		"tooltipAddNewItem": "Neuen Eintrag hinzufügen",
+		"tooltipPrevPage": "Vorherige Seite",
+		"tooltipNextPage": "Nächste Seite",
+		"tooltipSortBy": "Sortieren nach",
+		"tooltipExpand": "Aufklappen",
+		"tooltipCollapse": "Zuklappen",
+		"a11ySettingsTitle": "Barrierefreiheit",
+		"a11yHighContrast": "Hoher Kontrast",
+		"a11yReduceMotion": "Bewegungen reduzieren",
+		"a11yLargeFonts": "Größere Schrift",
+		"menuOption": "Sprache ändern",
+		"menuOptionTooltip": "Hinweis: Sprache ändern",
+		"changecontrast": "Kontrast ändern",
+		"contrastTooltip": "Hinweis: Kontrast",
+		"changeMode": "Modus ändern",
+		"changeModeHint": "Hinweis: Modus ändern",
+		"logout": "Abmelden",
+		"copiedToClipboard": "In die Zwischenablage kopiert",
+		"copyPassword": "Passwort kopieren",
+		"openLink": "Link öffnen",
+		"section": "Bereich",
+		"name": "Name",
+		"url": "URL",
+		"iconUrl": "Icon URL",
+		"documenationNotFound": "Dokumentation nicht gefunden",
+		"selectADifferentTopicFromTheSidebar": "Bitte wählen Sie ein anderes Thema in der Seitenleiste aus",
+		"mermaidSyntaxError": "Mermaid-Syntaxfehler",
+		"selectSection": "Bitte wählen Sie einen Bereich aus",
+		"noEntries": "Keine Einträge",
+		"documentation": "Dokumentation",
+		"created": "Erstellt",
+		"rating": "Bewertung",
+		"category": "Kategorien",
+		"receipt": "Quittung hochladen",
+		"uploadReceipt": "Bild hochladen",
+		"selectImage": "Bild auswählen",
+		"analyzing": "Wird analysiert...",
+		"reset": "Zurücksetzen",
+		"preview": "Vorschau",
+		"store": "Geschäft",
+		"date": "Datum",
+		"items": "Artikel",
+		"total": "Gesamt",
+		"save": "Speichern",
+		"create": "Erstellen",
+		"noData": "Keine Daten zum Anzeigen. Bitte laden Sie ein Bild hoch und analysieren Sie es.",
+		"pageNotFound": "Seite nicht gefunden",
+		"pageNotFoundDescription": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+		"backToHome": "Zur Startseite",
+		"pageNotFoundStatus": "404",
+		"managementDashboard": "Management Dashboard",
+		"managementDashboardDescription": "Ihre zentrale Plattform für effizientes Management. Verwalten Sie Aufgaben, Kontakte und Finanzen an einem Ort.",
+		"openDashboard": "Dashboard öffnen",
+		"footer": "© 2025 Management Dashboard. Alle Rechte vorbehalten."
+	},
+	"onboarding": [
+		{
+			"link": "/?q=docs&p=",
+			"title": "Dokumentation",
+			"desc": "Dokumentieren Sie Ihre Fortschritte.",
+			"icon": "📚"
+		},
+		{
+			"link": "/?q=quittung",
+			"title": "Quittungen",
+			"desc": "Quittungen hochladen.",
+			"icon": "💰"
+		},
+		{
+			"link": "/?q=portfolio",
+			"title": "Portfolio",
+			"desc": "Verwalten Sie Ihr Portfolio.",
+			"icon": "💼"
+		},
+		{
+			"link": "/?q=learn",
+			"title": "Lernen",
+			"desc": "Tracken Sie Ihren Lernprozess.",
+			"icon": "📚"
+		},
+		{
+			"link": "/?q=dashy",
+			"title": "Dashy",
+			"desc": "Verwalten Sie Ihre Dashboards.",
+			"icon": "🔗"
+		}
+	],
+	"language": {
+		"menu": {
+			"de": "Deutsch",
+			"en": "English",
+			"fr": "Français",
+			"ar": "العربية"
+		},
+		"tooltipTitle": {
+			"de": "Deutsch auswählen",
+			"en": "Select English",
+			"fr": "Sélectionner le français",
+			"ar": "اختر العربية"
+		},
+		"ariaLabel": {
+			"de": "Deutsch",
+			"en": "English",
+			"fr": "Français",
+			"ar": "العربية"
+		},
+		"ariaTooltipLabel": {
+			"de": "Sprache auf Deutsch wechseln",
+			"en": "Switch to English",
+			"fr": "Passer au français",
+			"ar": "التبديل إلى العربية"
+		}
+	},
+	"settings": {
+		"title": "Einstellungen",
+		"subtitle": "Verwalten Sie die Einstellungen Ihres Kontos.",
+		"general": "Allgemein",
+		"security": "Sicherheit",
+		"language": {
+			"title": "Sprache",
+			"description": "Wählen Sie die Sprache der Anwendung aus.",
+			"select": "Sprache auswählen"
+		},
+		"theme": {
+			"title": "Theme",
+			"description": "Wählen Sie das Farbschema der Anwendung aus.",
+			"select": "Theme auswählen",
+			"light": "Hell",
+			"dark": "Dunkel",
+			"contrast": "Kontrast",
+			"updated": "Theme"
+		},
+		"cookies": {
+			"title": "Cookies",
+			"description": "Aktuelle Cookie-Werte dieser Anwendung.",
+			"noCookies": "Keine Cookies gefunden."
+		}
+	},
+	"navigation": {
+		"calendar": "Kalender",
+		"contacts": "Kontakte",
+		"password": "Kennwörter",
+		"learn": "Lernen",
+		"management": "Verwaltung",
+		"root": "Docs",
+		"vocabular": "Vokabeln",
+		"expense": "Ausgaben",
+		"hobbys": "Hobbys",
+		"work": "Arbeit",
+		"sonstiges": "Sonstiges",
+		"reminiszenz": "Reminiszenz",
+		"nomination": "Nominierung",
+		"doctorsAppointment": "Arzttermin",
+		"informatica": "Informatik",
+		"verba": "Verben",
+		"englisch": "Englisch",
+		"idiotisms": "Redewendungen",
+		"adjectiva": "Adjektive",
+		"it": "IT Passwörter",
+		"homelab": "Homelab Passwörter",
+		"mail": "Mail Passwörter",
+		"mix": "Mix Passwörter",
+		"shopping": "Shopping Passwörter",
+		"socialMedia": "Social Media",
+		"study": "Studium",
+		"works": "Arbeits-Passwörter",
+		"privatContact": "Private Kontakte",
+		"workContact": "Arbeitskontakte",
+		"opportunityContact": "Gelegenheitskontakte",
+		"superficialContact": "Oberflächliche Kontakte",
+		"integrationContact": "Integrationskontakte",
+		"hyperlinkstool": "Hyperlinks"
+	},
+	"dataTypes": {
+		"expense": {
+			"title": "Ausgaben",
+			"icon": "💰",
+			"filePath": "management/expense.json",
+			"primaryField": "store",
+			"defaultSortField": "date",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"date"
+			],
+			"view": [
+				{
+					"key": "date",
+					"label": "Datum",
+					"type": "datetime"
+				},
+				{
+					"key": "store",
+					"label": "Geschäft",
+					"type": "text",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "date",
+					"label": "Datum",
+					"type": "datetime",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 12
+				},
+				{
+					"key": "store",
+					"label": "Geschäft",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Aldi",
+					"grid": 12
+				},
+				{
+					"key": "items",
+					"label": "Artikel",
+					"type": "array",
+					"required": true,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Artikel",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Artikelname",
+								"type": "text",
+								"placeholder": "z.B. Apfel"
+							},
+							{
+								"key": "value",
+								"label": "Preis (€)",
+								"type": "number",
+								"placeholder": "0.00",
+								"step": 0.01
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "date",
+					"label": "Datum",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 12
+				},
+				{
+					"key": "store",
+					"label": "Geschäft",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Aldi",
+					"grid": 12
+				},
+				{
+					"key": "items",
+					"label": "Artikel",
+					"type": "array",
+					"required": true,
+					"grid": 6,
+					"arrayConfig": {
+						"itemLabel": "Artikel",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Artikelname",
+								"type": "text",
+								"placeholder": "z.B. Apfel"
+							},
+							{
+								"key": "value",
+								"label": "Preis (€)",
+								"type": "number",
+								"placeholder": "0.00",
+								"step": 0.01
+							}
+						]
+					}
+				}
+			]
+		},
+		"hobbys": {
+			"title": "Hobbys",
+			"icon": "📅",
+			"filePath": "calendar/hobbys.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Chess",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Park",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Snacks einkaufen",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Chess",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Park",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Snacks einkaufen",
+					"grid": 12
+				}
+			]
+		},
+		"work": {
+			"title": "Arbeit",
+			"icon": "💼",
+			"filePath": "calendar/work.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Meeting mit Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Office",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Wir besprechen die neue Software",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Meeting mit Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Office",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Wir besprechen die neue Software",
+					"grid": 12
+				}
+			]
+		},
+		"sonstiges": {
+			"title": "Sonstiges",
+			"icon": "💡",
+			"filePath": "calendar/sonstiges.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Geburtstag von Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Partyhaus",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Geburtstagsparty organisieren mit XY",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Geburtstag von Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Partyhaus",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1"
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Geburtstagsparty organisieren mit XY",
+					"grid": 12
+				}
+			]
+		},
+		"reminiszenz": {
+			"title": "Reminiszenz",
+			"icon": "💭",
+			"filePath": "calendar/reminiszenz.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Erinnerung an Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Zuhause",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Beschreibung der Erinnerung",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Erinnerung an Max",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Zuhause",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Beschreibung der Erinnerung",
+					"grid": 12
+				}
+			]
+		},
+		"nomination": {
+			"title": "Nomination",
+			"icon": "🏆",
+			"filePath": "calendar/nomination.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Nominierung für Award",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Veranstaltungsort",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Beschreibung der Nominierung",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Nominierung für Award",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Veranstaltungsort",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Beschreibung der Nominierung",
+					"grid": 12
+				}
+			]
+		},
+		"doctorsAppointment": {
+			"title": "Arzttermin",
+			"icon": "🏥",
+			"filePath": "calendar/doctorsAppointment.json",
+			"primaryField": "title",
+			"defaultSortField": "start",
+			"defaultSortOrder": "desc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"hidden": true
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Arzttermin bei Dr. Müller",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Praxis Dr. Müller",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Routineuntersuchung",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Arzttermin bei Dr. Müller",
+					"grid": 6
+				},
+				{
+					"key": "location",
+					"label": "Ort",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. Praxis Dr. Müller",
+					"grid": 6
+				},
+				{
+					"key": "start",
+					"label": "Start",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 10:00",
+					"grid": 6
+				},
+				{
+					"key": "end",
+					"label": "Ende",
+					"type": "datetime",
+					"required": true,
+					"placeholder": "z.B. 2025-01-01 12:00",
+					"grid": 6
+				},
+				{
+					"key": "priority",
+					"label": "Priorität",
+					"type": "number",
+					"required": true,
+					"placeholder": "z.B. 1",
+					"grid": 6
+				},
+				{
+					"key": "reminder",
+					"label": "Erinnerung",
+					"type": "select",
+					"required": true,
+					"placeholder": "z.B. Keine",
+					"grid": 6,
+					"options": [
+						{
+							"value": "NONE",
+							"label": "Keine"
+						},
+						{
+							"value": "MINUTES_10_BEFORE",
+							"label": "10 Minuten vorher"
+						},
+						{
+							"value": "MINUTES_30_BEFORE",
+							"label": "30 Minuten vorher"
+						},
+						{
+							"value": "HOUR_1_BEFORE",
+							"label": "1 Stunde vorher"
+						},
+						{
+							"value": "DAY_1_BEFORE",
+							"label": "1 Tag vorher"
+						},
+						{
+							"value": "WEEK_1_BEFORE",
+							"label": "1 Woche vorher"
+						}
+					]
+				},
+				{
+					"key": "description",
+					"label": "Beschreibung",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. Routineuntersuchung",
+					"grid": 12
+				}
+			]
+		},
+		"informatica": {
+			"title": "Informatik",
+			"icon": "💻",
+			"filePath": "vocabular/informatica.json",
+			"primaryField": "key",
+			"defaultSortField": "key",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"key",
+				"value"
+			],
+			"view": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text"
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text"
+				}
+			],
+			"create": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "e.g. compile",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. kompilieren",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"placeholder": "e.g. compile",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. kompilieren",
+					"grid": 12
+				}
+			]
+		},
+		"verba": {
+			"title": "Verben",
+			"icon": "🔤",
+			"filePath": "vocabular/verba.json",
+			"primaryField": "key",
+			"defaultSortField": "key",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"key",
+				"value"
+			],
+			"view": [
+				{
+					"key": "key",
+					"label": "Verb",
+					"type": "text"
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text"
+				}
+			],
+			"create": [
+				{
+					"key": "key",
+					"label": "Verb",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "e.g. run",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. laufen",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "key",
+					"label": "Verb",
+					"type": "text",
+					"required": true,
+					"placeholder": "e.g. run",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. laufen",
+					"grid": 12
+				}
+			]
+		},
+		"englisch": {
+			"title": "Englisch",
+			"icon": "🇬🇧",
+			"filePath": "vocabular/englisch.json",
+			"primaryField": "key",
+			"defaultSortField": "key",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"key",
+				"value"
+			],
+			"view": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text"
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text"
+				}
+			],
+			"create": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "e.g. soulmate",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Seelenverwandtschaft",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"placeholder": "e.g. soulmate",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Seelenverwandtschaft",
+					"grid": 12
+				}
+			]
+		},
+		"idiotisms": {
+			"title": "Idiotismen",
+			"icon": "🤪",
+			"filePath": "vocabular/idiotisms.json",
+			"primaryField": "key",
+			"defaultSortField": "key",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"key"
+			],
+			"view": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text"
+				}
+			],
+			"create": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Es ist mir egal",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Es ist mir egal",
+					"grid": 12
+				}
+			]
+		},
+		"adjectiva": {
+			"title": "Adjektive",
+			"icon": "👍",
+			"filePath": "vocabular/adjectiva.json",
+			"primaryField": "key",
+			"defaultSortField": "key",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"key",
+				"value"
+			],
+			"view": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text"
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text"
+				}
+			],
+			"create": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "e.g. beautiful",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. schön",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "key",
+					"label": "Begriff",
+					"type": "text",
+					"required": true,
+					"placeholder": "e.g. beautiful",
+					"grid": 12
+				},
+				{
+					"key": "value",
+					"label": "Übersetzung",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. schön",
+					"grid": 12
+				}
+			]
+		},
+		"it": {
+			"title": "IT",
+			"icon": "🔒",
+			"filePath": "management/password/it.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "password",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Google",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.google.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Google",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.google.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"homelab": {
+			"title": "Homelab",
+			"icon": "🏠",
+			"filePath": "management/password/homelab.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Proxmox",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. admin@homelab.local",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://proxmox.homelab.local",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Proxmox",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. admin@homelab.local",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://proxmox.homelab.local",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"mail": {
+			"title": "Mail",
+			"icon": "📧",
+			"filePath": "management/password/mail.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Gmail",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@gmail.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://mail.google.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Gmail",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@gmail.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://mail.google.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"mix": {
+			"title": "Mix",
+			"icon": "🔀",
+			"filePath": "management/password/mix.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Netflix",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.netflix.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Netflix",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.netflix.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"shopping": {
+			"title": "Shopping",
+			"icon": "🛒",
+			"filePath": "management/password/shopping.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Amazon",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.amazon.de",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Amazon",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.amazon.de",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"socialMedia": {
+			"title": "Social Media",
+			"icon": "📱",
+			"filePath": "management/password/socialMedia.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Instagram",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.instagram.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Instagram",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.instagram.com",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"study": {
+			"title": "Study",
+			"icon": "📚",
+			"filePath": "management/password/study.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Coursera",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.coursera.org",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Coursera",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.coursera.org",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"works": {
+			"title": "Arbeit",
+			"icon": "💼",
+			"filePath": "management/password/works.json",
+			"primaryField": "title",
+			"defaultSortField": "title",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"title"
+			],
+			"view": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text"
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"hidden": true
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Coursera",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": false,
+					"placeholder": "z.B. https://www.coursera.org",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			],
+			"update": [
+				{
+					"key": "title",
+					"label": "Titel",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Coursera",
+					"grid": 6
+				},
+				{
+					"key": "username",
+					"label": "Mail/Benutzername",
+					"type": "email",
+					"required": true,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "password",
+					"label": "Passwort",
+					"type": "password",
+					"required": true,
+					"placeholder": "z.B. 1234567890",
+					"grid": 6
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.coursera.org",
+					"grid": 6
+				},
+				{
+					"key": "items",
+					"label": "Einträge",
+					"type": "array",
+					"required": false,
+					"grid": 12,
+					"arrayConfig": {
+						"itemLabel": "Zusätzliches Feld",
+						"fields": [
+							{
+								"key": "key",
+								"label": "Schlüssel",
+								"type": "text",
+								"placeholder": "z.B. API_TOKEN"
+							},
+							{
+								"key": "value",
+								"label": "Wert",
+								"type": "text",
+								"placeholder": "Wert eingeben"
+							}
+						]
+					}
+				}
+			]
+		},
+		"privatContact": {
+			"title": "Privat",
+			"icon": "👥",
+			"filePath": "management/contacts/privatContact.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			]
+		},
+		"workContact": {
+			"title": "Arbeit",
+			"icon": "💼",
+			"filePath": "management/contacts/workContact.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			]
+		},
+		"opportunityContact": {
+			"title": "Opportunistischer Kandidat",
+			"icon": "🔀",
+			"filePath": "management/contacts/opportunityContact.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			]
+		},
+		"superficialContact": {
+			"title": "Superfiziell",
+			"icon": "🎭",
+			"filePath": "management/contacts/superficialContact.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			]
+		},
+		"integrationContact": {
+			"title": "Integration",
+			"icon": "🤝",
+			"filePath": "management/contacts/integrationContact.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"hidden": true
+				}
+			],
+			"create": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"onFocused": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Max Mustermann",
+					"grid": 6
+				},
+				{
+					"key": "phone",
+					"label": "Telefon",
+					"type": "tel",
+					"required": true,
+					"placeholder": "z.B. 017678901234",
+					"grid": 6
+				},
+				{
+					"key": "email",
+					"label": "E-Mail",
+					"type": "email",
+					"required": false,
+					"placeholder": "z.B. max@example.com",
+					"grid": 6
+				},
+				{
+					"key": "address",
+					"label": "Adresse",
+					"type": "address",
+					"required": false,
+					"placeholder": "z.B. München, Deutschland",
+					"grid": 6
+				},
+				{
+					"key": "birthday",
+					"label": "Geburtstag",
+					"type": "datetime",
+					"required": false,
+					"placeholder": "z.B. 1990-01-01",
+					"grid": 12
+				}
+			]
+		},
+		"hyperlinkstool": {
+			"title": "Hyperlinkstool",
+			"icon": "📊",
+			"filePath": "management/dashy.json",
+			"primaryField": "name",
+			"defaultSortField": "name",
+			"defaultSortOrder": "asc",
+			"searchFields": [
+				"name",
+				"url",
+				"sectionTitle"
+			],
+			"view": [
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text"
+				},
+				{
+					"key": "sectionTitle",
+					"label": "Bereich",
+					"type": "text"
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url"
+				}
+			],
+			"create": [
+				{
+					"key": "sectionId",
+					"label": "Bereich",
+					"type": "select",
+					"required": true,
+					"placeholder": "Bereich auswählen",
+					"grid": 12
+				},
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Google",
+					"grid": 12
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.google.com",
+					"grid": 12
+				},
+				{
+					"key": "iconUrl",
+					"label": "Icon URL",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. https://example.com/icon.png",
+					"grid": 12
+				}
+			],
+			"update": [
+				{
+					"key": "sectionId",
+					"label": "Bereich",
+					"type": "select",
+					"required": true,
+					"placeholder": "Bereich auswählen",
+					"grid": 12,
+					"hidden": true
+				},
+				{
+					"key": "name",
+					"label": "Name",
+					"type": "text",
+					"required": true,
+					"placeholder": "z.B. Google",
+					"grid": 12
+				},
+				{
+					"key": "url",
+					"label": "URL",
+					"type": "url",
+					"required": true,
+					"placeholder": "z.B. https://www.google.com",
+					"grid": 12
+				},
+				{
+					"key": "iconUrl",
+					"label": "Icon URL",
+					"type": "text",
+					"required": false,
+					"placeholder": "z.B. https://example.com/icon.png",
+					"grid": 12
+				}
+			]
+		}
+	},
+	"pathNames": {
+		"expense": "Ausgaben",
+		"hobbys": "Hobbys",
+		"work": "Arbeit",
+		"sonstiges": "Sonstiges",
+		"reminiszenz": "Reminiszenz",
+		"nomination": "Nomination",
+		"doctorsAppointment": "Arzttermin",
+		"informatica": "Informatik",
+		"verba": "Verben",
+		"englisch": "Englisch",
+		"idiotisms": "Idiotismen",
+		"adjectiva": "Adjektive",
+		"it": "IT",
+		"homelab": "Homelab",
+		"mail": "Mail",
+		"mix": "Mix",
+		"shopping": "Shopping",
+		"socialMedia": "Social Media",
+		"study": "Study",
+		"works": "Arbeit",
+		"privatContact": "Privat",
+		"workContact": "Arbeit",
+		"dashy": "Dashy",
+		"hyperlinkstool": "Hyperlinkstool"
+	},
+	"datetimePicker": {
+		"hour": "Stunde",
+		"minute": "Minute",
+		"second": "Sekunde",
+		"amPm": "AM/PM",
+		"am": "AM",
+		"pm": "PM",
+		"ok": "OK",
+		"cancel": "Abbrechen",
+		"selectDateTime": "Datum und Uhrzeit auswählen",
+		"selectMonthYear": "Monat und Jahr auswählen",
+		"navigateCalendar": "Kalender navigieren",
+		"previousMonth": "Vorheriger Monat",
+		"nextMonth": "Nächster Monat",
+		"calendar": "Kalender",
+		"selectDate": "Datum auswählen",
+		"selectTime": "Uhrzeit auswählen",
+		"placeholderExample": "z.B. 12:00 01-01-2025",
+		"months": {
+			"january": "Januar",
+			"february": "Februar",
+			"march": "März",
+			"april": "April",
+			"may": "Mai",
+			"june": "Juni",
+			"july": "Juli",
+			"august": "August",
+			"september": "September",
+			"october": "Oktober",
+			"november": "November",
+			"december": "Dezember"
+		},
+		"weekdays": {
+			"sunday": "S",
+			"monday": "M",
+			"tuesday": "D",
+			"wednesday": "M",
+			"thursday": "D",
+			"friday": "F",
+			"saturday": "S"
+		}
+	}
+}
