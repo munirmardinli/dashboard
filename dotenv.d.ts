@@ -97,5 +97,25 @@ declare namespace NodeJS {
 		* @example 1234567890
 		*/
 		GITHUB_BRANCH: string;
+		/**
+		* The Twilio account SID
+		* @example xxx
+		*/
+		TWILIO_ACCOUNT_SID: string;
+		/**
+		* The Twilio auth token
+		* @example xxx
+		*/
+		TWILIO_AUTH_TOKEN: string;
+		/**
+		* The Twilio WhatsApp from
+		* @example xxx
+		*/
+		TWILIO_WHATSAPP_FROM: string;
+		/**
+		* The Twilio WhatsApp to
+		* @example xxx
+		*/
+		TWILIO_WHATSAPP_TO: string;
 	}
 }

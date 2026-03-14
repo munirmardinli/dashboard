@@ -30,6 +30,7 @@ declare global {
 		end: string;
 		description?: string;
 		location?: string;
+		reminder?: string;
 	}
 }
 

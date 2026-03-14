@@ -3,6 +3,9 @@ import { createServer } from "node:http";
 import { URL } from "node:url";
 import { handleCORS, parseBody, sendError } from "./utils/http.js";
 import routers from "./routers/index.js";
+import { sendWhatsapp } from "./utils/whatsapp.js";
+import { scheduleJob } from "./utils/scheduler.js";
+import { checkAndSendReminders } from "./utils/reminderChecker.js";
 
 const PORT = process.env.PORT || "4012";
 
@@ -32,4 +35,15 @@ const server = createServer(async (req, res) => {
 	}
 });
 
-server.listen(Number(PORT), () => console.log(`🚀 Server on ${PORT}`));
+server.listen(Number(PORT), () => {
+	console.log(`🚀 Server on ${PORT}`);
+	
+	try {
+		scheduleJob("*/60 * * * * *", () => {
+			checkAndSendReminders();
+		});
+		console.log("✅ Reminder scheduler started (every 60s)");
+	} catch (err) {
+		console.error("❌ Failed to start reminder scheduler:", err);
+	}
+});
