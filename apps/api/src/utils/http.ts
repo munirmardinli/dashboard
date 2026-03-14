@@ -24,6 +24,14 @@ export function sendICS(res: ServerResponse, icsContent: string, statusCode = 20
 	res.end(icsContent);
 }
 
+export function sendVCF(res: ServerResponse, vcfContent: string, filename = "contact.vcf", statusCode = 200): void {
+	res.writeHead(statusCode, {
+		"Content-Type": "text/vcard; charset=utf-8",
+		"Content-Disposition": `attachment; filename="${filename}"`,
+	});
+	res.end(vcfContent);
+}
+
 export function sendImage(res: ServerResponse, imageBuffer: Buffer, contentType: string, statusCode = 200): void {
 	res.writeHead(statusCode, {
 		"Content-Type": contentType,
