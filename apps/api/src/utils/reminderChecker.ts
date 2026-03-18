@@ -1,47 +1,77 @@
-import { GitHubService } from "../routers/GitHubService.js";
+import { GitHubService } from "./github.js";
 import { sendWhatsapp } from "./whatsapp.js";
-import { ReminderHelper } from "./reminder.js";
 
-const github = new GitHubService();
+export class ReminderChecker {
+	private github = new GitHubService();
+	private sentReminders = new Set<string>();
 
-const sentReminders = new Set<string>();
+	private reminderOffsets: Record<string, number> = {
+		NONE: 0,
+		MINUTES_10_BEFORE: 600,
+		MINUTES_30_BEFORE: 1800,
+		HOUR_1_BEFORE: 3600,
+		DAY_1_BEFORE: 86400,
+		WEEK_1_BEFORE: 604800,
+	};
 
-export async function checkAndSendReminders() {
-	try {
-		console.log("🕒 Checking for upcoming reminders...");
-		const files = await github.listDirectory("calendar");
-		const calendarFiles = files.filter(f => f.type === "file" && f.name.endsWith(".json"));
+	private reminderLabels: Record<string, string> = {
+		MINUTES_10_BEFORE: "10 Minuten",
+		MINUTES_30_BEFORE: "30 Minuten",
+		HOUR_1_BEFORE: "1 Stunde",
+		DAY_1_BEFORE: "1 Tag",
+		WEEK_1_BEFORE: "1 Woche",
+	};
 
-		const now = new Date();
+	async checkAndSendReminders(): Promise<void> {
+		try {
+			const files = await this.github.listDirectory("calendar");
+			const calendarFiles = files.filter(
+				f => f.type === "file" && f.name.endsWith(".json")
+			);
 
-		for (const file of calendarFiles) {
-			const { content } = await github.getFile(file.path);
-			const events = JSON.parse(content) as CalendarEvent[];
+			const now = new Date();
+			const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
+			for (const file of calendarFiles) {
+				const { content } = await this.github.getFile(file.path);
+				const events = JSON.parse(content) as CalendarEvent[];
 
-			for (const event of events) {
-				if (!event.reminder || event.reminder === "NONE") continue;
+				for (const event of events) {
+					if (!event.reminder || event.reminder === "NONE") continue;
+					const eventStart = new Date(event.start);
+					const offsetSeconds = this.getReminderOffset(event.reminder);
+					const reminderTime = new Date(
+						eventStart.getTime() - offsetSeconds * 1000
+					);
+					const reminderId = `${event.title}-${event.start}-${event.reminder}`;
 
-				const eventStart = new Date(event.start);
-				const offsetSeconds = ReminderHelper.getReminderOffset(event.reminder);
-				const reminderTime = new Date(eventStart.getTime() - offsetSeconds * 1000);
-
-				const reminderId = `${event.title}-${event.start}-${event.reminder}`;
-
-				const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
-
-				if (reminderTime <= now && reminderTime > fiveMinutesAgo && !sentReminders.has(reminderId)) {
-					const label = ReminderHelper.getReminderLabel(event.reminder);
-					const message = `🔔 Reminder: "${event.title}" startet in ${label}!\n📅 ${new Date(event.start).toLocaleString("de-DE",{
-						hour: "2-digit",
-						minute: "2-digit"
-					})}`;
-					console.log(`📤 Sending WhatsApp for: ${event.title}`);
-					await sendWhatsapp(message);
-					sentReminders.add(reminderId);
+					if (
+						reminderTime <= now &&
+						reminderTime > fiveMinutesAgo &&
+						!this.sentReminders.has(reminderId)
+					) {
+						const label = this.getReminderLabel(event.reminder);
+						const message =
+							`🔔 Reminder: "${event.title}" startet in ${label}!\n` +
+							`📅 ${new Date(event.start).toLocaleString("de-DE", {
+								hour: "2-digit",
+								minute: "2-digit"
+							})}`;
+						console.log(`📤 Sending WhatsApp for: ${event.title}`);
+						await sendWhatsapp(message);
+						this.sentReminders.add(reminderId);
+					}
 				}
 			}
+		} catch (error) {
+			console.error("❌ Error in checkAndSendReminders:", error);
 		}
-	} catch (error) {
-		console.error("❌ Error in checkAndSendReminders:", error);
+	}
+
+	private getReminderOffset(reminder: string): number {
+		return this.reminderOffsets[reminder] || 0;
+	}
+
+	private getReminderLabel(reminder: string): string {
+		return this.reminderLabels[reminder] || reminder;
 	}
 }

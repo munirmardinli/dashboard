@@ -32,6 +32,11 @@ services:
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:?Twilio Auth Token is required}
       TWILIO_WHATSAPP_FROM: ${TWILIO_WHATSAPP_FROM:?Twilio WhatsApp sender number is required}
       TWILIO_WHATSAPP_TO: ${TWILIO_WHATSAPP_TO:?Twilio WhatsApp destination number is required}
+    volumes:
+      - type: bind
+        source: ${PWD}/apps/ui/public/i18n # Path of i18n e.g. en.json, ar.json, fr.json
+        target: /usr/share/nginx/html/i18n
+        read_only: true
     labels:
       <<: *default-labels
       monitoring: dashboard

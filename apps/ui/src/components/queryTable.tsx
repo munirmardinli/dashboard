@@ -2,13 +2,14 @@ import { FC, useState, useEffect, useRef, useMemo, useCallback, useTransition } 
 import { notFound, useRouter } from "next/navigation";
 import { Clock, Plus, Search, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 
-import { DataAPI, ConfigAPI, DashyAPI } from "@/utils/api";
+import { DataAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
+import { useTranslation } from "@/hooks/useTranslation";
 
 export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
@@ -23,7 +24,8 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
   const setSnack = useSnackStore((state) => state.setSnack);
   const { isLoading } = useGlobalLoadingStore();
-  const { t, translations, loadTranslations, language, isRTL, getLocale, formatDate, formatDateTime } = useI18nStore();
+  const { t, translations, language, isRTL, dataTypes } = useTranslation();
+  const { getLocale, formatDate, formatDateTime, loadTranslations } = useI18nStore();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
@@ -45,19 +47,14 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   useEffect(() => {
     startTransition(async () => {
       try {
-        if (!configCacheRef.current.config) configCacheRef.current.config = await ConfigAPI.getFullConfig();
-        if (!configCacheRef.current.dataTypeConfig.has(dataType)) {
-          const dt = await ConfigAPI.getDataTypeConfig(dataType);
-          if (dt) configCacheRef.current.dataTypeConfig.set(dataType, dt);
-        }
-        const cfg = configCacheRef.current.config;
-        const dt = configCacheRef.current.dataTypeConfig.get(dataType);
-        setFullConfig(cfg); setConfig(dt || null);
+        const dt = dataTypes[dataType] as DataTypeConfig | undefined;
+        setFullConfig(translations as unknown as BasicConfig);
+        setConfig(dt || null);
         if (dt?.defaultSortField) setSortField(dt.defaultSortField as SortField);
         if (dt?.defaultSortOrder) setSortOrder(dt.defaultSortOrder as 'asc' | 'desc');
       } catch { setError('config-load-failed'); }
     });
-  }, [dataType]);
+  }, [dataType, dataTypes, translations]);
 
   useEffect(() => {
     startTransition(async () => {

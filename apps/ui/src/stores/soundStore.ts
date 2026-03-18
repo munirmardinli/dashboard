@@ -1,5 +1,3 @@
-"use client";
-
 import { create } from "zustand";
 
 let audioContext: AudioContext | null = null;

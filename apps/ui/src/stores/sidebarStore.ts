@@ -1,4 +1,3 @@
-"use client";
 import { create } from "zustand";
 
 const PATH_COOKIE = "lastActivePath";

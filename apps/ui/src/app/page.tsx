@@ -3,8 +3,7 @@
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense, useMemo } from "react";
-import { ConfigAPI } from "@/utils/api";
+import { Suspense, useMemo } from "react";
 import { Navigation } from "@/app/default";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import Loading from "@/app/loading";
@@ -23,12 +22,6 @@ export default function Root() {
   const mode = useThemeStore((state) => state.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
-  const [, setOnboardingFeatures] = useState<OnboardingFeature[]>([]);
-
-  useEffect(() => {
-    ConfigAPI.getOnboardingConfig().then(setOnboardingFeatures);
-  }, []);
-
   const viewComponent = useMemo(() => {
     if (!q) return <RootPage />;
     switch (q) {

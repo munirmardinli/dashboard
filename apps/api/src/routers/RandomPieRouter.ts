@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { sendJSON } from "../utils/http.js";
-import { GitHubService } from "./GitHubService.js";
+import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
 
@@ -10,7 +10,7 @@ export class RandomPieRouter {
 	}
 
 	async get(_req: IncomingMessage, res: ServerResponse): Promise<void> {
-		const { content } = await github.getFile("learn/learn.json");
+		const { content } = await github.getFile("management/learn.json");
 		sendJSON(res, JSON.parse(content));
 	}
 }

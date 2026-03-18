@@ -80,34 +80,6 @@ export const DataAPI = {
 	},
 };
 
-
-export const ConfigAPI = {
-	async getTranslations(language: string): Promise<Record<string, unknown>> {
-		const result = await fetchAPI<Record<string, unknown>>(`/api/config/translations/${language}`);
-		return result.success ? result.data : {};
-	},
-
-	async getFullConfig(): Promise<BasicConfig> {
-		const result = await fetchAPI<BasicConfig>(`/api/config`);
-		return result.success ? result.data : ({} as BasicConfig);
-	},
-
-	async getDataTypeConfig(dataType: string): Promise<DataTypeConfig | null> {
-		const result = await fetchAPI<DataTypeConfig>(`/api/config/dataType/${dataType}`);
-		return result.success ? result.data : null;
-	},
-
-	async getNavigationConfig(): Promise<NavigationConfig | null> {
-		const result = await fetchAPI<NavigationConfig>(`/api/config/navigation`);
-		return result.success ? result.data : null;
-	},
-
-	async getOnboardingConfig(): Promise<OnboardingFeature[]> {
-		const result = await fetchAPI<OnboardingFeature[]>(`/api/config/onboarding`);
-		return result.success ? result.data : [];
-	},
-};
-
 export const PortfolioAPI = {
 	async getPortfolioData(): Promise<PortfolioData | null> {
 		const result = await fetchAPI<PortfolioData>(`/api/portfolio`);

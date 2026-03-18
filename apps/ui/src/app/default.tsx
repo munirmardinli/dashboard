@@ -16,6 +16,7 @@ import Loading from '@/app/loading';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { useNavigation } from '@/hooks/useNavigation';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const DRAWER_WIDTH = 280;
 
@@ -27,7 +28,7 @@ export const Navigation: FC = () => {
   const { isOpen: mobileDrawerOpen, setIsOpen: setMobileDrawerOpen, toggleSidebar, setActivePath } = useSidebarStore();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  const { language, setLanguage, translations, loadTranslations } = useI18nStore();
+  const { t, language, setLanguage, translations } = useTranslation();
   const setSnack = useSnackStore((state) => state.setSnack);
   const { mode: themeMode, setMode: setThemeMode } = useThemeStore();
   const mode = useThemeStore((s) => s.mode);
@@ -35,30 +36,22 @@ export const Navigation: FC = () => {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSettingsSection, setActiveSettingsSection] = useState<'general' | 'security'>('general');
+  const [mounted, setMounted] = useState(false);
   const [, startTransition] = useTransition();
 
-  const t = useCallback((key: string): string => {
-    const keys = key.split(".");
-    let current: unknown = translations;
-    for (const k of keys) {
-      if (current == null || typeof current !== "object") return key;
-      const next = (current as Record<string, unknown>)[k];
-      if (next === undefined) return key;
-      current = next;
-    }
-    return typeof current === "string" ? current : key;
-  }, [translations]);
 
   useEffect(() => {
+    setMounted(true);
     initializeSidebarFromCookie();
   }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      const { loadTranslations } = useI18nStore.getState();
       if (Object.keys(translations).length === 0) startTransition(() => { loadTranslations(language); });
     }, 0);
     return () => clearTimeout(timer);
-  }, [translations, language, loadTranslations]);
+  }, [translations, language]);
 
   const handleExpandToggle = useCallback((key: string) => {
     setExpandedItems(prev => {
@@ -266,6 +259,8 @@ export const Navigation: FC = () => {
     </div>
   );
 
+  if (!mounted) return null;
+
   return (
     <Suspense fallback={<Loading />}>
       {isDesktop && (
@@ -301,7 +296,7 @@ export const Navigation: FC = () => {
               <span style={{ fontWeight: 700, fontSize: '1.25rem', color: theme.text }}>{t("ui.navigationTitle")}</span>
             </div>
           </div>
-          <div style={{ height: '64px' }} /> {/* Spacer for sticky header */}
+          <div style={{ height: '64px' }} />
           {mobileDrawerOpen && (
             <div style={{ position: 'fixed', inset: 0, zIndex: 1300 }}>
               <div onClick={() => setMobileDrawerOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} />

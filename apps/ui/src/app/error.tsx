@@ -1,23 +1,14 @@
 'use client';
-import { useEffect, useState, useTransition } from 'react';
-import { ConfigAPI } from '@/utils/api';
-import { useI18nStore } from '@/stores/i18nStore';
+import { useTransition } from 'react';
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }, reset: () => void }) {
-	const [fullConfig, setFullConfig] = useState<BasicConfig | null>(null);
 	const [isPending, startTransition] = useTransition();
-	const { t } = useI18nStore();
+	const { t } = useTranslation();
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
-
-	useEffect(() => {
-		startTransition(async () => {
-			const config = await ConfigAPI.getFullConfig();
-			setFullConfig(config);
-		});
-	}, []);
 
 	const handleReset = () => startTransition(() => reset());
 
@@ -47,7 +38,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 						opacity: isPending ? 0.7 : 1, transition: 'opacity 0.2s'
 					}}
 				>
-					{isPending ? t("ui.loading") : (fullConfig?.ui?.tryAgain ?? t("ui.tryAgain"))}
+					{isPending ? t("ui.loading") : t("ui.tryAgain")}
 				</button>
 			</div>
 		</div>

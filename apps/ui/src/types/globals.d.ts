@@ -271,6 +271,7 @@ declare global {
   interface Translations {
     version?: string;
     locale?: string;
+    onboarding?: OnboardingFeature[];
     ui?: Record<string, string>;
     language?: {
       menu?: Record<string, string>;

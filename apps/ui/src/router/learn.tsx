@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from "react";
 import { LearnAPI } from "@/utils/api";
 import { notFound } from "next/navigation";
 import { useI18nStore } from '@/stores/i18nStore';
+import Loading from "@/app/loading";
 
 export default function RandomPie() {
 	const mode = useThemeStore((state) => state.mode);
@@ -49,20 +50,7 @@ export default function RandomPie() {
 		}
 	}, [initialItems]);
 
-	if (loading) {
-		return (
-			<div style={{
-				height: "100vh",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				background: theme.bg,
-				color: theme.text
-			}}>
-				{t("ui.loading")}
-			</div>
-		);
-	}
+	if (loading) return <Loading />;
 
 	if (!data) return notFound();
 

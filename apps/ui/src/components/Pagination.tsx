@@ -1,7 +1,6 @@
-import { FC, useEffect, useState, useTransition } from 'react';
+import { FC, useTransition } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import { ConfigAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
@@ -12,14 +11,11 @@ export const MuiPagination: FC<PaginationProps> = ({
 }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-  const [, setFullConfig] = useState<BasicConfig | null>(null);
   const { getLocale, t } = useI18nStore();
   const [, startTransition] = useTransition();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
-
-  useEffect(() => { startTransition(async () => { setFullConfig(await ConfigAPI.getFullConfig()); }); }, []);
 
   const formatNumber = (num: number) => num.toLocaleString(getLocale());
 

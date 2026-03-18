@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check, ExternalLink } from "lucide-react";
 
-import { ConfigAPI, DataAPI, DashyAPI } from "@/utils/api";
+import { DataAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -13,13 +13,15 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setSnack = useSnackStore((state) => state.setSnack);
   const { setLoading, isLoading } = useGlobalLoadingStore();
-  const { t, translations, loadTranslations, language } = useI18nStore();
+  const { t, translations, language, dataTypes } = useTranslation();
+  const { loadTranslations } = useI18nStore();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
@@ -58,16 +60,14 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       setLoading(true, t("ui.initializing"));
       try {
         startTransition(async () => {
-          if (dataType === 'dashy') {
+          const dtCfg = dataTypes[dataType] as DataTypeConfig | undefined;
+          setFullConfig(translations as unknown as BasicConfig);
+          if (dtCfg) setConfig(dtCfg);
+          if (dataType && dataType !== 'dashy') {
+            setItems(await DataAPI.getItems<GenericJsonItem>(dataType) || []);
+          } else if (dataType === 'dashy') {
             const data = await DashyAPI.getDashyData();
             if (data) setDashyData(data);
-            const dtCfg = await ConfigAPI.getDataTypeConfig(dataType);
-            if (dtCfg) setConfig(dtCfg);
-          } else {
-            const [cfg, dtCfg] = await Promise.all([ConfigAPI.getFullConfig(), ConfigAPI.getDataTypeConfig(dataType)]);
-            if (cfg) setFullConfig(cfg);
-            if (dtCfg) setConfig(dtCfg);
-            if (dataType) setItems(await DataAPI.getItems<GenericJsonItem>(dataType) || []);
           }
           setIsInitialized(true);
         });
@@ -746,7 +746,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
             gap: '16px',
             alignItems: 'center',
           }}>
-            {/* Links: Abbrechen */}
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
               <button
                 onClick={() => router.back()}
@@ -761,7 +760,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               </button>
             </div>
 
-            {/* Mitte: Löschen (nur im Edit-Modus) */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               {isEdit && (
                 <button
@@ -780,7 +778,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
               )}
             </div>
 
-            {/* Rechts: Speichern / Erstellen */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={handleSave}

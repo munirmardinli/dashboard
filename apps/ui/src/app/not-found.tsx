@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FileQuestion, Home } from "lucide-react";
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
@@ -10,6 +10,7 @@ export default function NotFound() {
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const { t } = useI18nStore();
+  const router = useRouter();
 
   return (
     <div style={{
@@ -90,7 +91,11 @@ export default function NotFound() {
           {t("ui.pageNotFoundDescription")}
         </p>
 
-        <Link href="/" style={{
+        <button 
+          onClick={() => {
+            window.location.href = "/";
+          }} 
+          style={{
           display: "inline-flex",
           alignItems: "center",
           gap: "12px",
@@ -106,17 +111,17 @@ export default function NotFound() {
           border: "none",
           cursor: "pointer"
         }}
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.currentTarget.style.transform = "translateY(-4px) scale(1.05)";
             e.currentTarget.style.boxShadow = `0 12px 30px ${theme.primary}50`;
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.currentTarget.style.transform = "translateY(0) scale(1)";
             e.currentTarget.style.boxShadow = `0 8px 20px ${theme.primary}40`;
           }}>
           <Home size={20} />
           {t("ui.backToHome")}
-        </Link>
+        </button>
       </div>
 
       <style>{`

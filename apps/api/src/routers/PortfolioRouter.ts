@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { sendJSON, sendImage } from "../utils/http.js";
-import { GitHubService } from "./GitHubService.js";
+import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
 const PORTFOLIO_DIR = "portfolio/index.json";

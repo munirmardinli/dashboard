@@ -5,37 +5,9 @@ import { getTheme } from "@/utils/theme";
 
 import { QueryTable } from "@/components/queryTable";
 import CreateMode from "@/components/mutationTable";
-import { ConfigAPI } from "@/utils/api";
 import Loading from "@/app/loading";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
-import { useI18nStore } from "@/stores/i18nStore";
-
-const titleMap: Record<string, string> = {
-	expense: "Ausgaben",
-	hobbys: "Hobbys",
-	work: "Arbeit Kalender",
-	sonstiges: "Sonstiges",
-	reminiszenz: "Reminiszenz",
-	nomination: "Nomination",
-	doctorsAppointment: "Arzttermin",
-	rendezvous: "Rendezvous",
-	informatica: "Informatik Vokabular",
-	verba: "Verben",
-	englisch: "Englisch Vokabular",
-	idiotisms: "Idiotismen",
-	adjectiva: "Adjektive",
-	it: "IT Passwörter",
-	homelab: "Homelab Passwörter",
-	mail: "Mail Passwörter",
-	mix: "Mix Passwörter",
-	shopping: "Shopping Passwörter",
-	socialMedia: "Social Media Passwörter",
-	study: "Study Passwörter",
-	works: "Arbeit Passwörter",
-	privatContact: "Privat Kontakte",
-	workContact: "Arbeit Kontakte",
-	dashy: "Dashy",
-};
+import { useTranslation } from "@/hooks/useTranslation";
 
 function QueryPageContent() {
 	const searchParams = useSearchParams();
@@ -46,23 +18,20 @@ function QueryPageContent() {
 	const [validDataTypes, setValidDataTypes] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const isDesktop = useIsDesktop();
-	const { t } = useI18nStore();
+	const { t, dataTypes, navigation } = useTranslation();
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
 
-	useEffect(() => {
-		if (view && titleMap[view]) {
-			document.title = `${titleMap[view]}`;
-		} else {
-			document.title = "Management Dashboard";
-		}
-	}, [view]);
+	const pageTitle = (view && (typeof navigation[view] === 'string' ? navigation[view] : dataTypes[view]?.title)) || "Management Dashboard";
 
 	useEffect(() => {
-		const loadDataTypes = async () => {
+		document.title = pageTitle;
+	}, [pageTitle]);
+
+	useEffect(() => {
+		const loadDataTypes = () => {
 			try {
-				const config = await ConfigAPI.getFullConfig();
-				setValidDataTypes(Object.keys(config.dataTypes || {}));
+				setValidDataTypes(Object.keys(dataTypes || {}));
 			} catch (error) {
 				console.error(t("ui.error"), error);
 				setValidDataTypes([]);
@@ -71,7 +40,7 @@ function QueryPageContent() {
 			}
 		};
 		loadDataTypes();
-	}, []);
+	}, [dataTypes]);
 
 	if (isLoading) return <Loading />;
 	if (!view) return notFound();
@@ -94,7 +63,7 @@ function QueryPageContent() {
 					WebkitTextFillColor: "transparent",
 					lineHeight: "1.2"
 				}}>
-					{view && titleMap[view] ? titleMap[view] : "Management Dashboard"}
+					{pageTitle}
 				</h1>
 				<QueryTable dataType={view} />
 			</div>

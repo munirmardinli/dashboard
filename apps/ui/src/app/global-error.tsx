@@ -1,38 +1,35 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 
-import { ConfigAPI } from '@/utils/api';
 import { useSnackStore } from '@/stores/snackbarStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }, reset: () => void }) {
-	const [fullConfig, setFullConfig] = useState<BasicConfig | null>(null);
+	const { t } = useTranslation();
 	const setSnack = useSnackStore((state) => state.setSnack);
 	const router = useRouter();
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
 
-	useEffect(() => { ConfigAPI.getFullConfig().then(setFullConfig); }, []);
-
 	const handleRetry = () => {
 		try {
 			reset();
-			setSnack(`${fullConfig?.ui?.applicationIsBeingReloaded ?? ""}`, 'info');
-		} catch { setSnack(`${fullConfig?.ui?.errorWhileReloadingApplication ?? ""}`, 'error'); }
+			setSnack(t("ui.applicationIsBeingReloaded"), 'info');
+		} catch { setSnack(t("ui.errorWhileReloadingApplication"), 'error'); }
 	};
 
 	const handleGoHome = () => {
-		try { router.push('/'); } catch { setSnack(`${fullConfig?.ui?.errorWhileNavigatingToHomePage ?? ""}`, 'error'); }
+		try { router.push('/'); } catch { setSnack(t("ui.errorWhileNavigatingToHomePage"), 'error'); }
 	};
 
 	const handleReportBug = () => {
 		try {
 			console.error('Error Report:', { message: error.message, digest: error.digest, stack: error.stack, timestamp: new Date().toISOString(), url: window.location.href });
-			setSnack(`${fullConfig?.ui?.successfully ?? ""}`, 'success');
-		} catch { setSnack(`${fullConfig?.ui?.errorWhileCreatingBugReport ?? ""}`, 'error'); }
+			setSnack(t("ui.successfully"), 'success');
+		} catch { setSnack(t("ui.errorWhileCreatingBugReport"), 'error'); }
 	};
 
 	return (
@@ -50,19 +47,19 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 							<AlertCircle size={40} color="white" />
 						</div>
 						<h1 style={{ margin: '0 0 8px', fontWeight: 600, color: theme.text, fontSize: '2rem' }}>
-							{`${fullConfig?.ui?.oopsSomethingWentWrong ?? ""}`}
+							{t("ui.error")}
 						</h1>
 						<p style={{ margin: '0 0 24px', color: theme.textSec, maxWidth: '400px', fontSize: '1rem' }}>
-							{`${fullConfig?.ui?.oopsSomethingWentWrong ?? ""}`} {`${fullConfig?.ui?.weAreWorkingOnFixingTheProblem ?? ""}`}
+							{t("ui.oopsSomethingWentWrong") || "Oops, something went wrong."}
 						</p>
 						<div style={{ width: '100%', marginBottom: '24px', padding: '16px', borderRadius: '8px', background: '#fef2f2', border: '1px solid #fecaca', textAlign: 'left' }}>
-							<div style={{ fontWeight: 600, color: '#991b1b', marginBottom: '4px' }}>{`${fullConfig?.ui?.errorDetails ?? ""}`}</div>
+							<div style={{ fontWeight: 600, color: '#991b1b', marginBottom: '4px' }}>{t("ui.errorDetails")}</div>
 							<div style={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#b91c1c' }}>
-								{error.message || `${fullConfig?.ui?.unknownError ?? ""}`}
+								{error.message || t("ui.unknownError")}
 							</div>
 							{error.digest && (
 								<div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#dc2626' }}>
-									{`${fullConfig?.ui?.errorId ?? ""}`}: {error.digest}
+									{t("ui.errorId")}: {error.digest}
 								</div>
 							)}
 						</div>
@@ -75,7 +72,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 									display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '1rem', fontWeight: 500
 								}}
 							>
-								<RefreshCw size={20} /> {`${fullConfig?.ui?.tryAgain ?? ""}`}
+								<RefreshCw size={20} /> {t("ui.tryAgain")}
 							</button>
 							<button
 								onClick={handleGoHome}
@@ -85,13 +82,13 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 									display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '1rem', fontWeight: 500
 								}}
 							>
-								<Home size={20} /> {`${fullConfig?.ui?.toHomePage ?? ""}`}
+								<Home size={20} /> {t("ui.toHomePage")}
 							</button>
 						</div>
 						<div style={{ marginTop: '16px' }}>
 							<button
 								onClick={handleReportBug}
-								title={`${fullConfig?.ui?.createBugReport ?? ""}`}
+								title={t("ui.createBugReport")}
 								style={{ background: 'none', border: 'none', cursor: 'pointer', color: theme.textSec, padding: '8px', borderRadius: '50%' }}
 								onMouseEnter={(e) => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = '#fef2f2'; }}
 								onMouseLeave={(e) => { e.currentTarget.style.color = theme.textSec; e.currentTarget.style.background = 'none'; }}
@@ -100,7 +97,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 							</button>
 						</div>
 						<div style={{ fontSize: '0.75rem', color: theme.textSec, marginTop: '16px' }}>
-							{`${fullConfig?.ui?.ifTheProblemPersistsContactTheSupport ?? ""}`}
+							{t("ui.ifTheProblemPersistsContactTheSupport")}
 						</div>
 					</div>
 				</div>

@@ -1,4 +1,3 @@
-"use client";
 import { create } from "zustand";
 import { applyTheme } from "@/utils/theme";
 import { globalVars } from "@/utils/globalyVar";

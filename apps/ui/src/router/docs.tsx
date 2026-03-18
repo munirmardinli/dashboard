@@ -21,6 +21,7 @@ import { DocsAPI, PortfolioAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
 import { globalVars } from '@/utils/globalyVar';
 import Image from 'next/image';
+import Loading from '@/app/loading';
 
 function CodeBlock({ children, className, node, ...props }: {
   children: ReactNode;
@@ -308,7 +309,7 @@ export default function DocPage() {
       day: 'numeric'
     }) : null;
 
-  if (loading) return <div style={{ color: theme.text }}>{t("ui.loading")}</div>;
+  if (loading) return <Loading />;
 
   if (error || !data) {
     return (

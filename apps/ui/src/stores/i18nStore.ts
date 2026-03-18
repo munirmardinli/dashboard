@@ -53,8 +53,11 @@ function saveLanguageToCookie(lang: Language): void {
 
 async function loadTranslationFile(lang: Language): Promise<Translations> {
 	try {
-		const { ConfigAPI } = await import("@/utils/api");
-		const translations = await ConfigAPI.getTranslations(lang);
+		const response = await fetch(`/i18n/${lang}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load translation file: ${response.statusText}`);
+		}
+		const translations = await response.json();
 		return (translations as Translations) || ({} as Translations);
 	} catch (error) {
 		console.error(`Error loading translation file for ${lang}:`, error);

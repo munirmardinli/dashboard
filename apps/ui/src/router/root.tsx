@@ -7,10 +7,8 @@ import { useEffect, useState, Suspense } from "react";
 import { useThemeStore } from "@/stores/themeStore";
 import { useSidebarStore } from "@/stores/sidebarStore";
 import { getTheme } from "@/utils/theme";
-import { useI18nStore } from "@/stores/i18nStore";
-import { ConfigAPI } from "@/utils/api";
+import { useTranslation } from "@/hooks/useTranslation";
 import { globalVars } from "@/utils/globalyVar";
-
 
 export default function Root() {
 	const mode = useThemeStore((state) => state.mode);
@@ -18,17 +16,18 @@ export default function Root() {
 	const theme = getTheme(mode);
 	const router = useRouter();
 	const [dashboardUrl, setDashboardUrl] = useState(globalVars.DEFAULT_VIEW);
-	const [onboardingFeatures, setOnboardingFeatures] = useState<OnboardingFeature[]>([]);
+	const [mounted, setMounted] = useState(false);
 
-	const { t } = useI18nStore();
+	const { t, onboarding } = useTranslation();
 
 	useEffect(() => {
+		setMounted(true);
 		setDashboardUrl(activePath || globalVars.DEFAULT_VIEW);
 	}, [activePath]);
 
-	useEffect(() => {
-		ConfigAPI.getOnboardingConfig().then(setOnboardingFeatures);
-	}, []);
+	if (!mounted) {
+		return null;
+	}
 	return (
 		<Suspense fallback={<Circle />}>
 			<div style={{
@@ -114,7 +113,7 @@ export default function Root() {
 					marginTop: "120px",
 					marginBottom: "80px"
 				}}>
-					{onboardingFeatures.map((feature: OnboardingFeature, index: number) => (
+					{onboarding.map((feature: OnboardingFeature, index: number) => (
 						<div key={index} tabIndex={0} onClick={() => router.push(feature.link)} style={{ textDecoration: 'none' }} role="link" aria-label={feature.title} onKeyDown={(e) => e.key === "Enter" && router.push(feature.link)}>
 							<div style={{
 								background: theme.paper,
