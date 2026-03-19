@@ -1,40 +1,25 @@
 import "./utils/env.js";
-import { createServer } from "node:http";
-import { URL } from "node:url";
-import { handleCORS, parseBody, sendError } from "./utils/http.js";
-import routers from "./routers/index.js";
+import express from "express";
+import cors from "cors";
+import router from "./routers/index.js";
 import { scheduleJob } from "./utils/scheduler.js";
 import { ReminderChecker } from "./utils/reminderChecker.js";
 
 const PORT = process.env.PORT || "4012";
 
-const allRoutes = routers.flatMap(r => r.getRoutes());
+const app = express();
 
-const server = createServer(async (req, res) => {
-	try {
-		handleCORS(req, res);
-		if (req.method === "OPTIONS") return res.end();
+app.use(cors());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use("/", router);
 
-		const url = new URL(req.url || "/", `http://${req.headers.host}`);
-		const pathname = url.pathname;
-		const method = req.method || "GET";
-
-		const body = ["POST", "PUT", "PATCH"].includes(method) ? await parseBody(req) : null;
-		const route = allRoutes.find(r => r.method === method && r.path.test(pathname));
-
-		if (route) {
-			const match = pathname.match(route.path);
-			await route.handler(req, res, { params: match?.groups || {}, body, query: Object.fromEntries(url.searchParams) });
-		} else {
-			sendError(res, 404, "Not found");
-		}
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		sendError(res, 500, message);
-	}
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+	const message = err instanceof Error ? err.message : String(err);
+	res.status(500).json({ error: message, statusCode: 500 });
 });
 
-server.listen(Number(PORT), () => {
+app.listen(Number(PORT), () => {
 	console.log(`🚀 Server on ${PORT}`);
 	
 	try {

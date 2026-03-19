@@ -1,30 +1,35 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { sendJSON, sendImage } from "../utils/http.js";
+import { Router, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
 const PORTFOLIO_DIR = "portfolio/index.json";
 
-export class PortfolioRouter {
-	getRoutes(): Route[] {
-		return [
-			{ method: "GET", path: /^\/api\/portfolio$/, handler: this.get.bind(this) },
-			{ method: "GET", path: /^\/api\/portfolio\/(?<filename>[^/]+)$/, handler: this.getImage.bind(this) },
-		];
+class PortfolioRouter {
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/portfolio", this.get.bind(this));
+		router.get("/api/portfolio/:filename", this.getImage.bind(this));
+
+		return router;
 	}
 
-	async get(_req: IncomingMessage, res: ServerResponse): Promise<void> {
+	async get(_req: Request, res: Response): Promise<void> {
 		const { content } = await github.getFile(PORTFOLIO_DIR);
-		sendJSON(res, JSON.parse(content));
+		res.json(JSON.parse(content));
 	}
 
-	async getImage(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const params = ctx.params as unknown as FilenameRouteParams;
-		const filename = params.filename;
+	async getImage(req: Request, res: Response): Promise<void> {
+		const { filename = "" } = req.params;
 		if (!filename) throw new Error("Filename missing");
 		const { content } = await github.getRawFile(`${PORTFOLIO_DIR}/${filename}`);
 		const ext = filename.split(".").pop()?.toLowerCase() || "";
 		const mime: Record<string, string> = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", svg: "image/svg+xml" };
-		sendImage(res, content, mime[ext] || "application/octet-stream");
+		
+		res.status(200)
+			.set("Content-Type", mime[ext] || "application/octet-stream")
+			.send(content);
 	}
 }
+
+export { PortfolioRouter }

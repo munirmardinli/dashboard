@@ -1,42 +1,44 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { Router, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
-import { sendJSON } from "../utils/http.js";
 
 const github = new GitHubService();
 
-export class DataRouter {
-	getRoutes(): Route[] {
-		return [
-			{ method: "GET", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)$/, handler: this.getAll.bind(this) },
-			{ method: "POST", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)$/, handler: this.create.bind(this) },
-			{ method: "PUT", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)\/(?<id>[^/]+)$/, handler: this.update.bind(this) },
-			{ method: "DELETE", path: /^\/api\/data\/(?<dataType>[a-zA-Z0-9-/]+)\/(?<id>[^/]+)$/, handler: this.archive.bind(this) },
-		];
+class DataRouter {
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/data/:dataType(*)", this.getAll.bind(this));
+		router.post("/api/data/:dataType(*)", this.create.bind(this));
+		router.put("/api/data/:dataType(*)/:id", this.update.bind(this));
+		router.delete("/api/data/:dataType(*)/:id", this.archive.bind(this));
+
+		return router;
 	}
 
-	async getAll(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const { dataType = "" } = ctx.params as DataRouteParams;
+	async getAll(req: Request, res: Response): Promise<void> {
+		const { dataType = "" } = req.params;
 		const items = await this.getItems(dataType);
-		sendJSON(res, items);
+		res.json(items);
 	}
 
-	async create(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const { dataType = "" } = ctx.params as DataRouteParams;
-		const item = await this.createItem(dataType, ctx.body as Record<string, unknown>);
-		sendJSON(res, item, 201);
+	async create(req: Request, res: Response): Promise<void> {
+		const { dataType = "" } = req.params;
+		const item = await this.createItem(dataType, req.body as Record<string, unknown>);
+		res.status(201).json(item);
 	}
 
-	async update(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const { dataType = "", id = "" } = ctx.params as DataRouteParams;
-		const item = await this.updateItem(dataType, id, ctx.body as Record<string, unknown>);
-		sendJSON(res, item);
+	async update(req: Request, res: Response): Promise<void> {
+		const { dataType = "", id = "" } = req.params;
+		const item = await this.updateItem(dataType, id, req.body as Record<string, unknown>);
+		res.json(item);
 	}
 
-	async archive(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const { dataType = "", id = "" } = ctx.params as DataRouteParams;
+	async archive(req: Request, res: Response): Promise<void> {
+		const { dataType = "", id = "" } = req.params;
 		await this.archiveItem(dataType, id);
-		sendJSON(res, { success: true });
+		res.json({ success: true });
 	}
+
 
 	private async getConfig(): Promise<DashboardConfig> {
 		const lang = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE || "de";
@@ -106,3 +108,5 @@ export class DataRouter {
 		return this.updateItem<GenericItem>(dataType, id, { isArchive: true });
 	}
 }
+
+export { DataRouter }

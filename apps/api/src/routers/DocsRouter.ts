@@ -1,48 +1,50 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { Router, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
-import { sendJSON } from "../utils/http.js";
 
 const github = new GitHubService();
 
+type MetaData = Record<string, any>;
+
 export class DocsRouter {
+
 	private cachedMeta: MetaData | null = null;
 	private lastCacheTime = 0;
 	private readonly CACHE_TTL = 1000 * 60 * 5;
 	private titleCache: Record<string, string> = {};
 
-	getRoutes(): Route[] {
-		return [
-			{ method: "GET", path: /^\/api\/docs\/meta$/, handler: this.getMeta.bind(this) },
-			{ method: "GET", path: /^\/api\/docs\/list$/, handler: this.listDirectory.bind(this) },
-			{ method: "GET", path: /^\/api\/docs\/content$/, handler: this.getContentHandler.bind(this) },
-			{ method: "GET", path: /^\/api\/docs\/assets\/images(?:\/(?<subPath>.*))?$/, handler: this.getImage.bind(this) },
-			{ method: "GET", path: /^\/api\/docs\/assets\/pdf(?:\/(?<subPath>.*))?$/, handler: this.getPDF.bind(this) },
-		];
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/docs/meta", this.getMeta.bind(this));
+		router.get("/api/docs/list", this.listDirectory.bind(this));
+		router.get("/api/docs/content", this.getContentHandler.bind(this));
+		router.get("/api/docs/assets/images/:subPath(*)?", this.getImage.bind(this));
+		router.get("/api/docs/assets/pdf/:subPath(*)?", this.getPDF.bind(this));
+
+		return router;
 	}
 
-	async getMeta(_req: IncomingMessage, res: ServerResponse): Promise<void> {
-		sendJSON(res, await this.buildMeta());
+	async getMeta(_req: Request, res: Response): Promise<void> {
+		res.json(await this.buildMeta());
 	}
 
-	async listDirectory(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const p = ctx.query["p"] || "";
-		sendJSON(res, await this.listDirectoryInternal(p));
+	async listDirectory(req: Request, res: Response): Promise<void> {
+		const p = (req.query["p"] as string) || "";
+		res.json(await this.listDirectoryInternal(p));
 	}
 
-	async getContentHandler(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const p = ctx.query["p"] || "index";
-		res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-		res.end(await this.getContent(p));
+	async getContentHandler(req: Request, res: Response): Promise<void> {
+		const p = (req.query["p"] as string) || "index";
+		res.status(200).set("Content-Type", "text/plain; charset=utf-8").send(await this.getContent(p));
 	}
 
-	async getImage(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const params = ctx.params as DocsRouteParams;
-		const sub = params.subPath || "";
-		const file = ctx.query["p"];
+	async getImage(req: Request, res: Response): Promise<void> {
+		const { subPath = "" } = req.params;
+		const file = req.query["p"] as string;
 
 		if (!file) throw new Error("File path missing");
 
-		const { content } = await this.getAsset(`images/${sub ? sub + "/" + file : file}`);
+		const { content } = await this.getAsset(`images/${subPath ? subPath + "/" + file : file}`);
 
 		const ext = file.split(".").pop()?.toLowerCase() || "";
 		const mime: Record<string, string> = {
@@ -54,21 +56,18 @@ export class DocsRouter {
 			webp: "image/webp"
 		};
 
-		res.writeHead(200, { "Content-Type": mime[ext] || "application/octet-stream" });
-		res.end(content);
+		res.status(200).set("Content-Type", mime[ext] || "application/octet-stream").send(content);
 	}
 
-	async getPDF(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const params = ctx.params as DocsRouteParams;
-		const sub = params.subPath || "";
-		const file = ctx.query["p"];
+	async getPDF(req: Request, res: Response): Promise<void> {
+		const { subPath = "" } = req.params;
+		const file = req.query["p"] as string;
 
 		if (!file) throw new Error("File path missing");
 
-		const { content } = await this.getAsset(`pdf/${sub ? sub + "/" + file : file}`);
+		const { content } = await this.getAsset(`pdf/${subPath ? subPath + "/" + file : file}`);
 
-		res.writeHead(200, { "Content-Type": "application/pdf" });
-		res.end(content);
+		res.status(200).set("Content-Type", "application/pdf").send(content);
 	}
 
 	private async buildMeta(): Promise<MetaData> {
@@ -202,3 +201,4 @@ export class DocsRouter {
 		return github.getRawFile(`docs/studies/assets/${path}`);
 	}
 }
+

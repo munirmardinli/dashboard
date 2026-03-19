@@ -1,16 +1,21 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { sendJSON } from "../utils/http.js";
+import { Router, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
 
-export class RandomPieRouter {
-	getRoutes(): Route[] {
-		return [{ method: "GET", path: /^\/api\/randomPie$/, handler: this.get.bind(this) }];
+class RandomPieRouter {
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/randomPie", this.get.bind(this));
+
+		return router;
 	}
 
-	async get(_req: IncomingMessage, res: ServerResponse): Promise<void> {
+	async get(_req: Request, res: Response): Promise<void> {
 		const { content } = await github.getFile("management/learn.json");
-		sendJSON(res, JSON.parse(content));
+		res.json(JSON.parse(content));
 	}
 }
+
+export { RandomPieRouter }

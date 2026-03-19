@@ -5,26 +5,26 @@
  "sideEffects": false,
  "type": "module",
  "files": [
-  "lib/src"
+  "dist/src"
  ],
  "publishConfig": {
   "registry": "https://registry.npmjs.org"
  },
  "exports": {
   ".": {
-   "import": "./lib/src/index.js",
-   "require": "./lib/src/index.js"
+   "import": "./dist/src/index.js",
+   "require": "./dist/src/index.js"
   }
  },
  "scripts": {
   "build": "tsc",
-  "start": "node lib/src/index.js",
+  "start": "node dist/src/index.js",
   "dev": "tsc --watch",
   "lint": "echo 'No linting configured'",
   "type-check": "tsc --noEmit"
  },
- "main": "lib/src/index.js",
- "types": "lib/src/index.d.ts",
+ "main": "dist/src/index.js",
+ "types": "dist/src/index.d.ts",
  "license": "MIT",
  "devDependencies": {
   "@types/cookie-parser": "^1.4.10",

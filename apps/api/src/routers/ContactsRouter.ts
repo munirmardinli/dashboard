@@ -1,44 +1,67 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { Router, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
-import { generateVCF } from "../utils/vcf.js";
-import { sendJSON, sendVCF } from "../utils/http.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const github = new GitHubService();
 
-export class ContactsRouter {
-	getRoutes(): Route[] {
-		return [
-			{ method: "GET", path: /^\/api\/contacts$/, handler: this.list.bind(this) },
-			{ method: "GET", path: /^\/api\/vcf\/(?<name>[^/]+)\.vcf$/, handler: this.download.bind(this) },
-		];
+class ContactsRouter {
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/contacts", this.list.bind(this));
+		router.get("/api/vcf/:name.vcf", this.download.bind(this));
+
+		return router;
 	}
 
-	async list(_req: IncomingMessage, res: ServerResponse): Promise<void> {
+	async list(_req: Request, res: Response): Promise<void> {
 		const data = await this.getContactsList();
-		sendJSON(res, data);
+		res.json(data);
 	}
 
-	async download(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const params = ctx.params as { name: string };
-		const name = params.name || "";
+	async download(req: Request, res: Response): Promise<void> {
+		const { name = "" } = req.params;
 
 		try {
 			const vcf = await this.getVCF(name);
-			sendVCF(res, vcf, `${name}.vcf`);
+			res.status(200)
+				.set({
+					"Content-Type": "text/vcard; charset=utf-8",
+					"Content-Disposition": `attachment; filename="${name}.vcf"`,
+				})
+				.send(vcf);
 		} catch (error) {
-			sendJSON(res, { error: `Failed to generate VCF for ${name}` }, 500);
+			res.status(500).json({ error: `Failed to generate VCF for ${name}` });
 		}
 	}
 
 	private async getVCF(name: string): Promise<string> {
 		const { content } = await github.getFile(`management/contacts/${name}.json`);
 		const contacts = JSON.parse(content) as Contact[];
-		const vcf = generateVCF(contacts);
+		const vcf = this.generateVCF(contacts);
 
 		await this.saveVCFLocally(name, vcf);
 		return vcf;
+	}
+
+	private generateVCF(contacts: Contact[]): string {
+		return contacts.map(contact => {
+			const vcard = [
+				"BEGIN:VCARD",
+				"VERSION:3.0",
+				`FN:${contact.name || ""}`,
+				`TEL;TYPE=CELL:${contact.phone || ""}`,
+				contact.email ? `EMAIL:${contact.email}` : "",
+				contact.address ? `ADR;TYPE=HOME:;;${contact.address.replace(/\n/g, ";")}` : "",
+				contact.birthday ? `BDAY:${contact.birthday}` : "",
+				`REV:${contact.updatedAt || contact.createdAt || new Date().toISOString()}`,
+				`UID:${contact.id}`,
+				contact.isArchive ? "X-ARCHIVED:TRUE" : "",
+				"END:VCARD"
+			].filter(line => !!line).join("\n");
+			return vcard;
+		}).join("\n");
 	}
 
 	private async getContactsList(): Promise<{ name: string; url: string }[]> {
@@ -66,3 +89,5 @@ export class ContactsRouter {
 		}
 	}
 }
+
+export { ContactsRouter }

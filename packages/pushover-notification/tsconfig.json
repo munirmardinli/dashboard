@@ -1,7 +1,7 @@
 {
  "compilerOptions": {
   "rootDirs": ["src"],
-  "outDir": "lib/src",
+  "outDir": "dist/src",
   "lib": ["es2022", "dom"],
   "target": "es2022",
   "module": "nodenext",
@@ -27,7 +27,7 @@
   "noEmit": false,
   "removeComments": true,
   "declaration": true,
-  "declarationDir": "lib/src",
+  "declarationDir": "dist/src",
   "types": ["node"],
   "paths": {
    "pushover-types": ["./src/types.d.ts"]
