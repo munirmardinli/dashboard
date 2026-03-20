@@ -45,10 +45,32 @@ async function fetchAPI<T>(
 }
 
 export const DataAPI = {
-	async getItems<T extends BaseItem>(dataType: string): Promise<T[]> {
-		const result = await fetchAPI<T[]>(`/api/data/${dataType}`);
-		return result.success ? result.data : [];
+	async getItems<T extends BaseItem>(
+		dataType: string,
+		params?: { page?: number; limit?: number; search?: string; sortField?: string; sortOrder?: string }
+	): Promise<DataApiResponse<T>> {
+		const query = new URLSearchParams();
+		if (params?.page) query.append("page", params.page.toString());
+		if (params?.limit) query.append("limit", params.limit.toString());
+		if (params?.search) query.append("search", params.search);
+		if (params?.sortField) query.append("sortField", params.sortField);
+		if (params?.sortOrder) query.append("sortOrder", params.sortOrder);
+
+		const queryString = query.toString();
+		const result = await fetchAPI<DataApiResponse<T>>(`/api/data/${dataType}${queryString ? `?${queryString}` : ""}`);
+		
+		if (!result.success) {
+			return { items: [], total: 0, page: 1, limit: 10, totalPages: 0 };
+		}
+		return result.data;
 	},
+
+	async getItem<T extends BaseItem>(dataType: string, id: string): Promise<T | null> {
+		const result = await fetchAPI<T>(`/api/data/${dataType}/findonly/${id}`);
+		return result.success ? result.data : null;
+	},
+
+
 
 	async createItem<T extends BaseItem>(
 		dataType: string,
@@ -77,34 +99,6 @@ export const DataAPI = {
 			method: "DELETE",
 		});
 		return result.success;
-	},
-};
-
-
-export const ConfigAPI = {
-	async getTranslations(language: string): Promise<Record<string, unknown>> {
-		const result = await fetchAPI<Record<string, unknown>>(`/api/config/translations/${language}`);
-		return result.success ? result.data : {};
-	},
-
-	async getFullConfig(): Promise<BasicConfig> {
-		const result = await fetchAPI<BasicConfig>(`/api/config`);
-		return result.success ? result.data : ({} as BasicConfig);
-	},
-
-	async getDataTypeConfig(dataType: string): Promise<DataTypeConfig | null> {
-		const result = await fetchAPI<DataTypeConfig>(`/api/config/dataType/${dataType}`);
-		return result.success ? result.data : null;
-	},
-
-	async getNavigationConfig(): Promise<NavigationConfig | null> {
-		const result = await fetchAPI<NavigationConfig>(`/api/config/navigation`);
-		return result.success ? result.data : null;
-	},
-
-	async getOnboardingConfig(): Promise<OnboardingFeature[]> {
-		const result = await fetchAPI<OnboardingFeature[]>(`/api/config/onboarding`);
-		return result.success ? result.data : [];
 	},
 };
 
@@ -190,5 +184,10 @@ export const DocsAPI = {
 		} catch {
 			return null;
 		}
+	},
+
+	async getItemMeta(path: string): Promise<MetaData | null> {
+		const result = await fetchAPI<MetaData>(`/api/docs/findonly?p=${path}`);
+		return result.success ? result.data : null;
 	},
 };

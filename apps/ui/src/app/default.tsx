@@ -11,11 +11,13 @@ import { useI18nStore } from '@/stores/i18nStore';
 import { useSnackStore } from '@/stores/snackbarStore';
 import { useSoundStore } from '@/stores/soundStore';
 import { useThemeStore } from '@/stores/themeStore';
-import { useSidebarStore, initializeSidebarFromCookie } from '@/stores/sidebarStore';
+import { useSidebarStore, initializeSidebarFromJson } from '@/stores/sidebarStore';
+import { cookieService } from '@/utils/cookieService';
 import Loading from '@/app/loading';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { useNavigation } from '@/hooks/useNavigation';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const DRAWER_WIDTH = 280;
 
@@ -27,7 +29,7 @@ export const Navigation: FC = () => {
   const { isOpen: mobileDrawerOpen, setIsOpen: setMobileDrawerOpen, toggleSidebar, setActivePath } = useSidebarStore();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  const { language, setLanguage, translations, loadTranslations } = useI18nStore();
+  const { t, language, setLanguage, translations } = useTranslation();
   const setSnack = useSnackStore((state) => state.setSnack);
   const { mode: themeMode, setMode: setThemeMode } = useThemeStore();
   const mode = useThemeStore((s) => s.mode);
@@ -35,30 +37,29 @@ export const Navigation: FC = () => {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSettingsSection, setActiveSettingsSection] = useState<'general' | 'security'>('general');
+  const [mounted, setMounted] = useState(false);
+  const [cookieJsonData, setCookieJsonData] = useState<Record<string, unknown> | null>(null);
   const [, startTransition] = useTransition();
 
-  const t = useCallback((key: string): string => {
-    const keys = key.split(".");
-    let current: unknown = translations;
-    for (const k of keys) {
-      if (current == null || typeof current !== "object") return key;
-      const next = (current as Record<string, unknown>)[k];
-      if (next === undefined) return key;
-      current = next;
-    }
-    return typeof current === "string" ? current : key;
-  }, [translations]);
 
   useEffect(() => {
-    initializeSidebarFromCookie();
+    setMounted(true);
+    initializeSidebarFromJson();
   }, []);
 
   useEffect(() => {
+    if (activeSettingsSection === 'security') {
+      cookieService.get().then(setCookieJsonData);
+    }
+  }, [activeSettingsSection]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
+      const { loadTranslations } = useI18nStore.getState();
       if (Object.keys(translations).length === 0) startTransition(() => { loadTranslations(language); });
     }, 0);
     return () => clearTimeout(timer);
-  }, [translations, language, loadTranslations]);
+  }, [translations, language]);
 
   const handleExpandToggle = useCallback((key: string) => {
     setExpandedItems(prev => {
@@ -266,6 +267,8 @@ export const Navigation: FC = () => {
     </div>
   );
 
+  if (!mounted) return null;
+
   return (
     <Suspense fallback={<Loading />}>
       {isDesktop && (
@@ -301,7 +304,7 @@ export const Navigation: FC = () => {
               <span style={{ fontWeight: 700, fontSize: '1.25rem', color: theme.text }}>{t("ui.navigationTitle")}</span>
             </div>
           </div>
-          <div style={{ height: '64px' }} /> {/* Spacer for sticky header */}
+          <div style={{ height: '64px' }} />
           {mobileDrawerOpen && (
             <div style={{ position: 'fixed', inset: 0, zIndex: 1300 }}>
               <div onClick={() => setMobileDrawerOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }} />
@@ -383,7 +386,6 @@ export const Navigation: FC = () => {
                             onClick={async () => {
                               if (language !== item.code) {
                                 await setLanguage(item.code);
-                                document.cookie = `languageSelected=${item.code}; max-age=${30 * 24 * 60 * 60}; path=/`;
                                 try { useSoundStore.getState().playEvent("create"); } catch { }
                                 setSnack(`${t("language.menu." + item.code)} ${t("ui.successfully")} ${t("ui.updated")}`, 'success');
                               }
@@ -435,18 +437,14 @@ export const Navigation: FC = () => {
                     </h3>
                     <p style={{ margin: '0 0 16px', color: theme.textSec, fontSize: '0.875rem' }}>{t("settings.cookies.description")}</p>
                     <div style={{ border: `1px solid ${theme.divider}`, borderRadius: '12px', overflow: 'hidden' }}>
-                      {typeof window !== 'undefined' && document.cookie ? (
+                      {cookieJsonData ? (
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          {document.cookie.split(';').map((cookie, index) => {
-                            const [name, ...valueParts] = cookie.trim().split('=');
-                            const value = valueParts.join('=');
-                            return (
-                              <div key={index} style={{ padding: '12px', borderBottom: index < document.cookie.split(';').length - 1 ? `1px solid ${theme.divider}` : 'none' }}>
-                                <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', background: `${theme.primary}1a`, color: theme.primary, fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>{name}</div>
-                                <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-all' }}>{value || '(leer)'}</div>
-                              </div>
-                            );
-                          })}
+                          {Object.entries(cookieJsonData).map(([name, value], index, arr) => (
+                            <div key={index} style={{ padding: '12px', borderBottom: index < arr.length - 1 ? `1px solid ${theme.divider}` : 'none' }}>
+                              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', background: `${theme.primary}1a`, color: theme.primary, fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>{name}</div>
+                              <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-all' }}>{String(value)}</div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <div style={{ padding: '24px', textAlign: 'center', color: theme.textSec, fontSize: '0.875rem' }}>{t("settings.cookies.noCookies")}</div>

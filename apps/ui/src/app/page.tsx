@@ -3,8 +3,7 @@
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense, useMemo } from "react";
-import { ConfigAPI } from "@/utils/api";
+import { Suspense, useMemo } from "react";
 import { Navigation } from "@/app/default";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import Loading from "@/app/loading";
@@ -20,15 +19,10 @@ import RootPage from "@/router/root";
 export default function Root() {
   const searchParams = useSearchParams();
   const q = searchParams?.get('q');
+  const page = searchParams?.get('page');
   const mode = useThemeStore((state) => state.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
-  const [, setOnboardingFeatures] = useState<OnboardingFeature[]>([]);
-
-  useEffect(() => {
-    ConfigAPI.getOnboardingConfig().then(setOnboardingFeatures);
-  }, []);
-
   const viewComponent = useMemo(() => {
     if (!q) return <RootPage />;
     switch (q) {
@@ -40,7 +34,7 @@ export default function Root() {
       case 'quittung': return <QuittungPage />;
       default: return <QueryPage />;
     }
-  }, [q]);
+  }, [q, page]);
 
   if (q && viewComponent) {
     return (
@@ -51,7 +45,7 @@ export default function Root() {
         background: theme.bg
       }}>
         <Navigation />
-        <div style={{
+        <div key={`${q}-${page || 1}`} style={{
           flex: 1,
           marginLeft: isDesktop ? '280px' : '0',
           width: isDesktop ? 'calc(100% - 280px)' : '100%',
@@ -67,7 +61,9 @@ export default function Root() {
 
   return (
     <Suspense fallback={<Loading />}>
-      {viewComponent}
+      <div key={page || 1}>
+        {viewComponent}
+      </div>
     </Suspense>
   );
 }

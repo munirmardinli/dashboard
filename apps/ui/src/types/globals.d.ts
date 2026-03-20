@@ -271,6 +271,7 @@ declare global {
   interface Translations {
     version?: string;
     locale?: string;
+    onboarding?: OnboardingFeature[];
     ui?: Record<string, string>;
     language?: {
       menu?: Record<string, string>;
@@ -341,8 +342,9 @@ declare global {
     itemsPerPage: number;
     totalItems: number;
     onPageChange: (page: number) => void;
-    onItemsPerPageChange: (items: number) => void;
+    onItemsPerPageChange?: (items: number) => void;
   }
+
 
   /**
    * Props for create mode components
@@ -601,6 +603,9 @@ declare global {
     created?: string;
     updated?: string;
     tags?: string | string[];
+    author_name?: string;
+    author_image?: string;
+    author_role?: string;
     [key: string]: string | boolean | string[] | number | undefined | unknown;
   }
 
@@ -1011,6 +1016,35 @@ declare global {
     DEFAULT_VIEW: string,
   }
   type FormMode = "create" | "update";
+
+  interface DataApiResponse<T> {
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }
+  interface PaginationState {
+    pages: Record<string, number>;
+    setPage: (dataType: string, page: number) => void;
+    getPage: (dataType: string) => number;
+  }
+  interface QueryParams {
+    page: number;
+    limit: number;
+    search: string;
+    sortField?: string;
+    sortOrder?: SortOrder;
+  }
+
+  interface QueryResult<T> {
+    items: T[];
+    total: number;
+    totalPages: number;
+    loading: boolean;
+    error: string | null;
+    refetch: () => void;
+  }
 }
 
 export { };

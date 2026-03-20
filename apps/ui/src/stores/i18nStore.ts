@@ -31,30 +31,15 @@ function getTimezone(): string {
 	return "Europe/Berlin";
 }
 
-function getStoredLanguage(): Language {
-	if (typeof window === "undefined") return defaultLanguage;
-
-	const cookies = document.cookie.split(";");
-	const langCookie = cookies.find((c) => c.trim().startsWith("languageSelected="));
-	if (langCookie) {
-		const lang = langCookie.split("=")[1]?.trim();
-		if (lang === "de" || lang === "en" || lang === "fr" || lang === "ar") {
-			return lang as Language;
-		}
-	}
-
-	return defaultLanguage;
-}
-
-function saveLanguageToCookie(lang: Language): void {
-	if (typeof window === "undefined") return;
-	document.cookie = `languageSelected=${lang}; max-age=${30 * 24 * 60 * 60}; path=/`;
-}
+import { cookieService } from "@/utils/cookieService";
 
 async function loadTranslationFile(lang: Language): Promise<Translations> {
 	try {
-		const { ConfigAPI } = await import("@/utils/api");
-		const translations = await ConfigAPI.getTranslations(lang);
+		const response = await fetch(`/i18n/${lang}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load translation file: ${response.statusText}`);
+		}
+		const translations = await response.json();
 		return (translations as Translations) || ({} as Translations);
 	} catch (error) {
 		console.error(`Error loading translation file for ${lang}:`, error);
@@ -101,17 +86,7 @@ function formatNumberString(num: string, language: Language): string {
 }
 
 export const useI18nStore = create<I18nState>((set, get) => {
-	const initialLanguage = typeof window !== "undefined"
-		? getStoredLanguage()
-		: defaultLanguage;
-
-	if (typeof window !== "undefined") {
-		const cookies = document.cookie.split(";");
-		const langCookie = cookies.find((c) => c.trim().startsWith("languageSelected="));
-		if (!langCookie) {
-			saveLanguageToCookie(initialLanguage);
-		}
-	}
+	const initialLanguage = defaultLanguage;
 
 	return {
 		language: initialLanguage,
@@ -122,7 +97,7 @@ export const useI18nStore = create<I18nState>((set, get) => {
 			set({ translations, language: lang });
 
 			if (typeof window !== "undefined") {
-				saveLanguageToCookie(lang);
+				cookieService.set({ languageSelected: lang });
 
 				const isRTL = lang === "ar";
 				useThemeStore.getState().setIsRTL(isRTL);
@@ -220,17 +195,14 @@ export const useI18nStore = create<I18nState>((set, get) => {
 	};
 });
 
-export async function initializeLanguageFromCookie(): Promise<void> {
+export async function initializeLanguageFromJson(): Promise<void> {
 	if (typeof window === "undefined") return;
 
-	const storedLanguage = getStoredLanguage();
+	const data = await cookieService.get();
+	const langStr = data.languageSelected as string;
+	const storedLanguage = (langStr === "de" || langStr === "en" || langStr === "fr" || langStr === "ar") ? (langStr as Language) : defaultLanguage;
+	
 	const { language: currentLanguage, translations, loadTranslations } = useI18nStore.getState();
-
-	const cookies = document.cookie.split(";");
-	const langCookie = cookies.find((c) => c.trim().startsWith("languageSelected="));
-	if (!langCookie) {
-		saveLanguageToCookie(storedLanguage);
-	}
 
 	if (storedLanguage !== currentLanguage) {
 		await useI18nStore.getState().setLanguage(storedLanguage);
@@ -245,21 +217,5 @@ export async function initializeLanguageFromCookie(): Promise<void> {
 }
 
 export function watchLanguageCookie(): () => void {
-	if (typeof window === "undefined") return () => { };
-
-	let lastCookieValue = getStoredLanguage();
-
-	const checkCookie = async () => {
-		const currentCookieValue = getStoredLanguage();
-		const currentStoreLanguage = useI18nStore.getState().language;
-
-		if (currentCookieValue !== lastCookieValue || currentCookieValue !== currentStoreLanguage) {
-			lastCookieValue = currentCookieValue;
-			await useI18nStore.getState().setLanguage(currentCookieValue);
-		}
-	};
-
-	const interval = setInterval(checkCookie, 500);
-
-	return () => clearInterval(interval);
+	return () => { };
 }

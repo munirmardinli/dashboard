@@ -75,20 +75,7 @@ export default function DashyPage() {
 		});
 	};
 
-	if (loading) {
-		return (
-			<div style={{
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				height: '100vh',
-				backgroundColor: theme.bg,
-				color: theme.text
-			}}>
-				{t('ui.loading')}
-			</div>
-		);
-	}
+	if (loading) return <Loading />;
 
 	if (!data) {
 		return notFound();

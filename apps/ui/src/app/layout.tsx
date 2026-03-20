@@ -3,11 +3,12 @@ import { ReactNode, Suspense, useEffect } from "react";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";
-import { initializeThemeFromCookie, useThemeStore } from "@/stores/themeStore";
+import { initializeThemeFromJson, useThemeStore } from "@/stores/themeStore";
 import Loading from "@/app/loading";
-import { initializeLanguageFromCookie, useI18nStore } from "@/stores/i18nStore";
+import { initializeLanguageFromJson, useI18nStore } from "@/stores/i18nStore";
 import { getTheme } from "@/utils/theme";
 import { Roboto_Condensed } from "next/font/google";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -23,11 +24,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const mode = useThemeStore((s) => s.mode);
   const language = useI18nStore((s) => s.language);
   const direction = useThemeStore((s) => s.direction);
-  const { t } = useI18nStore();
+  const { t } = useTranslation();
   const theme = getTheme(mode);
   useEffect(() => {
-    initializeThemeFromCookie();
-    initializeLanguageFromCookie();
+    initializeThemeFromJson();
+    initializeLanguageFromJson();
   }, []);
 
   useEffect(() => {
@@ -86,17 +87,15 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2" user-scalable="yes" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <title>{t("ui.title")}</title>
         <meta name="description" content={t("ui.description")} />
       </head>
       <body style={{ margin: 0, padding: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }} suppressHydrationWarning>
-        <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '50px' }}>
-          <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />}>
+          <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '50px' }} suppressHydrationWarning>
             {children}
-          </Suspense>
-        </main>
+          </main>
+        </Suspense>
         <Footer />
         {isLoading && <Loading />}
         {snack.open && (
@@ -190,7 +189,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
 }
 
 const Footer = () => {
-  const { t } = useI18nStore();
+  const { t } = useTranslation();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   return (

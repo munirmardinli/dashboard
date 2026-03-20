@@ -1,19 +1,54 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { sendJSON, sendICS } from "../utils/http.js";
-import { CalendarService } from "./CalendarService.js";
+import { Router, type Request, type Response } from "express";
+import createCalendar from "ical-generator";
+import { GitHubService } from "../utils/github.js";
 
-const service = new CalendarService();
+const github = new GitHubService();
 
-export class CalendarRouter {
-	getRoutes(): Route[] {
-		return [
-			{ method: "GET", path: /^\/api\/calendar$/, handler: async (_req: IncomingMessage, res: ServerResponse) => sendJSON(res, { status: "ok" }) },
-			{ method: "GET", path: /^\/api\/ics\/(?<calendarName>[^/]+)\.ics$/, handler: this.getICS.bind(this) },
-		];
+class CalendarRouter {
+	getRouter(): Router {
+		const router = Router();
+
+		router.get("/api/calendar", async (_req: Request, res: Response) =>
+			res.json({ status: "ok" })
+		);
+
+		router.get("/api/ics/:calendarName.ics", this.getICS.bind(this));
+
+		return router;
 	}
 
-	async getICS(_req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-		const params = ctx.params as unknown as CalendarRouteParams;
-		sendICS(res, await service.getICal(params.calendarName || ""));
+	async getICS(req: Request, res: Response): Promise<void> {
+		const { calendarName = "" } = req.params as CalendarRouteParams;
+		try {
+			const ics = await this.generateICal(calendarName);
+			res.status(200)
+				.set({
+					"Content-Type": "text/calendar; charset=utf-8",
+					"Content-Disposition": "attachment; filename=calendar.ics",
+				})
+				.send(ics);
+		} catch (error) {
+			res.status(500).json({ error: (error as Error).message });
+		}
+	}
+
+
+	private async generateICal(name: string): Promise<string> {
+		const { content } = await github.getFile(`calendar/${name}.json`);
+		const events = JSON.parse(content) as CalendarEvent[];
+
+		const cal = createCalendar({ name });
+		for (const ev of events) {
+			cal.createEvent({
+				summary: ev.title,
+				start: new Date(ev.start),
+				end: new Date(ev.end),
+				description: ev.description,
+				location: ev.location
+			});
+		}
+		return cal.toString();
 	}
 }
+
+export { CalendarRouter }

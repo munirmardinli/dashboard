@@ -13,8 +13,7 @@
 				".next/**",
 				"!.next/cache/**",
 				"dist/**",
-				"out/**",
-				"lib/**"
+				"out/**"
 			]
 		},
 		"dev": {

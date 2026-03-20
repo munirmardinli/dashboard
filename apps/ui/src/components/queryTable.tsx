@@ -1,43 +1,119 @@
 import { FC, useState, useEffect, useRef, useMemo, useCallback, useTransition } from "react";
-import { notFound, useRouter } from "next/navigation";
-import { Clock, Plus, Search, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { Clock, Plus, Search, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 
-import { DataAPI, ConfigAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
+import { useTranslation } from "@/hooks/useTranslation";
+import { MuiPagination } from "./Pagination";
+import { useDataQuery } from "@/hooks/useDataQuery";
+import { usePaginationStore, useFilterStore, loadFilterFromJson } from "@/stores/paginationStore";
 
 export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
-  const [allItems, setAllItems] = useState<GenericJsonItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
-  const [searchTerm, setSearchTerm] = useState('');
+  const searchParams = useSearchParams();
+  const getPage = usePaginationStore((s) => s.getPage);
+  const setPage = usePaginationStore((s) => s.setPage);
+  const getFilter = useFilterStore((s) => s.getFilter);
+  const setFilter = useFilterStore((s) => s.setFilter);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(6);
   const [sortField, setSortField] = useState<SortField>('title');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [, setFullConfig] = useState<BasicConfig | null>(null);
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
   const setSnack = useSnackStore((state) => state.setSnack);
   const { isLoading } = useGlobalLoadingStore();
-  const { t, translations, loadTranslations, language, isRTL, getLocale, formatDate, formatDateTime } = useI18nStore();
+  const { t, translations, language, dataTypes } = useTranslation();
+  const { formatDate, formatDateTime, loadTranslations } = useI18nStore();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
 
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [searchError, setSearchError] = useState("");
+  const [searchError, setSearchError] = useState<string>("");
   const [isPending, startTransition] = useTransition();
+  const searchQueryRef = useRef<string>('');
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const searchPersistTimer = useRef<NodeJS.Timeout | null>(null);
+  const [searchTrigger, setSearchTrigger] = useState<string>('');
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
-  const configCacheRef = useRef<{ config: BasicConfig | null; dataTypeConfig: Map<string, DataTypeConfig>; items: Map<string, GenericJsonItem[]> }>({
-    config: null, dataTypeConfig: new Map(), items: new Map()
-  });
 
   const actualDisplayFields = useMemo(() => (config?.view || displayFields).filter(f => !f.hidden), [config?.view, displayFields]);
+
+  useEffect(() => {
+    setIsInitializing(true);
+    searchQueryRef.current = '';
+    setSearchTrigger('');
+    if (searchInputRef.current) searchInputRef.current.value = '';
+
+    loadFilterFromJson(dataType).then(() => {
+      const saved = getFilter(dataType);
+      setCurrentPage(saved.page);
+      
+      searchQueryRef.current = saved.search || '';
+      setSearchTrigger(saved.search || '');
+      
+      if (searchInputRef.current) {
+        searchInputRef.current.value = saved.search || '';
+      }
+      
+      setSortField(saved.sortField as SortField || 'title');
+      setSortOrder(saved.sortOrder || 'asc');
+      setIsInitializing(false);
+    });
+  }, [dataType]);
+
+  useEffect(() => {
+    const urlPage = searchParams?.get('page');
+    let targetPage = 1;
+
+    if (urlPage) {
+      targetPage = Number(urlPage);
+    } else {
+      targetPage = getPage(dataType);
+      if (targetPage > 1 && !isInitializing) {
+        const params = new URLSearchParams(searchParams?.toString() || "");
+        params.set('page', String(targetPage));
+        router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+      }
+    }
+
+    if (!isNaN(targetPage) && targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    }
+
+    if (!isNaN(targetPage)) {
+      setPage(dataType, targetPage);
+    }
+  }, [dataType, searchParams, getPage, setPage, currentPage, isInitializing, router]);
+
+  const handlePageChange = useCallback((page: number) => {
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.set('page', String(page));
+    setFilter(dataType, { page });
+    startTransition(() => {
+      router.push(`${window.location.pathname}?${params.toString()}`);
+    });
+  }, [router, searchParams, dataType, setFilter]);
+
+  const { items, total: totalItems, totalPages, loading: queryLoading, error: queryError } = useDataQuery<GenericJsonItem>(
+    dataType,
+    { page: currentPage, limit: itemsPerPage, search: searchTrigger, sortField, sortOrder },
+    { debounceMs: 50, enabled: !isInitializing }
+  );
+
+  useEffect(() => {
+    if (queryError) {
+      setSnack(`${t("ui.failedToLoad")} ${dataType}`, 'error');
+    }
+  }, [queryError, dataType, t, setSnack]);
 
   useEffect(() => { if (Object.keys(translations).length === 0) loadTranslations(language); }, [translations, language, loadTranslations]);
   useEffect(() => setIsClient(true), []);
@@ -45,33 +121,15 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   useEffect(() => {
     startTransition(async () => {
       try {
-        if (!configCacheRef.current.config) configCacheRef.current.config = await ConfigAPI.getFullConfig();
-        if (!configCacheRef.current.dataTypeConfig.has(dataType)) {
-          const dt = await ConfigAPI.getDataTypeConfig(dataType);
-          if (dt) configCacheRef.current.dataTypeConfig.set(dataType, dt);
-        }
-        const cfg = configCacheRef.current.config;
-        const dt = configCacheRef.current.dataTypeConfig.get(dataType);
-        setFullConfig(cfg); setConfig(dt || null);
+        const dt = dataTypes[dataType] as DataTypeConfig | undefined;
+        setFullConfig(translations as unknown as BasicConfig);
+        setConfig(dt || null);
         if (dt?.defaultSortField) setSortField(dt.defaultSortField as SortField);
         if (dt?.defaultSortOrder) setSortOrder(dt.defaultSortOrder as 'asc' | 'desc');
-      } catch { setError('config-load-failed'); }
+      } catch { }
     });
-  }, [dataType]);
+  }, [dataType, dataTypes, translations]);
 
-  useEffect(() => {
-    startTransition(async () => {
-      try {
-        if (dataType === 'dashy') {
-          const items = await DashyAPI.getAllItems();
-          setAllItems(items.filter(i => !i.isArchive) as unknown as GenericJsonItem[]);
-        } else {
-          if (!configCacheRef.current.items.has(dataType)) configCacheRef.current.items.set(dataType, await DataAPI.getItems<GenericJsonItem>(dataType));
-          setAllItems((configCacheRef.current.items.get(dataType) || []).filter(i => !i.isArchive));
-        }
-      } catch { setError('load-failed'); setSnack(`${t("ui.failedToLoad")} ${dataType}`, 'error'); notFound(); }
-    });
-  }, [dataType, setSnack, t]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -81,60 +139,21 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleSort = useCallback((field: string, currentFilteredItems: GenericJsonItem[]) => {
+  const handleSort = useCallback((field: string) => {
     startTransition(() => {
-      const currentSortField = currentFilteredItems.length > 0 ? Object.keys(currentFilteredItems[0] || {}).find(key => key === field) : field;
-      if (currentSortField === field) {
-        const newOrder = currentFilteredItems.length > 0 ? "desc" : "asc";
-        setSortOrder(newOrder); setSnack(`${t("ui.sortedBy")} ${field} (${newOrder})`, 'info');
-      } else {
-        setSortField(field as SortField); setSortOrder("asc"); setSnack(`${t("ui.sortedBy")} ${field}`, 'info');
-      }
+      const newOrder = sortField === field ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+      const newField = field as SortField;
+      setSortField(newField);
+      setSortOrder(newOrder);
+      setFilter(dataType, { sortField: field, sortOrder: newOrder });
+      setSnack(`${t("ui.sortedBy")} ${field}`, 'info');
     });
-  }, [t, setSnack]);
+  }, [sortField, sortOrder, t, setSnack, dataType, setFilter]);
 
-  const searchInValue = useCallback((value: unknown, term: string): boolean => {
-    if (value == null) return false;
-    if (Array.isArray(value)) return value.some(item => searchInValue(item, term));
-    if (typeof value === 'object') return Object.values(value).some(v => searchInValue(v, term));
-    return String(value).toLowerCase().includes(term.toLowerCase());
-  }, []);
 
-  const getFieldValue = useCallback((item: GenericJsonItem, fieldPath: string): unknown => {
-    let value: unknown = item;
-    for (const part of fieldPath.split('.')) {
-      if (value == null || typeof value !== 'object') return null;
-      value = (value as Record<string, unknown>)[part];
-    }
-    return value;
-  }, []);
-
-  const filteredItems = useMemo(() => {
-    let items = [...allItems];
-    if (searchTerm) {
-      const searchFields = config?.searchFields?.length ? config.searchFields : (allItems.length ? Object.keys(allItems[0]).filter(k => !['id', 'createdAt', 'updatedAt', 'isArchive'].includes(k)) : ['title', 'description', 'category']);
-      items = items.filter(item => searchFields.some(field => searchInValue(getFieldValue(item, field), searchTerm)));
-    }
-    items.sort((a, b) => {
-      const aVal = a[sortField], bVal = b[sortField];
-      if (aVal === bVal) return 0;
-      if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
-      if (bVal == null) return sortOrder === 'asc' ? 1 : -1;
-      const comp = String(aVal).toLowerCase() < String(bVal).toLowerCase() ? -1 : 1;
-      return sortOrder === 'asc' ? comp : -comp;
-    });
-    return items;
-  }, [allItems, searchTerm, sortField, sortOrder, config?.searchFields, getFieldValue, searchInValue]);
-
-  const paginatedItems = useMemo(() => filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage), [filteredItems, currentPage, itemsPerPage]);
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, filteredItems.length);
-
-  const formatNum = (num: number) => num.toLocaleString(getLocale()).replace(/_/g, '-');
   const handleEdit = (id: string) => {
     if (dataType === 'dashy') {
-      const item = allItems.find(i => i.id === id) as DashyItemWithMeta | undefined;
+      const item = items.find(i => i.id === id) as DashyItemWithMeta | undefined;
       if (item) {
         startTransition(() => router.push(`/?q=${dataType}&id=${id}&sectionId=${item.sectionId}&itemIndex=${item.itemIndex}`));
       }
@@ -147,11 +166,6 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     const field = (translations.dataTypes?.[dataType]?.view as DisplayField[])?.find(f => f.key === fieldKey);
     return field?.label || '';
   }, [dataType, translations.dataTypes]);
-
-  const getReminderLabel = useCallback((reminder: string) => {
-    const options = (translations.dataTypes?.[dataType]?.create as FormField[])?.find(f => f.key === 'reminder')?.options || config?.create.find(f => f.key === 'reminder')?.options;
-    return options?.find(o => o.value === reminder)?.label || reminder;
-  }, [config, dataType, translations.dataTypes]);
 
   const isOverdue = (dueDate: string, isArchive: boolean) => dueDate && new Date(dueDate) < new Date() && !isArchive;
 
@@ -198,8 +212,8 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     return <span style={{ fontSize: isDesktop ? '1rem' : '0.875rem', color: theme.text }}>{String(value)}</span>;
   };
 
-  if (error) return notFound();
-  if (!isClient || isLoading || isPending) return null;
+  if (queryError) return notFound();
+  if (!isClient || isLoading || isInitializing) return null;
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -211,11 +225,24 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
           <div style={{ display: 'flex', alignItems: 'center', background: theme.paper, borderRadius: isDesktop ? '8px' : '6px', padding: isDesktop ? '12px 16px' : '10px 12px', border: `1px solid ${searchError ? theme.error : theme.divider}`, width: isDesktop ? '300px' : '100%', maxWidth: '300px', boxShadow: 'none' }}>
             <Search size={isDesktop ? 22 : 18} color={theme.textSec} />
             <input
-              ref={searchInputRef} type="search" placeholder={t("ui.searchPlaceholder")} value={searchTerm}
+              ref={searchInputRef}
+              type="search"
+              placeholder={t("ui.searchPlaceholder")}
+              defaultValue={searchQueryRef.current}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val !== '' && !/^[a-zA-ZäöüÄÖÜß\u0600-\u06FF\s\-\,!?()\[\]{}\"':;]*$/.test(val)) { setSearchError(t("ui.onlyLatinGermanArabicCharacters")); setSnack(t("ui.onlyLatinGermanArabicCharacters"), 'warning'); }
-                else { setSearchError(""); setSearchTerm(val); setCurrentPage(1); }
+                if (val !== '' && !/^[a-zA-ZäöüÄÖÜß\u0600-\u06FF\s\-\,!?()\[\]{}\"':;]*$/.test(val)) {
+                  setSearchError(t("ui.onlyLatinGermanArabicCharacters"));
+                  setSnack(t("ui.onlyLatinGermanArabicCharacters"), 'warning');
+                } else {
+                  setSearchError("");
+                  searchQueryRef.current = val;
+                  setCurrentPage(1);
+                  if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+                  searchDebounceRef.current = setTimeout(() => setSearchTrigger(val), 300);
+                  if (searchPersistTimer.current) clearTimeout(searchPersistTimer.current);
+                  searchPersistTimer.current = setTimeout(() => setFilter(dataType, { search: val }), 1000);
+                }
               }}
               style={{ border: 'none', background: 'transparent', marginLeft: isDesktop ? '12px' : '8px', flex: 1, outline: 'none', color: theme.text, fontSize: isDesktop ? '1rem' : '0.875rem' }}
             />
@@ -244,7 +271,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
                 {actualDisplayFields.map((field) => (
                   <th
                     key={field.key}
-                    onClick={() => handleSort(field.key, filteredItems)}
+                    onClick={() => handleSort(field.key)}
                     style={{
                       padding: '20px 24px', textAlign: 'left', borderBottom: `2px solid ${theme.divider}`, cursor: 'pointer',
                       color: sortField === field.key ? theme.primary : theme.textSec, fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap',
@@ -260,14 +287,14 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
               </tr>
             </thead>
             <tbody>
-              {paginatedItems.map((item, index) => (
+              {items.map((item, index) => (
                 <tr
                   key={index}
                   onClick={() => handleEdit(item.id)}
-                  style={{
-                    cursor: 'pointer', borderBottom: `1px solid ${theme.divider}`, transition: 'all 0.2s',
-                    opacity: item.isArchive ? 0.6 : 1, background: theme.bg
-                  }}
+                    style={{
+                      cursor: 'pointer', borderBottom: `1px solid ${theme.divider}`, transition: 'all 0.2s',
+                      background: theme.bg
+                    }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = `${theme.primary}08`; e.currentTarget.style.transform = 'scale(1.001)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = theme.bg; e.currentTarget.style.transform = 'none'; }}
                 >
@@ -285,40 +312,13 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             </tbody>
           </table>
         </div>
-
-        <div style={{ padding: '20px 24px', borderTop: `1px solid ${theme.divider}`, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px', background: theme.bg }}>
-          <button
-            onClick={() => startTransition(() => setCurrentPage(Math.max(1, currentPage - 1)))}
-            disabled={currentPage === 1}
-            title={t("ui.tooltipPrevPage")}
-            style={{
-              background: currentPage === 1 ? 'transparent' : `${theme.primary}10`,
-              border: 'none', borderRadius: '12px', padding: '8px',
-              cursor: currentPage === 1 ? 'default' : 'pointer',
-              color: currentPage === 1 ? theme.textSec : theme.primary,
-              transition: 'all 0.2s'
-            }}
-          >
-            {isRTL() ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-          </button>
-          <span style={{ fontSize: '1rem', color: theme.text, fontWeight: 500 }}>
-            {isDesktop && `${formatNum(startItem)}-${formatNum(endItem)} ${isClient ? t("ui.paginationFrom") : ""} ${formatNum(filteredItems.length)}`}
-          </span>
-          <button
-            onClick={() => startTransition(() => setCurrentPage(Math.min(totalPages, currentPage + 1)))}
-            disabled={currentPage >= totalPages}
-            title={t("ui.tooltipNextPage")}
-            style={{
-              background: currentPage >= totalPages ? 'transparent' : `${theme.primary}10`,
-              border: 'none', borderRadius: '12px', padding: '8px',
-              cursor: currentPage >= totalPages ? 'default' : 'pointer',
-              color: currentPage >= totalPages ? theme.textSec : theme.primary,
-              transition: 'all 0.2s'
-            }}
-          >
-            {isRTL() ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
-          </button>
-        </div>
+        <MuiPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

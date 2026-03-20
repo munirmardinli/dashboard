@@ -1,22 +1,6 @@
-"use client";
 import { create } from "zustand";
 
-const PATH_COOKIE = "lastActivePath";
-const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
-
-function getCookie(name: string): string | undefined {
-	if (typeof window === "undefined") return undefined;
-	const cookies = document.cookie.split(";");
-	const cookie = cookies.find((c) => c.trim().startsWith(`${name}=`));
-	if (!cookie) return undefined;
-	const parts = cookie.split("=");
-	return parts.slice(1).join("=").trim();
-}
-
-function setCookie(name: string, value: string): void {
-	if (typeof window === "undefined") return;
-	document.cookie = `${name}=${value}; max-age=${COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
-}
+import { cookieService } from "@/utils/cookieService";
 
 function formatPath(path: string | null | undefined): string | null {
 	if (!path) return null;
@@ -26,7 +10,7 @@ function formatPath(path: string | null | undefined): string | null {
 
 export const useSidebarStore = create<SidebarState>((set) => ({
 	isOpen: false,
-	activePath: typeof window !== "undefined" ? formatPath(getCookie(PATH_COOKIE)) : null,
+	activePath: null,
 	setIsOpen: (value: boolean) => {
 		set({ isOpen: value });
 	},
@@ -35,15 +19,16 @@ export const useSidebarStore = create<SidebarState>((set) => ({
 	},
 	setActivePath: (path: string) => {
 		const formattedPath = formatPath(path) || "/";
-		setCookie(PATH_COOKIE, formattedPath);
+		cookieService.set({ lastActivePath: formattedPath });
 		set({ activePath: formattedPath });
 	},
 }));
 
-export function initializeSidebarFromCookie(): void {
+export async function initializeSidebarFromJson(): Promise<void> {
 	if (typeof window === "undefined") return;
 
-	const storedPath = formatPath(getCookie(PATH_COOKIE));
+	const data = await cookieService.get();
+	const storedPath = formatPath(data.lastActivePath as string);
 	const currentState = useSidebarStore.getState();
 
 	if (storedPath && storedPath !== currentState.activePath) {

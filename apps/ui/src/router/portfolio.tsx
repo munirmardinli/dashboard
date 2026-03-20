@@ -8,7 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { useI18nStore } from '@/stores/i18nStore';
-import { Github, Linkedin, Mail, Globe, Twitter, Instagram } from 'lucide-react';
+import { Github, Linkedin, Mail} from 'lucide-react';
+import Loading from "@/app/loading";
 
 export default function PortfolioPage() {
 	const mode = useThemeStore((state) => state.mode);
@@ -36,21 +37,7 @@ export default function PortfolioPage() {
 		loadData();
 	}, []);
 
-	if (loading) {
-		return (
-			<div style={{
-				minHeight: "100vh",
-				background: theme.bg,
-				color: theme.text,
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				fontFamily: theme.fontFamily,
-			}}>
-				{t("ui.loading")}
-			</div>
-		);
-	}
+	if (loading) return <Loading />;
 
 	if (error || !data) {
 		return notFound();

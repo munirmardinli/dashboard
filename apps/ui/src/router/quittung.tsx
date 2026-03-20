@@ -57,12 +57,14 @@ export default function QuittungPage() {
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const cameraInputRef = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		fetchExpenses();
-	}, []);
-
-	async function fetchExpenses() {
+	const [mounted, setMounted] = useState(false);
+ 
+ 	useEffect(() => {
+		setMounted(true);
+ 		fetchExpenses();
+ 	}, []);
+ 
+ 	async function fetchExpenses() {
 		try {
 			const response = await fetch(`${globalVars.API_URL}/api/data/expense`);
 			if (response.ok) {
@@ -171,6 +173,8 @@ export default function QuittungPage() {
 
 	const mode = useThemeStore((s) => s.mode);
 	const theme = getTheme(mode);
+
+	if (!mounted) return null;
 
 	return (
 		<div style={{
