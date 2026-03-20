@@ -31,30 +31,7 @@ function getTimezone(): string {
 	return "Europe/Berlin";
 }
 
-async function getFromCookieJson(): Promise<Record<string, unknown>> {
-	if (typeof window === "undefined") return {};
-	try {
-		const res = await fetch(`${globalVars.API_URL}/api/cookie`);
-		if (!res.ok) return {};
-		return await res.json();
-	} catch (e) {
-		console.error("Failed to fetch cookie.json", e);
-		return {};
-	}
-}
-
-async function saveToCookieJson(data: Record<string, unknown>): Promise<void> {
-	if (typeof window === "undefined") return;
-	try {
-		await fetch(`${globalVars.API_URL}/api/cookie`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(data)
-		});
-	} catch (e) {
-		console.error("Failed to save to cookie.json", e);
-	}
-}
+import { cookieService } from "@/utils/cookieService";
 
 async function loadTranslationFile(lang: Language): Promise<Translations> {
 	try {
@@ -120,7 +97,7 @@ export const useI18nStore = create<I18nState>((set, get) => {
 			set({ translations, language: lang });
 
 			if (typeof window !== "undefined") {
-				saveToCookieJson({ languageSelected: lang });
+				cookieService.set({ languageSelected: lang });
 
 				const isRTL = lang === "ar";
 				useThemeStore.getState().setIsRTL(isRTL);
@@ -221,7 +198,7 @@ export const useI18nStore = create<I18nState>((set, get) => {
 export async function initializeLanguageFromJson(): Promise<void> {
 	if (typeof window === "undefined") return;
 
-	const data = await getFromCookieJson();
+	const data = await cookieService.get();
 	const langStr = data.languageSelected as string;
 	const storedLanguage = (langStr === "de" || langStr === "en" || langStr === "fr" || langStr === "ar") ? (langStr as Language) : defaultLanguage;
 	

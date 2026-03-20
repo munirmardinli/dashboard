@@ -12,6 +12,7 @@ import { useSnackStore } from '@/stores/snackbarStore';
 import { useSoundStore } from '@/stores/soundStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSidebarStore, initializeSidebarFromJson } from '@/stores/sidebarStore';
+import { cookieService } from '@/utils/cookieService';
 import Loading from '@/app/loading';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
@@ -48,7 +49,7 @@ export const Navigation: FC = () => {
 
   useEffect(() => {
     if (activeSettingsSection === 'security') {
-      fetch(`${globalVars.API_URL}/api/cookie`).then(r => r.json()).then(setCookieJsonData).catch(() => {});
+      cookieService.get().then(setCookieJsonData);
     }
   }, [activeSettingsSection]);
 

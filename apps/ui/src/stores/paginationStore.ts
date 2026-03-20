@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { cookieService } from '@/utils/cookieService';
 
 interface TableFilterState {
   page: number;
@@ -17,15 +18,7 @@ const DEFAULTS: TableFilterState = { page: 1, search: '', sortField: 'title', so
 
 async function saveFilters(dataType: string, state: TableFilterState): Promise<void> {
   if (typeof window === 'undefined') return;
-  try {
-    await fetch(`${globalVars.API_URL}/api/cookie`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [`filter_${dataType}`]: state })
-    });
-  } catch (e) {
-    console.error('Failed to persist filter state', e);
-  }
+  cookieService.set({ [`filter_${dataType}`]: state });
 }
 
 export const useFilterStore = create<FilterStoreState>((set, get) => ({
@@ -42,9 +35,7 @@ export const useFilterStore = create<FilterStoreState>((set, get) => ({
 export async function loadFilterFromJson(dataType: string): Promise<void> {
   if (typeof window === 'undefined') return;
   try {
-    const res = await fetch(`${globalVars.API_URL}/api/cookie`);
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await cookieService.get();
     const saved = data[`filter_${dataType}`] as TableFilterState | undefined;
     if (saved) {
       useFilterStore.setState((s) => ({
@@ -56,12 +47,10 @@ export async function loadFilterFromJson(dataType: string): Promise<void> {
   }
 }
 
-// Keep paginationStore as simple alias for backwards compat
 export const usePaginationStore = create<PaginationState>((set, get) => ({
   pages: {},
   setPage: (dataType: string, page: number) => {
     set((state) => ({ pages: { ...state.pages, [dataType]: page } }));
-    // Sync into filterStore too
     useFilterStore.getState().setFilter(dataType, { page });
   },
   getPage: (dataType: string) => {

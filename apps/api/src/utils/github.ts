@@ -1,23 +1,34 @@
 export class GitHubService {
-	private token = process.env.GITHUB_TOKEN?.trim();
-	private owner = process.env.GITHUB_OWNER?.trim() || "";
-	private repo = process.env.GITHUB_REPO?.split("/").pop()?.trim() || "";
-	private branch = process.env.GITHUB_BRANCH?.trim() || "main";
-	private baseUrl = `https://api.github.com/repos/${this.owner}/${this.repo}/contents`;
+	private _config: { token: string; owner: string; repo: string; branch: string; baseUrl: string } | null = null;
 
-	constructor() {
-		if (!this.token || !this.owner || !this.repo) {
+	private get config() {
+		if (this._config) return this._config;
+
+		const token = process.env.GITHUB_TOKEN?.trim() || "";
+		const owner = process.env.GITHUB_OWNER?.trim() || "";
+		const repo = process.env.GITHUB_REPO?.split("/").pop()?.trim() || "";
+		const branch = process.env.GITHUB_BRANCH?.trim() || "main";
+		const baseUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
+
+		if (!token || !owner || !repo) {
+			console.error("❌ GitHub configuration missing:", { token: !!token, owner: !!owner, repo: !!repo });
 			throw new Error("GitHub configuration missing (TOKEN, OWNER or REPO)");
 		}
+
+		this._config = { token, owner, repo, branch, baseUrl };
+		return this._config;
+	}
+
+	constructor() {
 	}
 
 	private async fetchGitHub<T>(path: string, options: RequestInit = {}): Promise<T> {
-		const url = `${this.baseUrl}/dashboard/${path.startsWith("/") ? path.slice(1) : path}?ref=${this.branch}`;
+		const url = `${this.config.baseUrl}/dashboard/${path.startsWith("/") ? path.slice(1) : path}?ref=${this.config.branch}`;
 		const response = await fetch(url, {
 			...options,
 			headers: {
 				Accept: "application/vnd.github.v3+json",
-				Authorization: `Bearer ${this.token}`,
+				Authorization: `Bearer ${this.config.token}`,
 				...options.headers,
 			},
 		});
@@ -48,7 +59,7 @@ export class GitHubService {
 			body: JSON.stringify({
 				message,
 				content: Buffer.from(content).toString("base64"),
-				branch: this.branch,
+				branch: this.config.branch,
 				sha,
 			}),
 		});
@@ -64,11 +75,11 @@ export class GitHubService {
 	}
 
 	async getTree(recursive = true): Promise<{ path: string; type: "blob" | "tree"; sha: string }[]> {
-		const url = `https://api.github.com/repos/${this.owner}/${this.repo}/git/trees/${this.branch}?recursive=${recursive ? 1 : 0}`;
+		const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/git/trees/${this.config.branch}?recursive=${recursive ? 1 : 0}`;
 		const response = await fetch(url, {
 			headers: {
 				Accept: "application/vnd.github.v3+json",
-				Authorization: `Bearer ${this.token}`,
+				Authorization: `Bearer ${this.config.token}`,
 			},
 		});
 

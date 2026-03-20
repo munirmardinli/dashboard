@@ -1,6 +1,6 @@
 "use client";
 import { Circle } from "lucide-react";
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from "next/image";
 import { useEffect, useState, Suspense } from "react";
 
@@ -9,21 +9,49 @@ import { useSidebarStore } from "@/stores/sidebarStore";
 import { getTheme } from "@/utils/theme";
 import { useTranslation } from "@/hooks/useTranslation";
 import { globalVars } from "@/utils/globalyVar";
+import { cookieService } from "@/utils/cookieService";
 
 export default function Root() {
 	const mode = useThemeStore((state) => state.mode);
 	const activePath = useSidebarStore((state) => state.activePath);
 	const theme = getTheme(mode);
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const page = searchParams?.get("page");
 	const [dashboardUrl, setDashboardUrl] = useState(globalVars.DEFAULT_VIEW);
 	const [mounted, setMounted] = useState(false);
 
 	const { t, onboarding } = useTranslation();
 
 	useEffect(() => {
-		setMounted(true);
-		setDashboardUrl(activePath || globalVars.DEFAULT_VIEW);
-	}, [activePath]);
+		let isMounted = true;
+		cookieService.get().then((data) => {
+			if (isMounted) {
+				const storedPath = data.lastActivePath as string;
+				let url = storedPath || activePath || globalVars.DEFAULT_VIEW;
+				
+				let urlQ = null;
+				try {
+					const parsedUrl = new URL(url, 'http://localhost');
+					urlQ = parsedUrl.searchParams.get('q');
+				} catch (e) { }
+
+				let cookiePage = page;
+				if (urlQ && data[`filter_${urlQ}`]) {
+					const filter = data[`filter_${urlQ}`] as any;
+					if (filter && filter.page) cookiePage = String(filter.page);
+				}
+
+				if (cookiePage && !url.includes('page=') && Number(cookiePage) > 1) {
+					url += url.includes('?') ? `&page=${cookiePage}` : `?page=${cookiePage}`;
+				}
+				
+				setDashboardUrl(url);
+				setMounted(true);
+			}
+		});
+		return () => { isMounted = false; };
+	}, [activePath, page]);
 
 	if (!mounted) {
 		return null;

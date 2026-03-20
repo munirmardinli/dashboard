@@ -78,6 +78,11 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
       targetPage = Number(urlPage);
     } else {
       targetPage = getPage(dataType);
+      if (targetPage > 1 && !isInitializing) {
+        const params = new URLSearchParams(searchParams?.toString() || "");
+        params.set('page', String(targetPage));
+        router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+      }
     }
 
     if (!isNaN(targetPage) && targetPage !== currentPage) {
@@ -87,7 +92,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     if (!isNaN(targetPage)) {
       setPage(dataType, targetPage);
     }
-  }, [dataType, searchParams, getPage, setPage, currentPage]);
+  }, [dataType, searchParams, getPage, setPage, currentPage, isInitializing, router]);
 
   const handlePageChange = useCallback((page: number) => {
     const params = new URLSearchParams(searchParams?.toString() || "");

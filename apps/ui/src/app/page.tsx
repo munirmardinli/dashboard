@@ -19,6 +19,7 @@ import RootPage from "@/router/root";
 export default function Root() {
   const searchParams = useSearchParams();
   const q = searchParams?.get('q');
+  const page = searchParams?.get('page');
   const mode = useThemeStore((state) => state.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
@@ -33,7 +34,7 @@ export default function Root() {
       case 'quittung': return <QuittungPage />;
       default: return <QueryPage />;
     }
-  }, [q]);
+  }, [q, page]);
 
   if (q && viewComponent) {
     return (
@@ -44,7 +45,7 @@ export default function Root() {
         background: theme.bg
       }}>
         <Navigation />
-        <div style={{
+        <div key={`${q}-${page || 1}`} style={{
           flex: 1,
           marginLeft: isDesktop ? '280px' : '0',
           width: isDesktop ? 'calc(100% - 280px)' : '100%',
@@ -60,7 +61,9 @@ export default function Root() {
 
   return (
     <Suspense fallback={<Loading />}>
-      {viewComponent}
+      <div key={page || 1}>
+        {viewComponent}
+      </div>
     </Suspense>
   );
 }
