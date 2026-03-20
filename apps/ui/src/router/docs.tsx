@@ -363,27 +363,33 @@ export default function DocPage() {
                   style={{ objectFit: 'cover' }}
                 />
 
-                 {frontmatter.authors && (
+                {frontmatter.author_name && (
                   <div style={{
                     position: 'absolute',
-                    bottom: '12px',
-                    right: '12px',
+                    bottom: '0px',
+                    right: '0px',
                     display: 'flex',
                     alignItems: 'center',
+                    gap: '12px',
+                    padding: '7px 6px',
+                    background: 'rgba(0, 0, 0, 0.45)',
+                    backdropFilter: 'blur(12px)',
+                    borderRadius: '4px',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                    zIndex: 10
                   }}>
-                    <span style={{ 
-                      fontSize: '11px', 
-                      fontWeight: 700, 
-                      color: 'rgba(255,255,255,0.95)',
-                      padding: '6px 14px',
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      backdropFilter: 'blur(10px)',
-                      borderRadius: '14px',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                    }}>
-                      {Array.isArray(frontmatter.authors) ? frontmatter.authors[0] : frontmatter.authors}
-                    </span>
+                    {frontmatter.author_image && (
+                      <div style={{ position: 'relative', width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.5)' }}>
+                        <Image src={frontmatter.author_image} alt={frontmatter.author_name} fill style={{ objectFit: 'cover' }} />
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#fff', letterSpacing: '0.01em' }}>{frontmatter.author_name}</span>
+                      {frontmatter.author_role && (
+                        <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>{frontmatter.author_role}</span>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

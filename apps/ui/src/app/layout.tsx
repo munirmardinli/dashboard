@@ -3,9 +3,9 @@ import { ReactNode, Suspense, useEffect } from "react";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";
-import { initializeThemeFromCookie, useThemeStore } from "@/stores/themeStore";
+import { initializeThemeFromJson, useThemeStore } from "@/stores/themeStore";
 import Loading from "@/app/loading";
-import { initializeLanguageFromCookie, useI18nStore } from "@/stores/i18nStore";
+import { initializeLanguageFromJson, useI18nStore } from "@/stores/i18nStore";
 import { getTheme } from "@/utils/theme";
 import { Roboto_Condensed } from "next/font/google";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -27,8 +27,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const { t } = useTranslation();
   const theme = getTheme(mode);
   useEffect(() => {
-    initializeThemeFromCookie();
-    initializeLanguageFromCookie();
+    initializeThemeFromJson();
+    initializeLanguageFromJson();
   }, []);
 
   useEffect(() => {

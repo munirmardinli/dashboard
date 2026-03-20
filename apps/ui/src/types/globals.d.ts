@@ -603,6 +603,9 @@ declare global {
     created?: string;
     updated?: string;
     tags?: string | string[];
+    author_name?: string;
+    author_image?: string;
+    author_role?: string;
     [key: string]: string | boolean | string[] | number | undefined | unknown;
   }
 
@@ -1030,6 +1033,8 @@ declare global {
     page: number;
     limit: number;
     search: string;
+    sortField?: string;
+    sortOrder?: SortOrder;
   }
 
   interface QueryResult<T> {

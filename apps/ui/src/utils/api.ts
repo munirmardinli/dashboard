@@ -47,12 +47,14 @@ async function fetchAPI<T>(
 export const DataAPI = {
 	async getItems<T extends BaseItem>(
 		dataType: string,
-		params?: { page?: number; limit?: number; search?: string }
+		params?: { page?: number; limit?: number; search?: string; sortField?: string; sortOrder?: string }
 	): Promise<DataApiResponse<T>> {
 		const query = new URLSearchParams();
 		if (params?.page) query.append("page", params.page.toString());
 		if (params?.limit) query.append("limit", params.limit.toString());
 		if (params?.search) query.append("search", params.search);
+		if (params?.sortField) query.append("sortField", params.sortField);
+		if (params?.sortOrder) query.append("sortOrder", params.sortOrder);
 
 		const queryString = query.toString();
 		const result = await fetchAPI<DataApiResponse<T>>(`/api/data/${dataType}${queryString ? `?${queryString}` : ""}`);

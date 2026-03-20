@@ -19,7 +19,13 @@ class DataRouter {
 
 	async getAll(req: Request, res: Response): Promise<void> {
 		const { dataType = "" } = req.params;
-		const { page = "1", limit = "10", search = "" } = req.query as Record<string, string>;
+		const { 
+			page = "1", 
+			limit = "10", 
+			search = "", 
+			sortField = "", 
+			sortOrder = "asc" 
+		} = req.query as Record<string, string>;
 		
 		const p = parseInt(page);
 		const l = parseInt(limit);
@@ -34,6 +40,20 @@ class DataRouter {
 					String(val).toLowerCase().includes(term)
 				)
 			);
+		}
+
+		if (sortField) {
+			items.sort((a: any, b: any) => {
+				const valA = a[sortField];
+				const valB = b[sortField];
+
+				if (valA === valB) return 0;
+				if (valA === undefined || valA === null) return 1;
+				if (valB === undefined || valB === null) return -1;
+
+				const comparison = String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' });
+				return sortOrder === 'desc' ? -comparison : comparison;
+			});
 		}
 
 		const total = items.length;

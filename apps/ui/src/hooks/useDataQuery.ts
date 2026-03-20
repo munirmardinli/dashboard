@@ -8,7 +8,7 @@ export function useDataQuery<T extends BaseItem>(
 ): QueryResult<T> {
 
   const { enabled = true, debounceMs = 0 } = options;
-  const { page, limit, search } = params;
+  const { page, limit, search, sortField, sortOrder } = params;
   const [items, setItems] = useState<T[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -22,7 +22,7 @@ export function useDataQuery<T extends BaseItem>(
   const fetchData = useCallback(async () => {
     if (!enabled) return;
     
-    const paramsKey = JSON.stringify({ dataType, page, limit, search });
+    const paramsKey = JSON.stringify({ dataType, page, limit, search, sortField, sortOrder });
     if (paramsKey === lastParamsRef.current) return;
     lastParamsRef.current = paramsKey;
 
@@ -41,6 +41,16 @@ export function useDataQuery<T extends BaseItem>(
             Object.values(item as Record<string, unknown>).some(val => String(val).toLowerCase().includes(term))
           );
         }
+
+        if (sortField) {
+          filtered.sort((a, b) => {
+            const valA = (a as any)[sortField];
+            const valB = (b as any)[sortField];
+            if (valA === valB) return 0;
+            const comp = String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' });
+            return sortOrder === 'desc' ? -comp : comp;
+          });
+        }
         
         setTotal(filtered.length);
         setTotalPages(Math.ceil(filtered.length / limit));
@@ -56,7 +66,7 @@ export function useDataQuery<T extends BaseItem>(
     } finally {
       setLoading(false);
     }
-  }, [dataType, page, limit, search, enabled]);
+  }, [dataType, page, limit, search, sortField, sortOrder, enabled]);
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);

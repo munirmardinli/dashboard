@@ -4,6 +4,7 @@ import { GitHubService } from "../utils/github.js";
 const github = new GitHubService();
 
 type MetaData = Record<string, any>;
+type AuthorInfo = { name: string; image: string; role: string };
 
 class DocsRouter {
 
@@ -11,6 +12,7 @@ class DocsRouter {
 	private lastCacheTime = 0;
 	private readonly CACHE_TTL = 1000 * 60 * 5;
 	private titleCache: Record<string, string> = {};
+	private authorCache: AuthorInfo | null = null;
 	private metaPromise: Promise<MetaData> | null = null;
 
 	getRouter(): Router {
@@ -232,10 +234,38 @@ class DocsRouter {
 			fallback.slice(1).replace(/-/g, " ");
 	}
 
+	private async getAuthor(): Promise<AuthorInfo | null> {
+		if (this.authorCache) return this.authorCache;
+		try {
+			const { content } = await github.getFile("docs/.author.json");
+			this.authorCache = JSON.parse(content) as AuthorInfo;
+			return this.authorCache;
+		} catch (error) {
+			console.error("Error fetching .author.json:", error);
+			return null;
+		}
+	}
+
 	private async getContent(path: string) {
 		try {
 			const { content } = await github.getFile(`docs/${path}.md`);
-			return content;
+			const author = await this.getAuthor();
+
+			if (!author) return content;
+
+			const { name, image, role } = author;
+			const authorFm = `\nauthor_name: ${name}\nauthor_image: ${image}\nauthor_role: ${role}`;
+
+			if (content.startsWith("---")) {
+				const parts = content.split("---");
+				if (parts.length >= 3 && parts[1] !== undefined) {
+					parts[1] = parts[1].trimEnd() + authorFm + "\n";
+					return parts.join("---");
+				}
+			}
+
+			const titleFallback = path.split("/").pop() || "Document";
+			return `---\ntitle: ${titleFallback}${authorFm}\n---\n\n${content}`;
 		} catch (error) {
 			console.error(`Error fetching content for ${path}:`, error);
 			return null;

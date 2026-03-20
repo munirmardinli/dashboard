@@ -11,7 +11,7 @@ import { useI18nStore } from '@/stores/i18nStore';
 import { useSnackStore } from '@/stores/snackbarStore';
 import { useSoundStore } from '@/stores/soundStore';
 import { useThemeStore } from '@/stores/themeStore';
-import { useSidebarStore, initializeSidebarFromCookie } from '@/stores/sidebarStore';
+import { useSidebarStore, initializeSidebarFromJson } from '@/stores/sidebarStore';
 import Loading from '@/app/loading';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
@@ -37,13 +37,20 @@ export const Navigation: FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSettingsSection, setActiveSettingsSection] = useState<'general' | 'security'>('general');
   const [mounted, setMounted] = useState(false);
+  const [cookieJsonData, setCookieJsonData] = useState<Record<string, unknown> | null>(null);
   const [, startTransition] = useTransition();
 
 
   useEffect(() => {
     setMounted(true);
-    initializeSidebarFromCookie();
+    initializeSidebarFromJson();
   }, []);
+
+  useEffect(() => {
+    if (activeSettingsSection === 'security') {
+      fetch(`${globalVars.API_URL}/api/cookie`).then(r => r.json()).then(setCookieJsonData).catch(() => {});
+    }
+  }, [activeSettingsSection]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -378,7 +385,6 @@ export const Navigation: FC = () => {
                             onClick={async () => {
                               if (language !== item.code) {
                                 await setLanguage(item.code);
-                                document.cookie = `languageSelected=${item.code}; max-age=${30 * 24 * 60 * 60}; path=/`;
                                 try { useSoundStore.getState().playEvent("create"); } catch { }
                                 setSnack(`${t("language.menu." + item.code)} ${t("ui.successfully")} ${t("ui.updated")}`, 'success');
                               }
@@ -430,18 +436,14 @@ export const Navigation: FC = () => {
                     </h3>
                     <p style={{ margin: '0 0 16px', color: theme.textSec, fontSize: '0.875rem' }}>{t("settings.cookies.description")}</p>
                     <div style={{ border: `1px solid ${theme.divider}`, borderRadius: '12px', overflow: 'hidden' }}>
-                      {typeof window !== 'undefined' && document.cookie ? (
+                      {cookieJsonData ? (
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          {document.cookie.split(';').map((cookie, index) => {
-                            const [name, ...valueParts] = cookie.trim().split('=');
-                            const value = valueParts.join('=');
-                            return (
-                              <div key={index} style={{ padding: '12px', borderBottom: index < document.cookie.split(';').length - 1 ? `1px solid ${theme.divider}` : 'none' }}>
-                                <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', background: `${theme.primary}1a`, color: theme.primary, fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>{name}</div>
-                                <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-all' }}>{value || '(leer)'}</div>
-                              </div>
-                            );
-                          })}
+                          {Object.entries(cookieJsonData).map(([name, value], index, arr) => (
+                            <div key={index} style={{ padding: '12px', borderBottom: index < arr.length - 1 ? `1px solid ${theme.divider}` : 'none' }}>
+                              <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', background: `${theme.primary}1a`, color: theme.primary, fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>{name}</div>
+                              <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-all' }}>{String(value)}</div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <div style={{ padding: '24px', textAlign: 'center', color: theme.textSec, fontSize: '0.875rem' }}>{t("settings.cookies.noCookies")}</div>

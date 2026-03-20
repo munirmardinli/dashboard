@@ -11,15 +11,17 @@ import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { useTranslation } from "@/hooks/useTranslation";
 import { MuiPagination } from "./Pagination";
 import { useDataQuery } from "@/hooks/useDataQuery";
-import { usePaginationStore } from "@/stores/paginationStore";
+import { usePaginationStore, useFilterStore, loadFilterFromJson } from "@/stores/paginationStore";
 
 export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { getPage, setPage } = usePaginationStore();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
-  const [searchTerm, setSearchTerm] = useState('');
+  const getPage = usePaginationStore((s) => s.getPage);
+  const setPage = usePaginationStore((s) => s.setPage);
+  const getFilter = useFilterStore((s) => s.getFilter);
+  const setFilter = useFilterStore((s) => s.setFilter);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(6);
   const [sortField, setSortField] = useState<SortField>('title');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [, setFullConfig] = useState<BasicConfig | null>(null);
@@ -32,12 +34,41 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
 
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState<boolean>(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [searchError, setSearchError] = useState("");
+  const [searchError, setSearchError] = useState<string>("");
   const [isPending, startTransition] = useTransition();
+  const searchQueryRef = useRef<string>('');
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const searchPersistTimer = useRef<NodeJS.Timeout | null>(null);
+  const [searchTrigger, setSearchTrigger] = useState<string>('');
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+
 
   const actualDisplayFields = useMemo(() => (config?.view || displayFields).filter(f => !f.hidden), [config?.view, displayFields]);
+
+  useEffect(() => {
+    setIsInitializing(true);
+    searchQueryRef.current = '';
+    setSearchTrigger('');
+    if (searchInputRef.current) searchInputRef.current.value = '';
+
+    loadFilterFromJson(dataType).then(() => {
+      const saved = getFilter(dataType);
+      setCurrentPage(saved.page);
+      
+      searchQueryRef.current = saved.search || '';
+      setSearchTrigger(saved.search || '');
+      
+      if (searchInputRef.current) {
+        searchInputRef.current.value = saved.search || '';
+      }
+      
+      setSortField(saved.sortField as SortField || 'title');
+      setSortOrder(saved.sortOrder || 'asc');
+      setIsInitializing(false);
+    });
+  }, [dataType]);
 
   useEffect(() => {
     const urlPage = searchParams?.get('page');
@@ -61,15 +92,16 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const handlePageChange = useCallback((page: number) => {
     const params = new URLSearchParams(searchParams?.toString() || "");
     params.set('page', String(page));
+    setFilter(dataType, { page });
     startTransition(() => {
       router.push(`${window.location.pathname}?${params.toString()}`);
     });
-  }, [router, searchParams]);
+  }, [router, searchParams, dataType, setFilter]);
 
   const { items, total: totalItems, totalPages, loading: queryLoading, error: queryError } = useDataQuery<GenericJsonItem>(
     dataType,
-    { page: currentPage, limit: itemsPerPage, search: searchTerm },
-    { debounceMs: 100 }
+    { page: currentPage, limit: itemsPerPage, search: searchTrigger, sortField, sortOrder },
+    { debounceMs: 50, enabled: !isInitializing }
   );
 
   useEffect(() => {
@@ -104,26 +136,15 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
 
   const handleSort = useCallback((field: string) => {
     startTransition(() => {
-      if (sortField === field) {
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-      } else {
-        setSortField(field as SortField);
-        setSortOrder('asc');
-      }
+      const newOrder = sortField === field ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+      const newField = field as SortField;
+      setSortField(newField);
+      setSortOrder(newOrder);
+      setFilter(dataType, { sortField: field, sortOrder: newOrder });
       setSnack(`${t("ui.sortedBy")} ${field}`, 'info');
     });
-  }, [sortField, sortOrder, t, setSnack]);
+  }, [sortField, sortOrder, t, setSnack, dataType, setFilter]);
 
-  const sortedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
-      const aVal = a[sortField], bVal = b[sortField];
-      if (aVal === bVal) return 0;
-      if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
-      if (bVal == null) return sortOrder === 'asc' ? 1 : -1;
-      const comp = String(aVal).toLowerCase() < String(bVal).toLowerCase() ? -1 : 1;
-      return sortOrder === 'asc' ? comp : -comp;
-    });
-  }, [items, sortField, sortOrder]);
 
   const handleEdit = (id: string) => {
     if (dataType === 'dashy') {
@@ -187,7 +208,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   };
 
   if (queryError) return notFound();
-  if (!isClient || isLoading || isPending || queryLoading) return null;
+  if (!isClient || isLoading || isInitializing) return null;
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -199,11 +220,24 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
           <div style={{ display: 'flex', alignItems: 'center', background: theme.paper, borderRadius: isDesktop ? '8px' : '6px', padding: isDesktop ? '12px 16px' : '10px 12px', border: `1px solid ${searchError ? theme.error : theme.divider}`, width: isDesktop ? '300px' : '100%', maxWidth: '300px', boxShadow: 'none' }}>
             <Search size={isDesktop ? 22 : 18} color={theme.textSec} />
             <input
-              ref={searchInputRef} type="search" placeholder={t("ui.searchPlaceholder")} value={searchTerm}
+              ref={searchInputRef}
+              type="search"
+              placeholder={t("ui.searchPlaceholder")}
+              defaultValue={searchQueryRef.current}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val !== '' && !/^[a-zA-ZäöüÄÖÜß\u0600-\u06FF\s\-\,!?()\[\]{}\"':;]*$/.test(val)) { setSearchError(t("ui.onlyLatinGermanArabicCharacters")); setSnack(t("ui.onlyLatinGermanArabicCharacters"), 'warning'); }
-                else { setSearchError(""); setSearchTerm(val); setCurrentPage(1); }
+                if (val !== '' && !/^[a-zA-ZäöüÄÖÜß\u0600-\u06FF\s\-\,!?()\[\]{}\"':;]*$/.test(val)) {
+                  setSearchError(t("ui.onlyLatinGermanArabicCharacters"));
+                  setSnack(t("ui.onlyLatinGermanArabicCharacters"), 'warning');
+                } else {
+                  setSearchError("");
+                  searchQueryRef.current = val;
+                  setCurrentPage(1);
+                  if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+                  searchDebounceRef.current = setTimeout(() => setSearchTrigger(val), 300);
+                  if (searchPersistTimer.current) clearTimeout(searchPersistTimer.current);
+                  searchPersistTimer.current = setTimeout(() => setFilter(dataType, { search: val }), 1000);
+                }
               }}
               style={{ border: 'none', background: 'transparent', marginLeft: isDesktop ? '12px' : '8px', flex: 1, outline: 'none', color: theme.text, fontSize: isDesktop ? '1rem' : '0.875rem' }}
             />
@@ -248,7 +282,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
               </tr>
             </thead>
             <tbody>
-              {sortedItems.map((item, index) => (
+              {items.map((item, index) => (
                 <tr
                   key={index}
                   onClick={() => handleEdit(item.id)}
