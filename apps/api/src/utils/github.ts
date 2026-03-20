@@ -25,10 +25,12 @@ export class GitHubService {
 	private async fetchGitHub<T>(path: string, options: RequestInit = {}): Promise<T> {
 		const url = `${this.config.baseUrl}/dashboard/${path.startsWith("/") ? path.slice(1) : path}?ref=${this.config.branch}`;
 		const response = await fetch(url, {
+			cache: "no-store",
 			...options,
 			headers: {
 				Accept: "application/vnd.github.v3+json",
 				Authorization: `Bearer ${this.config.token}`,
+				"Cache-Control": "no-cache, no-store, must-revalidate",
 				...options.headers,
 			},
 		});
