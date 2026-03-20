@@ -5,12 +5,13 @@ const github = new GitHubService();
 
 type MetaData = Record<string, any>;
 
-export class DocsRouter {
+class DocsRouter {
 
 	private cachedMeta: MetaData | null = null;
 	private lastCacheTime = 0;
 	private readonly CACHE_TTL = 1000 * 60 * 5;
 	private titleCache: Record<string, string> = {};
+	private metaPromise: Promise<MetaData> | null = null;
 
 	getRouter(): Router {
 		const router = Router();
@@ -20,12 +21,56 @@ export class DocsRouter {
 		router.get("/api/docs/content", this.getContentHandler.bind(this));
 		router.get("/api/docs/assets/images/:subPath(*)?", this.getImage.bind(this));
 		router.get("/api/docs/assets/pdf/:subPath(*)?", this.getPDF.bind(this));
+		router.get("/api/docs/findonly", this.findOnlyMeta.bind(this));
 
 		return router;
 	}
 
 	async getMeta(_req: Request, res: Response): Promise<void> {
-		res.json(await this.buildMeta());
+		if (this.cachedMeta && Date.now() - this.lastCacheTime < this.CACHE_TTL) {
+			res.json(this.cachedMeta);
+			return;
+		}
+
+		if (!this.metaPromise) {
+			this.metaPromise = this.buildMeta().finally(() => {
+				this.metaPromise = null;
+			});
+		}
+
+		try {
+			res.json(await this.metaPromise);
+		} catch (error) {
+			res.status(500).json({ error: "Failed to load docs metadata" });
+		}
+	}
+
+	async findOnlyMeta(req: Request, res: Response): Promise<void> {
+		const p = (req.query["p"] as string) || "";
+		if (!p) {
+			res.status(400).json({ error: "Path parameter 'p' is missing" });
+			return;
+		}
+
+		try {
+			const meta = await this.buildMeta();
+			const searchPath = p.startsWith("docs/") ? p : `docs/${p}`;
+			const parts = searchPath.split("/");
+			let current: any = meta;
+
+			for (const part of parts) {
+				if (current && typeof current === 'object' && part in current) {
+					current = current[part];
+				} else {
+					res.status(404).json({ error: `Metadata for path '${p}' (resolved: '${searchPath}') not found` });
+					return;
+				}
+			}
+
+			res.json(current);
+		} catch (error) {
+			res.status(500).json({ error: "Failed to fetch document metadata" });
+		}
 	}
 
 	async listDirectory(req: Request, res: Response): Promise<void> {
@@ -202,3 +247,4 @@ export class DocsRouter {
 	}
 }
 
+export { DocsRouter }

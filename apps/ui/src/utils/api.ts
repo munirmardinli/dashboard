@@ -45,10 +45,30 @@ async function fetchAPI<T>(
 }
 
 export const DataAPI = {
-	async getItems<T extends BaseItem>(dataType: string): Promise<T[]> {
-		const result = await fetchAPI<T[]>(`/api/data/${dataType}`);
-		return result.success ? result.data : [];
+	async getItems<T extends BaseItem>(
+		dataType: string,
+		params?: { page?: number; limit?: number; search?: string }
+	): Promise<DataApiResponse<T>> {
+		const query = new URLSearchParams();
+		if (params?.page) query.append("page", params.page.toString());
+		if (params?.limit) query.append("limit", params.limit.toString());
+		if (params?.search) query.append("search", params.search);
+
+		const queryString = query.toString();
+		const result = await fetchAPI<DataApiResponse<T>>(`/api/data/${dataType}${queryString ? `?${queryString}` : ""}`);
+		
+		if (!result.success) {
+			return { items: [], total: 0, page: 1, limit: 10, totalPages: 0 };
+		}
+		return result.data;
 	},
+
+	async getItem<T extends BaseItem>(dataType: string, id: string): Promise<T | null> {
+		const result = await fetchAPI<T>(`/api/data/${dataType}/findonly/${id}`);
+		return result.success ? result.data : null;
+	},
+
+
 
 	async createItem<T extends BaseItem>(
 		dataType: string,
@@ -162,5 +182,10 @@ export const DocsAPI = {
 		} catch {
 			return null;
 		}
+	},
+
+	async getItemMeta(path: string): Promise<MetaData | null> {
+		const result = await fetchAPI<MetaData>(`/api/docs/findonly?p=${path}`);
+		return result.success ? result.data : null;
 	},
 };

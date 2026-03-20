@@ -1,8 +1,7 @@
 import { FC, useState, useEffect, useRef, useMemo, useCallback, useTransition } from "react";
-import { notFound, useRouter } from "next/navigation";
-import { Clock, Plus, Search, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { Clock, Plus, Search, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 
-import { DataAPI, DashyAPI } from "@/utils/api";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useI18nStore } from "@/stores/i18nStore";
@@ -10,11 +9,14 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { useTranslation } from "@/hooks/useTranslation";
+import { MuiPagination } from "./Pagination";
+import { useDataQuery } from "@/hooks/useDataQuery";
+import { usePaginationStore } from "@/stores/paginationStore";
 
 export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
-  const [allItems, setAllItems] = useState<GenericJsonItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const { getPage, setPage } = usePaginationStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,8 +26,8 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
   const setSnack = useSnackStore((state) => state.setSnack);
   const { isLoading } = useGlobalLoadingStore();
-  const { t, translations, language, isRTL, dataTypes } = useTranslation();
-  const { getLocale, formatDate, formatDateTime, loadTranslations } = useI18nStore();
+  const { t, translations, language, dataTypes } = useTranslation();
+  const { formatDate, formatDateTime, loadTranslations } = useI18nStore();
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
@@ -35,11 +37,46 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
   const [searchError, setSearchError] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  const configCacheRef = useRef<{ config: BasicConfig | null; dataTypeConfig: Map<string, DataTypeConfig>; items: Map<string, GenericJsonItem[]> }>({
-    config: null, dataTypeConfig: new Map(), items: new Map()
-  });
-
   const actualDisplayFields = useMemo(() => (config?.view || displayFields).filter(f => !f.hidden), [config?.view, displayFields]);
+
+  useEffect(() => {
+    const urlPage = searchParams?.get('page');
+    let targetPage = 1;
+
+    if (urlPage) {
+      targetPage = Number(urlPage);
+    } else {
+      targetPage = getPage(dataType);
+    }
+
+    if (!isNaN(targetPage) && targetPage !== currentPage) {
+      setCurrentPage(targetPage);
+    }
+
+    if (!isNaN(targetPage)) {
+      setPage(dataType, targetPage);
+    }
+  }, [dataType, searchParams, getPage, setPage, currentPage]);
+
+  const handlePageChange = useCallback((page: number) => {
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.set('page', String(page));
+    startTransition(() => {
+      router.push(`${window.location.pathname}?${params.toString()}`);
+    });
+  }, [router, searchParams]);
+
+  const { items, total: totalItems, totalPages, loading: queryLoading, error: queryError } = useDataQuery<GenericJsonItem>(
+    dataType,
+    { page: currentPage, limit: itemsPerPage, search: searchTerm },
+    { debounceMs: 100 }
+  );
+
+  useEffect(() => {
+    if (queryError) {
+      setSnack(`${t("ui.failedToLoad")} ${dataType}`, 'error');
+    }
+  }, [queryError, dataType, t, setSnack]);
 
   useEffect(() => { if (Object.keys(translations).length === 0) loadTranslations(language); }, [translations, language, loadTranslations]);
   useEffect(() => setIsClient(true), []);
@@ -52,23 +89,10 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
         setConfig(dt || null);
         if (dt?.defaultSortField) setSortField(dt.defaultSortField as SortField);
         if (dt?.defaultSortOrder) setSortOrder(dt.defaultSortOrder as 'asc' | 'desc');
-      } catch { setError('config-load-failed'); }
+      } catch { }
     });
   }, [dataType, dataTypes, translations]);
 
-  useEffect(() => {
-    startTransition(async () => {
-      try {
-        if (dataType === 'dashy') {
-          const items = await DashyAPI.getAllItems();
-          setAllItems(items.filter(i => !i.isArchive) as unknown as GenericJsonItem[]);
-        } else {
-          if (!configCacheRef.current.items.has(dataType)) configCacheRef.current.items.set(dataType, await DataAPI.getItems<GenericJsonItem>(dataType));
-          setAllItems((configCacheRef.current.items.get(dataType) || []).filter(i => !i.isArchive));
-        }
-      } catch { setError('load-failed'); setSnack(`${t("ui.failedToLoad")} ${dataType}`, 'error'); notFound(); }
-    });
-  }, [dataType, setSnack, t]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,41 +102,20 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleSort = useCallback((field: string, currentFilteredItems: GenericJsonItem[]) => {
+  const handleSort = useCallback((field: string) => {
     startTransition(() => {
-      const currentSortField = currentFilteredItems.length > 0 ? Object.keys(currentFilteredItems[0] || {}).find(key => key === field) : field;
-      if (currentSortField === field) {
-        const newOrder = currentFilteredItems.length > 0 ? "desc" : "asc";
-        setSortOrder(newOrder); setSnack(`${t("ui.sortedBy")} ${field} (${newOrder})`, 'info');
+      if (sortField === field) {
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
       } else {
-        setSortField(field as SortField); setSortOrder("asc"); setSnack(`${t("ui.sortedBy")} ${field}`, 'info');
+        setSortField(field as SortField);
+        setSortOrder('asc');
       }
+      setSnack(`${t("ui.sortedBy")} ${field}`, 'info');
     });
-  }, [t, setSnack]);
+  }, [sortField, sortOrder, t, setSnack]);
 
-  const searchInValue = useCallback((value: unknown, term: string): boolean => {
-    if (value == null) return false;
-    if (Array.isArray(value)) return value.some(item => searchInValue(item, term));
-    if (typeof value === 'object') return Object.values(value).some(v => searchInValue(v, term));
-    return String(value).toLowerCase().includes(term.toLowerCase());
-  }, []);
-
-  const getFieldValue = useCallback((item: GenericJsonItem, fieldPath: string): unknown => {
-    let value: unknown = item;
-    for (const part of fieldPath.split('.')) {
-      if (value == null || typeof value !== 'object') return null;
-      value = (value as Record<string, unknown>)[part];
-    }
-    return value;
-  }, []);
-
-  const filteredItems = useMemo(() => {
-    let items = [...allItems];
-    if (searchTerm) {
-      const searchFields = config?.searchFields?.length ? config.searchFields : (allItems.length ? Object.keys(allItems[0]).filter(k => !['id', 'createdAt', 'updatedAt', 'isArchive'].includes(k)) : ['title', 'description', 'category']);
-      items = items.filter(item => searchFields.some(field => searchInValue(getFieldValue(item, field), searchTerm)));
-    }
-    items.sort((a, b) => {
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
       const aVal = a[sortField], bVal = b[sortField];
       if (aVal === bVal) return 0;
       if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
@@ -120,18 +123,11 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
       const comp = String(aVal).toLowerCase() < String(bVal).toLowerCase() ? -1 : 1;
       return sortOrder === 'asc' ? comp : -comp;
     });
-    return items;
-  }, [allItems, searchTerm, sortField, sortOrder, config?.searchFields, getFieldValue, searchInValue]);
+  }, [items, sortField, sortOrder]);
 
-  const paginatedItems = useMemo(() => filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage), [filteredItems, currentPage, itemsPerPage]);
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, filteredItems.length);
-
-  const formatNum = (num: number) => num.toLocaleString(getLocale()).replace(/_/g, '-');
   const handleEdit = (id: string) => {
     if (dataType === 'dashy') {
-      const item = allItems.find(i => i.id === id) as DashyItemWithMeta | undefined;
+      const item = items.find(i => i.id === id) as DashyItemWithMeta | undefined;
       if (item) {
         startTransition(() => router.push(`/?q=${dataType}&id=${id}&sectionId=${item.sectionId}&itemIndex=${item.itemIndex}`));
       }
@@ -144,11 +140,6 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     const field = (translations.dataTypes?.[dataType]?.view as DisplayField[])?.find(f => f.key === fieldKey);
     return field?.label || '';
   }, [dataType, translations.dataTypes]);
-
-  const getReminderLabel = useCallback((reminder: string) => {
-    const options = (translations.dataTypes?.[dataType]?.create as FormField[])?.find(f => f.key === 'reminder')?.options || config?.create.find(f => f.key === 'reminder')?.options;
-    return options?.find(o => o.value === reminder)?.label || reminder;
-  }, [config, dataType, translations.dataTypes]);
 
   const isOverdue = (dueDate: string, isArchive: boolean) => dueDate && new Date(dueDate) < new Date() && !isArchive;
 
@@ -195,8 +186,8 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
     return <span style={{ fontSize: isDesktop ? '1rem' : '0.875rem', color: theme.text }}>{String(value)}</span>;
   };
 
-  if (error) return notFound();
-  if (!isClient || isLoading || isPending) return null;
+  if (queryError) return notFound();
+  if (!isClient || isLoading || isPending || queryLoading) return null;
 
   return (
     <div style={{ width: "100%", position: "relative" }}>
@@ -241,7 +232,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
                 {actualDisplayFields.map((field) => (
                   <th
                     key={field.key}
-                    onClick={() => handleSort(field.key, filteredItems)}
+                    onClick={() => handleSort(field.key)}
                     style={{
                       padding: '20px 24px', textAlign: 'left', borderBottom: `2px solid ${theme.divider}`, cursor: 'pointer',
                       color: sortField === field.key ? theme.primary : theme.textSec, fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap',
@@ -257,14 +248,14 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
               </tr>
             </thead>
             <tbody>
-              {paginatedItems.map((item, index) => (
+              {sortedItems.map((item, index) => (
                 <tr
                   key={index}
                   onClick={() => handleEdit(item.id)}
-                  style={{
-                    cursor: 'pointer', borderBottom: `1px solid ${theme.divider}`, transition: 'all 0.2s',
-                    opacity: item.isArchive ? 0.6 : 1, background: theme.bg
-                  }}
+                    style={{
+                      cursor: 'pointer', borderBottom: `1px solid ${theme.divider}`, transition: 'all 0.2s',
+                      background: theme.bg
+                    }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = `${theme.primary}08`; e.currentTarget.style.transform = 'scale(1.001)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = theme.bg; e.currentTarget.style.transform = 'none'; }}
                 >
@@ -282,40 +273,13 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             </tbody>
           </table>
         </div>
-
-        <div style={{ padding: '20px 24px', borderTop: `1px solid ${theme.divider}`, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '20px', background: theme.bg }}>
-          <button
-            onClick={() => startTransition(() => setCurrentPage(Math.max(1, currentPage - 1)))}
-            disabled={currentPage === 1}
-            title={t("ui.tooltipPrevPage")}
-            style={{
-              background: currentPage === 1 ? 'transparent' : `${theme.primary}10`,
-              border: 'none', borderRadius: '12px', padding: '8px',
-              cursor: currentPage === 1 ? 'default' : 'pointer',
-              color: currentPage === 1 ? theme.textSec : theme.primary,
-              transition: 'all 0.2s'
-            }}
-          >
-            {isRTL() ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-          </button>
-          <span style={{ fontSize: '1rem', color: theme.text, fontWeight: 500 }}>
-            {isDesktop && `${formatNum(startItem)}-${formatNum(endItem)} ${isClient ? t("ui.paginationFrom") : ""} ${formatNum(filteredItems.length)}`}
-          </span>
-          <button
-            onClick={() => startTransition(() => setCurrentPage(Math.min(totalPages, currentPage + 1)))}
-            disabled={currentPage >= totalPages}
-            title={t("ui.tooltipNextPage")}
-            style={{
-              background: currentPage >= totalPages ? 'transparent' : `${theme.primary}10`,
-              border: 'none', borderRadius: '12px', padding: '8px',
-              cursor: currentPage >= totalPages ? 'default' : 'pointer',
-              color: currentPage >= totalPages ? theme.textSec : theme.primary,
-              transition: 'all 0.2s'
-            }}
-          >
-            {isRTL() ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
-          </button>
-        </div>
+        <MuiPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

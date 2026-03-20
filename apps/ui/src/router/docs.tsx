@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement } from 'react';
+import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -17,7 +17,7 @@ import { getTheme } from '@/utils/theme';
 import { useThemeStore } from '@/stores/themeStore';
 import { useSearchParams } from 'next/navigation';
 import { useSnackStore } from "@/stores/snackbarStore";
-import { DocsAPI, PortfolioAPI } from '@/utils/api';
+import { DocsAPI } from '@/utils/api';
 import { useI18nStore } from '@/stores/i18nStore';
 import { globalVars } from '@/utils/globalyVar';
 import Image from 'next/image';
@@ -194,78 +194,82 @@ function MermaidDiagram({ chart }: { chart: string }) {
 export default function DocPage() {
   const searchParams = useSearchParams();
   const p = searchParams.get('p') || 'index';
-  const [data, setData] = useState<PortfolioData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [content, setContent] = useState<string>('');
   const [frontmatter, setFrontmatter] = useState<Frontmatter>({});
+  const [, setServerMeta] = useState<MetaData | null>(null);
   const [loading, setLoading] = useState(true);
-  const { t } = useI18nStore();
+  const t = useI18nStore((s) => s.t);
 
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
+  const lastPathRef = useRef<string>("");
 
   useEffect(() => {
+    if (lastPathRef.current === p) return;
+    lastPathRef.current = p;
     setLoading(true);
 
-    DocsAPI.getContent(p)
-      .then(data => {
-        if (data) {
-          const parsed = matter(data);
-          if (parsed.data?.isArchive) {
-            setContent('');
-            setFrontmatter({});
-            setLoading(false);
-            return;
-          }
-          setFrontmatter(parsed.data || {});
-          let rawContent = parsed.content;
-
-          if (parsed.data?.title) {
-            rawContent = rawContent.replace(/^\s*#\s+.+\r?\n/, '');
-          }
-
-          const lines = rawContent.split('\n');
-          const processedLines = [];
-          let inAdmonition = false;
-
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            const trimmed = line.trim();
-            const isAdmonitionStart = /^(\?{3}|!{3})[+-]?\s+\w+.*$/.test(trimmed);
-
-            if (isAdmonitionStart) {
-              processedLines.push('> ' + trimmed);
-              inAdmonition = true;
-            } else if (
-              inAdmonition &&
-              (line.startsWith('    ') ||
-                line.startsWith('\t') ||
-                line.startsWith('  ') ||
-                trimmed === '')
-            ) {
-              let contentLine = line;
-              if (line.startsWith('    ')) contentLine = line.substring(4);
-              else if (line.startsWith('\t')) contentLine = line.substring(1);
-              else if (line.startsWith('  ')) contentLine = line.substring(2);
-
-              processedLines.push('> ' + contentLine);
-            } else {
-              processedLines.push(line);
-              if (trimmed !== '') inAdmonition = false;
-            }
-          }
-
-          setContent(processedLines.join('\n'));
-        } else {
+    Promise.all([
+      DocsAPI.getContent(p),
+      DocsAPI.getItemMeta(p)
+    ]).then(([data, meta]) => {
+      setServerMeta(meta);
+      if (data) {
+        const parsed = matter(data);
+        if (parsed.data?.isArchive) {
           setContent('');
           setFrontmatter({});
+          setLoading(false);
+          return;
         }
-      })
-      .catch(() => {
+        setFrontmatter(parsed.data || {});
+        let rawContent = parsed.content;
+
+        if (parsed.data?.title) {
+          rawContent = rawContent.replace(/^\s*#\s+.+\r?\n/, '');
+        }
+
+        const lines = rawContent.split('\n');
+        const processedLines = [];
+        let inAdmonition = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const trimmed = line.trim();
+          const isAdmonitionStart = /^(\?{3}|!{3})[+-]?\s+\w+.*$/.test(trimmed);
+
+          if (isAdmonitionStart) {
+            processedLines.push('> ' + trimmed);
+            inAdmonition = true;
+          } else if (
+            inAdmonition &&
+            (line.startsWith('    ') ||
+              line.startsWith('\t') ||
+              line.startsWith('  ') ||
+              trimmed === '')
+          ) {
+            let contentLine = line;
+            if (line.startsWith('    ')) contentLine = line.substring(4);
+            else if (line.startsWith('\t')) contentLine = line.substring(1);
+            else if (line.startsWith('  ')) contentLine = line.substring(2);
+
+            processedLines.push('> ' + contentLine);
+          } else {
+            processedLines.push(line);
+            if (trimmed !== '') inAdmonition = false;
+          }
+        }
+
+        setContent(processedLines.join('\n'));
+      } else {
         setContent('');
         setFrontmatter({});
-      })
-      .finally(() => setLoading(false));
+      }
+    }).catch(() => {
+      setContent('');
+      setFrontmatter({});
+    }).finally(() => setLoading(false));
   }, [p]);
 
   useEffect(() => {
@@ -283,24 +287,6 @@ export default function DocPage() {
     }
   }, [frontmatter]);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const portfolioData = await PortfolioAPI.getPortfolioData();
-        if (portfolioData) {
-          setData(portfolioData);
-        } else {
-          setError(t("ui.noEntries"));
-        }
-      } catch (err) {
-        //notFound();
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
 
   const formatDate = (d?: string) =>
     d ? new Date(d).toLocaleDateString('de-DE', {
@@ -311,21 +297,6 @@ export default function DocPage() {
 
   if (loading) return <Loading />;
 
-  if (error || !data) {
-    return (
-      <div style={{
-        color: theme.text,
-        padding: '2rem',
-        textAlign: 'center',
-        border: `1px solid ${theme.divider}`,
-        borderRadius: '12px',
-        margin: '2rem'
-      }}>
-        <AlertCircle size={40} style={{ marginBottom: '1rem', color: '#ef4444' }} />
-        <p>{error || t("ui.noEntries")}</p>
-      </div>
-    );
-  }
 
 
   if (!content) {
@@ -392,40 +363,27 @@ export default function DocPage() {
                   style={{ objectFit: 'cover' }}
                 />
 
-                {frontmatter.authors && (
+                 {frontmatter.authors && (
                   <div style={{
                     position: 'absolute',
-                    bottom: '0',
-                    right: '0',
+                    bottom: '12px',
+                    right: '12px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '6px 6px 6px 14px',
-                    background: 'rgba(0, 0, 0, 0.25)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '20px 0 0 0',
-                    borderTop: '1px solid rgba(255,255,255,0.1)',
-                    borderLeft: '1px solid rgba(255,255,255,0.1)',
                   }}>
-                    <span style={{ fontSize: '11px', fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>
+                    <span style={{ 
+                      fontSize: '11px', 
+                      fontWeight: 700, 
+                      color: 'rgba(255,255,255,0.95)',
+                      padding: '6px 14px',
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '14px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                    }}>
                       {Array.isArray(frontmatter.authors) ? frontmatter.authors[0] : frontmatter.authors}
                     </span>
-                    <Image
-                      src={data.profile.image ?? ""}
-                      alt={data.profile.name ?? ""}
-                      width={30}
-                      height={30}
-                      style={{
-                        borderRadius: '50%',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '10px',
-                        fontWeight: 700,
-                        color: '#fff',
-                        border: '1px solid rgba(255,255,255,0.2)'
-                      }} />
                   </div>
                 )}
               </div>

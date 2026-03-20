@@ -18,13 +18,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const setSnack = useSnackStore((state) => state.setSnack);
-  const { setLoading, isLoading } = useGlobalLoadingStore();
-  const { t, translations, language, dataTypes } = useTranslation();
-  const { loadTranslations } = useI18nStore();
-  const mode = useThemeStore((s) => s.mode);
-  const theme = getTheme(mode);
-  const isDesktop = useIsDesktop();
 
   const actualSlug = slug || 'create';
   const idFromParams = searchParams?.get('id');
@@ -32,30 +25,45 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const itemIndexFromParams = searchParams?.get('itemIndex');
   const actualId = idFromParams || (actualSlug === 'create' ? 'create' : actualSlug);
 
+  const setSnack = useSnackStore((state) => state.setSnack);
+  const setLoading = useGlobalLoadingStore((state) => state.setLoading);
+  const isLoading = useGlobalLoadingStore((state) => state.isLoading);
+  const { translations, language } = useI18nStore();
+  const loadTranslations = useI18nStore((state) => state.loadTranslations);
+  const mode = useThemeStore((s) => s.mode);
+  const theme = getTheme(mode);
+  const isDesktop = useIsDesktop();
+  const { t, dataTypes } = useTranslation();
+
   const [items, setItems] = useState<GenericJsonItem[]>([]);
   const [dashyData, setDashyData] = useState<DashyData | null>(null);
   const [, setFullConfig] = useState<BasicConfig | null>(null);
   const [config, setConfig] = useState<DataTypeConfig | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [queryId, setQueryId] = useState<string | null>(null);
   const [dashySectionId, setDashySectionId] = useState<string>('');
   const [dashyItemIndex, setDashyItemIndex] = useState<number>(-1);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [itemNotFound, setItemNotFound] = useState(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [itemNotFound, setItemNotFound] = useState<boolean>(false);
   const [formErrors, setFormErrors] = useState<Record<string, string | null>>({});
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>({});
-  const isSavingRef = useRef(false);
+  const isSavingRef = useRef<boolean>(false);
+  const lastInitRef = useRef<string>("");
   const [, startTransition] = useTransition();
   const handleSaveRef = useRef<(() => Promise<void>) | null>(null);
 
   const [, setOptimisticItems] = useOptimistic(items, (state, newItem: GenericJsonItem) => isEdit && queryId ? state.map(i => i.id === queryId ? newItem : i) : [...state, newItem]);
 
   useEffect(() => {
+    const initKey = `${dataType}-${actualId}`;
+    if (lastInitRef.current === initKey) return;
+    lastInitRef.current = initKey;
+
     const init = async () => {
       setLoading(true, t("ui.initializing"));
       try {
@@ -64,17 +72,25 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           setFullConfig(translations as unknown as BasicConfig);
           if (dtCfg) setConfig(dtCfg);
           if (dataType && dataType !== 'dashy') {
-            setItems(await DataAPI.getItems<GenericJsonItem>(dataType) || []);
+            if (actualId !== 'create') {
+              const item = await DataAPI.getItem<GenericJsonItem>(dataType, actualId);
+              if (item) setItems([item]);
+            }
           } else if (dataType === 'dashy') {
             const data = await DashyAPI.getDashyData();
             if (data) setDashyData(data);
           }
           setIsInitialized(true);
         });
-      } catch { setSnack(t("ui.failedToLoad"), 'error'); } finally { setLoading(false); }
+      } catch { 
+        setSnack(t("ui.failedToLoad"), 'error'); 
+        lastInitRef.current = "";
+      } finally { 
+        setLoading(false); 
+      }
     };
     init();
-  }, [dataType, setLoading, t, setSnack]);
+  }, [dataType, actualId, setLoading, t, setSnack, dataTypes, translations]);
 
   useEffect(() => { if (Object.keys(translations).length === 0) loadTranslations(language); }, [translations, language, loadTranslations]);
 
@@ -240,7 +256,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           await DataAPI.createItem(dataType, newItem);
           try { useSoundStore.getState().playEvent("create"); } catch { }
         }
-        setItems(await DataAPI.getItems(dataType));
         setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
         router.push(`/?q=${dataType}`);
       }
@@ -260,7 +275,6 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
       if (!isEdit || !queryId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
       try {
         await DataAPI.archiveItem(dataType, queryId);
-        setItems(await DataAPI.getItems(dataType));
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }
         router.push(`/?q=${dataType}`);

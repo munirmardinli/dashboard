@@ -342,8 +342,9 @@ declare global {
     itemsPerPage: number;
     totalItems: number;
     onPageChange: (page: number) => void;
-    onItemsPerPageChange: (items: number) => void;
+    onItemsPerPageChange?: (items: number) => void;
   }
+
 
   /**
    * Props for create mode components
@@ -1012,6 +1013,33 @@ declare global {
     DEFAULT_VIEW: string,
   }
   type FormMode = "create" | "update";
+
+  interface DataApiResponse<T> {
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }
+  interface PaginationState {
+    pages: Record<string, number>;
+    setPage: (dataType: string, page: number) => void;
+    getPage: (dataType: string) => number;
+  }
+  interface QueryParams {
+    page: number;
+    limit: number;
+    search: string;
+  }
+
+  interface QueryResult<T> {
+    items: T[];
+    total: number;
+    totalPages: number;
+    loading: boolean;
+    error: string | null;
+    refetch: () => void;
+  }
 }
 
 export { };

@@ -54,23 +54,17 @@ export const MuiPagination: FC<PaginationProps> = ({
     <div
       role="navigation" aria-label={t("ui.ariaPagination")}
       style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: isDesktop ? '16px' : '8px',
-        padding: isDesktop ? '24px' : '12px 8px',
-        background: `${theme.bg}cc`,
-        backdropFilter: 'blur(20px)',
+        padding: isDesktop ? '20px 24px' : '16px 12px',
+        background: theme.bg,
         borderTop: `1px solid ${theme.divider}`,
-        boxShadow: theme.shadowXs
       }}
     >
+
       <span style={{
         color: theme.textSec,
         fontWeight: 600,
@@ -106,15 +100,21 @@ export const MuiPagination: FC<PaginationProps> = ({
             <ChevronLeft size={isDesktop ? 20 : 16} />
           </button>
 
-          {Array.from({ length: Math.min(maxVisiblePages, totalPages) }, (_, i) => {
-            let page = i + 1;
-            if (totalPages > maxVisiblePages) {
-              const offset = Math.floor(maxVisiblePages / 2);
-              if (currentPage > offset + 1) page = currentPage - offset + i;
-              if (page > totalPages) page = totalPages - maxVisiblePages + 1 + i;
+          {(() => {
+            const range = [];
+            let start = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let end = Math.min(totalPages, start + maxVisiblePages - 1);
+
+            if (end - start + 1 < maxVisiblePages) {
+              start = Math.max(1, end - maxVisiblePages + 1);
             }
-            return renderPageButton(page);
-          })}
+
+            for (let i = start; i <= end; i++) {
+              range.push(renderPageButton(i));
+            }
+            return range;
+          })()}
+
 
           <button
             onClick={() => startTransition(() => onPageChange(Math.min(totalPages, currentPage + 1)))}
