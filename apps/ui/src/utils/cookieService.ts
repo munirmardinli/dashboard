@@ -1,4 +1,4 @@
-import { globalVars } from "./globalyVar";
+import { CookieAPI } from "./api";
 
 let cookieCache: Record<string, unknown> | null = null;
 let cookiePromise: Promise<Record<string, unknown>> | null = null;
@@ -8,19 +8,16 @@ export const cookieService = {
     if (cookieCache) return cookieCache;
     if (cookiePromise) return cookiePromise;
 
-    cookiePromise = fetch(`${globalVars.API_URL}/api/cookie`)
-      .then(res => {
-        if (!res.ok) throw new Error(`Cookie API Error: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+    cookiePromise = CookieAPI.get()
+      .then((data) => {
         cookieCache = data;
         cookiePromise = null;
         return data;
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("cookieService: Failed to fetch cookie.json", err);
         cookiePromise = null;
+        cookieCache = {};
         return {};
       });
 
@@ -33,16 +30,8 @@ export const cookieService = {
     }
 
     try {
-      const res = await fetch(`${globalVars.API_URL}/api/cookie`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      });
-      if (!res.ok) throw new Error(`Cookie POST Error: ${res.status}`);
-      const result = await res.json();
-      if (result.success && result.data) {
-          cookieCache = result.data;
-      }
+      const next = await CookieAPI.set(updates);
+      if (next) cookieCache = next;
     } catch (err) {
       console.error("cookieService: Failed to save cookie.json", err);
     }

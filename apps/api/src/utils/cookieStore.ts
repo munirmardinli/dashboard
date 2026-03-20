@@ -16,14 +16,31 @@ class CookieStore {
 		}
 	}
 
-	private async executeWrite(updates: Record<string, unknown>, retryCount = 0): Promise<Record<string, unknown>> {
+	private async executeWrite(
+		updates: Record<string, unknown>,
+		retryCount = 0
+	): Promise<Record<string, unknown>> {
 		try {
-			const current = await this.read();
+			github.invalidateCacheForPath(this.PATH);
+			let current: Record<string, unknown>;
+			let sha: string | undefined;
+			try {
+				const file = await github.getFile(this.PATH);
+				sha = file.sha;
+				current = JSON.parse(file.content) as Record<string, unknown>;
+			} catch {
+				current = {};
+			}
 			const next = { ...current, ...updates };
-			await github.updateFile(this.PATH, JSON.stringify(next, null, 2), 'Update cookie.json via API');
+			await github.updateFile(
+				this.PATH,
+				JSON.stringify(next, null, 2),
+				'Update cookie.json via API',
+				sha
+			);
 			return next;
-		} catch (err: any) {
-			if (err.message && err.message.includes('409 Conflict') && retryCount < 3) {
+		} catch (err: unknown) {
+			if (err instanceof Error && err.message.includes('409 Conflict') && retryCount < 3) {
 				console.log(`Retrying GitHub write due to 409 Conflict (attempt ${retryCount + 1})...`);
 				await new Promise(r => setTimeout(r, 1000));
 				return this.executeWrite(updates, retryCount + 1);
@@ -41,4 +58,4 @@ class CookieStore {
 	}
 }
 
-export { CookieStore }
+export { CookieStore };

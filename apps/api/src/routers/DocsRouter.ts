@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
@@ -18,12 +18,17 @@ class DocsRouter {
 	getRouter(): Router {
 		const router = Router();
 
-		router.get("/api/docs/meta", this.getMeta.bind(this));
-		router.get("/api/docs/list", this.listDirectory.bind(this));
-		router.get("/api/docs/content", this.getContentHandler.bind(this));
-		router.get("/api/docs/assets/images/:subPath(*)?", this.getImage.bind(this));
-		router.get("/api/docs/assets/pdf/:subPath(*)?", this.getPDF.bind(this));
-		router.get("/api/docs/findonly", this.findOnlyMeta.bind(this));
+		const asyncHandler = (fn: (req: Request, res: Response) => Promise<void>) => 
+			(req: Request, res: Response, next: NextFunction) => {
+				Promise.resolve(fn(req, res)).catch(next);
+			};
+
+		router.get("/api/docs/meta", asyncHandler(this.getMeta.bind(this)));
+		router.get("/api/docs/list", asyncHandler(this.listDirectory.bind(this)));
+		router.get("/api/docs/content", asyncHandler(this.getContentHandler.bind(this)));
+		router.get("/api/docs/assets/images/:subPath(*)?", asyncHandler(this.getImage.bind(this)));
+		router.get("/api/docs/assets/pdf/:subPath(*)?", asyncHandler(this.getPDF.bind(this)));
+		router.get("/api/docs/findonly", asyncHandler(this.findOnlyMeta.bind(this)));
 
 		return router;
 	}

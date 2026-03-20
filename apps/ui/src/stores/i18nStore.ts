@@ -32,20 +32,7 @@ function getTimezone(): string {
 }
 
 import { cookieService } from "@/utils/cookieService";
-
-async function loadTranslationFile(lang: Language): Promise<Translations> {
-	try {
-		const response = await fetch(`/i18n/${lang}.json`);
-		if (!response.ok) {
-			throw new Error(`Failed to load translation file: ${response.statusText}`);
-		}
-		const translations = await response.json();
-		return (translations as Translations) || ({} as Translations);
-	} catch (error) {
-		console.error(`Error loading translation file for ${lang}:`, error);
-		return {} as Translations;
-	}
-}
+import { I18nStaticAPI } from "@/utils/api";
 
 function getNestedValue(obj: TranslationValue, path: string): string {
 	const keys = path.split(".");
@@ -93,7 +80,7 @@ export const useI18nStore = create<I18nState>((set, get) => {
 		translations: {} as Translations,
 
 		loadTranslations: async (lang: Language) => {
-			const translations = await loadTranslationFile(lang);
+			const translations = await I18nStaticAPI.loadTranslations(lang);
 			set({ translations, language: lang });
 
 			if (typeof window !== "undefined") {

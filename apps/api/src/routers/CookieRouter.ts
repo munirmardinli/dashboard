@@ -20,12 +20,8 @@ export class CookieRouter {
 		try {
 			const data = await store.read();
 			res.json(data);
-		} catch (err: unknown) {
-			const message = err instanceof Error ? err.message : String(err);
-			res.status(500).json({
-				error: 'Failed to read cookie.json',
-				details: message
-			});
+		} catch (err) {
+			res.status(500).json({ error: 'Failed to read cookie.json' });
 		}
 	}
 
@@ -34,12 +30,8 @@ export class CookieRouter {
 			const updates = req.body as Record<string, unknown>;
 			const next = await store.write(updates);
 			res.json({ success: true, data: next });
-		} catch (err: unknown) {
-			const message = err instanceof Error ? err.message : String(err);
-			res.status(500).json({
-				error: 'Failed to write cookie.json',
-				details: message
-			});
+		} catch (err) {
+			res.status(500).json({ error: 'Failed to write cookie.json' });
 		}
 	}
 

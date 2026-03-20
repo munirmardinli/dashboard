@@ -5,7 +5,7 @@ import { Upload, Image as ImageIcon, Loader2, Check, X, Camera } from "lucide-re
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
-import { globalVars } from "@/utils/globalyVar";
+import { DataAPI, ReceiptAPI } from "@/utils/api";
 
 function compressImage(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -66,11 +66,11 @@ export default function QuittungPage() {
  
  	async function fetchExpenses() {
 		try {
-			const response = await fetch(`${globalVars.API_URL}/api/data/expense`);
-			if (response.ok) {
-				const data = await response.json();
-				setExpenses(data.filter((exp: ExpenseData) => !exp.isArchive));
-			}
+			const result = await DataAPI.getItems("expense", {
+				page: 1,
+				limit: 10_000,
+			});
+			setExpenses(result.items.filter((exp) => !exp.isArchive) as unknown as ExpenseData[]);
 		} catch (err) {
 			console.error(t("ui.errorDetails"), err);
 		}
@@ -104,15 +104,7 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const response = await fetch(`${globalVars.API_URL}/api/receipt/analyze`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ image: selectedImage }),
-			});
-
-			const result = await response.json();
+			const result = await ReceiptAPI.analyzeReceipt(selectedImage);
 
 			if (result.success && result.data) {
 				setAnalyzedData(result.data);
@@ -134,15 +126,9 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const response = await fetch(`${globalVars.API_URL}/api/data/expense`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(analyzedData),
-			});
+			const created = await DataAPI.createItem("expense", analyzedData as unknown as Partial<GenericJsonItem>);
 
-			if (response.ok) {
+			if (created) {
 				setSuccessMessage(t("ui.copiedToClipboard"));
 				setSelectedImage(null);
 				setImageFile(null);

@@ -21,6 +21,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 const DRAWER_WIDTH = 280;
 
+function formatCookieValue(value: unknown): string {
+	if (value === null || value === undefined) return "—";
+	if (typeof value === "object") return JSON.stringify(value, null, 2);
+	return String(value);
+}
+
 export const Navigation: FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -442,7 +448,7 @@ export const Navigation: FC = () => {
                           {Object.entries(cookieJsonData).map(([name, value], index, arr) => (
                             <div key={index} style={{ padding: '12px', borderBottom: index < arr.length - 1 ? `1px solid ${theme.divider}` : 'none' }}>
                               <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '4px', background: `${theme.primary}1a`, color: theme.primary, fontSize: '0.75rem', fontWeight: 600, marginBottom: '4px' }}>{name}</div>
-                              <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-all' }}>{String(value)}</div>
+                              <div style={{ fontSize: '0.875rem', color: theme.textSec, fontFamily: 'monospace', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{formatCookieValue(value)}</div>
                             </div>
                           ))}
                         </div>

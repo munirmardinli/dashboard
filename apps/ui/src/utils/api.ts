@@ -1,48 +1,146 @@
 import { globalVars } from './globalyVar';
 
+type ApiResult<T> = { success: true; data: T } | { success: false; error: string };
+
+const inFlightGet = new Map<string, Promise<unknown>>();
+
+let cookieJsonGetInFlight: Promise<ApiResult<unknown>> | null = null;
+
+function resolveApiUrl(endpoint: string): string {
+	const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+	return globalVars.API_URL
+		? `${globalVars.API_URL.replace(/\/$/, "")}${normalizedEndpoint}`
+		: normalizedEndpoint;
+}
+
+function dedupeGet<T>(url: string, method: string, run: () => Promise<T>): Promise<T> {
+	const key = `${method}:${url}`;
+	const existing = inFlightGet.get(key);
+	if (existing !== undefined) return existing as Promise<T>;
+	const p = run().finally(() => {
+		inFlightGet.delete(key);
+	});
+	inFlightGet.set(key, p);
+	return p;
+}
+
 async function fetchAPI<T>(
 	endpoint: string,
 	options?: RequestInit
-): Promise<{ success: true; data: T } | { success: false; error: string }> {
-	try {
+): Promise<ApiResult<T>> {
+	const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+	const method = (options?.method ?? "GET").toUpperCase();
+	const isCookieJsonGet =
+		normalizedEndpoint === "/api/cookie" && method === "GET" && !options?.body;
 
-		const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-		const url = globalVars.API_URL
-			? `${globalVars.API_URL.replace(/\/$/, '')}${normalizedEndpoint}`
-			: normalizedEndpoint;
+	const url = resolveApiUrl(endpoint);
+	const canDedupe =
+		(method === "GET" || method === "HEAD") && !options?.body;
 
-		const response = await fetch(url, {
-			...options,
-			headers: {
-				"Content-Type": "application/json",
-				...options?.headers,
-			},
-		});
+	const execute = async (): Promise<ApiResult<T>> => {
+		try {
+			const response = await fetch(url, {
+				...options,
+				headers: {
+					"Content-Type": "application/json",
+					...options?.headers,
+				},
+			});
 
-		if (!response.ok) {
-			let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-			try {
-				const errorData = await response.json();
-				errorMessage = errorData.error || errorMessage;
-			} catch {
+			if (!response.ok) {
+				let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+				try {
+					const errorData = await response.json();
+					errorMessage = errorData.error || errorMessage;
+				} catch {
+				}
+				return {
+					success: false,
+					error: errorMessage,
+				};
 			}
+
+			const data = await response.json();
+			return { success: true, data };
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
+			console.error(`API call failed for ${endpoint}:`, errorMessage);
 			return {
 				success: false,
 				error: errorMessage,
 			};
 		}
+	};
 
-		const data = await response.json();
-		return { success: true, data };
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
-		console.error(`API call failed for ${endpoint}:`, errorMessage);
-		return {
-			success: false,
-			error: errorMessage,
-		};
+	if (isCookieJsonGet) {
+		if (!cookieJsonGetInFlight) {
+			cookieJsonGetInFlight = execute().finally(() => {
+				cookieJsonGetInFlight = null;
+			});
+		}
+		return cookieJsonGetInFlight as Promise<ApiResult<T>>;
 	}
+
+	if (canDedupe) {
+		return dedupeGet(url, method, execute);
+	}
+	return execute();
 }
+
+export const CookieAPI = {
+	async get(): Promise<Record<string, unknown>> {
+		const result = await fetchAPI<Record<string, unknown>>(`/api/cookie`);
+		return result.success ? result.data : {};
+	},
+
+	async set(updates: Record<string, unknown>): Promise<Record<string, unknown> | null> {
+		const result = await fetchAPI<{ success: boolean; data: Record<string, unknown> }>(`/api/cookie`, {
+			method: "POST",
+			body: JSON.stringify(updates),
+		});
+		if (!result.success) return null;
+		const body = result.data;
+		if (body?.success && body.data) return body.data;
+		return null;
+	},
+};
+
+export const ReceiptAPI = {
+	async analyzeReceipt(
+		imageBase64: string
+	): Promise<{ success: boolean; data?: AnalyzedData; error?: string }> {
+		const result = await fetchAPI<{ success: boolean; data?: AnalyzedData; error?: string }>(
+			`/api/receipt/analyze`,
+			{
+				method: "POST",
+				body: JSON.stringify({ image: imageBase64 }),
+			}
+		);
+		if (!result.success) return { success: false, error: result.error };
+		return result.data;
+	},
+};
+
+export const I18nStaticAPI = {
+	async loadTranslations(lang: Language): Promise<Translations> {
+		const path = `/i18n/${lang}.json`;
+		const dedupeKey =
+			typeof window !== "undefined" ? new URL(path, window.location.origin).href : path;
+		return dedupeGet(dedupeKey, "GET", async () => {
+			try {
+				const response = await fetch(path);
+				if (!response.ok) {
+					throw new Error(`Failed to load translation file: ${response.statusText}`);
+				}
+				const translations = await response.json();
+				return (translations as Translations) || ({} as Translations);
+			} catch (error) {
+				console.error(`Error loading translation file for ${lang}:`, error);
+				return {} as Translations;
+			}
+		});
+	},
+};
 
 export const DataAPI = {
 	async getItems<T extends BaseItem>(
@@ -177,13 +275,16 @@ export const DocsAPI = {
 	},
 
 	async getContent(path: string): Promise<string | null> {
-		try {
-			const response = await fetch(`${globalVars.API_URL}/api/docs/content?p=${path}`);
-			if (!response.ok) return null;
-			return await response.text();
-		} catch {
-			return null;
-		}
+		const url = `${resolveApiUrl("/api/docs/content")}?p=${encodeURIComponent(path)}`;
+		return dedupeGet(url, "GET", async () => {
+			try {
+				const response = await fetch(url);
+				if (!response.ok) return null;
+				return await response.text();
+			} catch {
+				return null;
+			}
+		});
 	},
 
 	async getItemMeta(path: string): Promise<MetaData | null> {

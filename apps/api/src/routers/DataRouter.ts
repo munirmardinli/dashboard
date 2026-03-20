@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
@@ -7,12 +7,15 @@ class DataRouter {
 	getRouter(): Router {
 		const router = Router();
 
-		router.get("/api/data/:dataType(*)/findonly/:id", this.findonly.bind(this));
-		router.get("/api/data/:dataType(*)", this.getAll.bind(this));
-
-		router.post("/api/data/:dataType(*)", this.create.bind(this));
-		router.put("/api/data/:dataType(*)/:id", this.update.bind(this));
-		router.delete("/api/data/:dataType(*)/:id", this.archive.bind(this));
+		const asyncHandler = (fn: (req: Request, res: Response) => Promise<void>) => 
+			(req: Request, res: Response, next: NextFunction) => {
+				Promise.resolve(fn(req, res)).catch(next);
+			};
+		router.get("/api/data/:dataType(*)/findonly/:id", asyncHandler(this.findonly.bind(this)));
+		router.get("/api/data/:dataType(*)", asyncHandler(this.getAll.bind(this)));
+		router.post("/api/data/:dataType(*)", asyncHandler(this.create.bind(this)));
+		router.put("/api/data/:dataType(*)/:id", asyncHandler(this.update.bind(this)));
+		router.delete("/api/data/:dataType(*)/:id", asyncHandler(this.archive.bind(this)));
 
 		return router;
 	}

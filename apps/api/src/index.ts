@@ -25,10 +25,7 @@ app.listen(Number(PORT), () => {
 	console.log(`🚀 Server on ${PORT}`);
 	
 	try {
-		scheduleJob("*/60 * * * * *", () => {
-			const reminderChecker = new ReminderChecker();
-			reminderChecker.checkAndSendReminders();
-		});
+
 	} catch (err) {
 		console.error("❌ Failed to start reminder scheduler:", err);
 	}
