@@ -27,7 +27,6 @@ app.listen(Number(PORT), () => {
 
 	try {
 		reminderChecker.start();
-		void reminderChecker.sendTestWhatsApp();
 	} catch (err) {
 		console.error("❌ Failed to start reminder scheduler:", err);
 	}

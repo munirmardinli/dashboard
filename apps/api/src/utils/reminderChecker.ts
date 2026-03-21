@@ -5,8 +5,7 @@ class ReminderChecker {
 	private github = new GitHubService();
 	private sentReminders = new Set<string>();
 	private job: globalThis.ScheduledJob | null = null;
-	private whatsappSendTestOnStart = process.env["WHATSAPP_SEND_TEST_ON_START"] === "1";
-	
+
 	private reminderOffsets: Record<string, number> = {
 		NONE: 0,
 		MINUTES_10_BEFORE: 600,
@@ -42,24 +41,6 @@ class ReminderChecker {
 			this.job = null;
 			console.log("⏹️ ReminderChecker gestoppt");
 		}
-	}
-
-	/**
-		* Einmalige Test-Nachricht beim Serverstart (Twilio).
-		* Läuft, wenn TWILIO_* gesetzt sind; mit `WHATSAPP_SEND_TEST_ON_START=0` abschalten.
-		*/
-	async sendTestWhatsApp(): Promise<void> {
-		if (!this.whatsappSendTestOnStart) {
-			console.log("📵 WhatsApp-Test aus (WHATSAPP_SEND_TEST_ON_START=0)");
-			return;
-		}
-		if (!process.env["TWILIO_ACCOUNT_SID"]?.trim() || !process.env["TWILIO_AUTH_TOKEN"]?.trim()) {
-			console.log("📵 WhatsApp-Test übersprungen (TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN fehlen oder leer)");
-			return;
-		}
-		const msg = `Dashboard API: ReminderChecker Test (${new Date().toISOString()})`;
-		console.log("📤 Sende WhatsApp-Testnachricht …");
-		await sendWhatsapp(msg);
 	}
 
 	async checkAndSendReminders(): Promise<void> {
