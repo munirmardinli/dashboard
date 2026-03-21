@@ -117,5 +117,15 @@ declare namespace NodeJS {
 		* @example xxx
 		*/
 		TWILIO_WHATSAPP_TO: string;
+		/**
+		* The cron expression for the reminder checker
+		* @example "*\/60 * * * * *"
+		*/
+		REMINDER_CRON: string;
+		/**
+		* Whether to send a test WhatsApp message on startup
+		* @example 1
+		*/
+		WHATSAPP_SEND_TEST_ON_START: string;
 	}
 }

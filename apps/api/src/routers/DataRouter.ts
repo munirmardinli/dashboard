@@ -34,7 +34,21 @@ class DataRouter {
 		const l = parseInt(limit);
 		const offset = (p - 1) * l;
 
-		let items = (await this.getItems<GenericItem>(dataType)).filter(item => !item.isArchive);
+		const config = await this.getConfig();
+		if (!config) {
+			res.status(503).json({
+				error:
+					"Datenquelle nicht erreichbar (GitHub). Auf dem Server: Internet/DNS für api.github.com prüfen, GITHUB_TOKEN / GITHUB_OWNER / GITHUB_REPO in .env.",
+				items: [],
+				total: 0,
+				page: p,
+				limit: l,
+				totalPages: 0,
+			});
+			return;
+		}
+
+		let items = (await this.getItemsWithConfig<GenericItem>(config, dataType)).filter(item => !item.isArchive);
 
 		if (search) {
 			const term = search.toLowerCase();
@@ -73,7 +87,15 @@ class DataRouter {
 
 	async findonly(req: Request, res: Response): Promise<void> {
 		const { dataType = "", id = "" } = req.params;
-		const items = await this.getItems<GenericItem>(dataType);
+		const config = await this.getConfig();
+		if (!config) {
+			res.status(503).json({
+				error:
+					"Datenquelle nicht erreichbar (GitHub). Internet/DNS und GITHUB_* Umgebungsvariablen prüfen.",
+			});
+			return;
+		}
+		const items = await this.getItemsWithConfig<GenericItem>(config, dataType);
 		const item = items.find(it => it.id === id);
 		
 		if (!item) {
@@ -105,14 +127,21 @@ class DataRouter {
 	}
 
 
-	private async getConfig(): Promise<DashboardConfig> {
-		const lang = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE || "de";
-		const { content } = await github.getFile(`${lang}.json`);
-		return JSON.parse(content) as DashboardConfig;
+	private async getConfig(): Promise<DashboardConfig | null> {
+		try {
+			const lang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"] || "de";
+			const { content } = await github.getFile(`${lang}.json`);
+			return JSON.parse(content) as DashboardConfig;
+		} catch (e) {
+			console.error("❌ DataRouter: Konfiguration (GitHub) nicht ladbar:", e);
+			return null;
+		}
 	}
 
-	private async getItems<T extends GenericItem>(dataType: string): Promise<T[]> {
-		const config = await this.getConfig();
+	private async getItemsWithConfig<T extends GenericItem>(
+		config: DashboardConfig,
+		dataType: string
+	): Promise<T[]> {
 		const path = config.dataTypes[dataType]?.filePath;
 		if (!path) return [];
 
@@ -124,8 +153,17 @@ class DataRouter {
 		}
 	}
 
+	private async getItems<T extends GenericItem>(dataType: string): Promise<T[]> {
+		const config = await this.getConfig();
+		if (!config) return [];
+		return this.getItemsWithConfig<T>(config, dataType);
+	}
+
 	private async saveItems(dataType: string, items: unknown[]): Promise<void> {
 		const config = await this.getConfig();
+		if (!config) {
+			throw new Error("GitHub nicht erreichbar — Speichern nicht möglich.");
+		}
 		const path = config.dataTypes[dataType]?.filePath;
 
 		if (path) {

@@ -1,12 +1,13 @@
-import "./utils/env.js";
 import express from "express";
 import cors from "cors";
 import path from "path";
 import router from "./routers/index.js";
-import { scheduleJob } from "./utils/scheduler.js";
 import { ReminderChecker } from "./utils/reminderChecker.js";
+import "dotenv/config";
 
 const PORT = process.env.PORT || "4012";
+
+const reminderChecker = new ReminderChecker();
 
 const app = express();
 
@@ -23,9 +24,10 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 
 app.listen(Number(PORT), () => {
 	console.log(`🚀 Server on ${PORT}`);
-	
-	try {
 
+	try {
+		reminderChecker.start();
+		void reminderChecker.sendTestWhatsApp();
 	} catch (err) {
 		console.error("❌ Failed to start reminder scheduler:", err);
 	}
