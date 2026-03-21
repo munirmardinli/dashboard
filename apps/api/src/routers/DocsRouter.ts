@@ -3,7 +3,7 @@ import { GitHubService } from "../utils/github.js";
 
 const github = new GitHubService();
 
-type MetaData = Record<string, any>;
+type MetaData = Record<string, unknown>;
 type AuthorInfo = { name: string; image: string; role: string };
 
 class DocsRouter {
@@ -63,11 +63,11 @@ class DocsRouter {
 			const meta = await this.buildMeta();
 			const searchPath = p.startsWith("docs/") ? p : `docs/${p}`;
 			const parts = searchPath.split("/");
-			let current: any = meta;
+			let current: unknown = meta;
 
 			for (const part of parts) {
-				if (current && typeof current === 'object' && part in current) {
-					current = current[part];
+				if (current !== null && typeof current === "object" && part in current) {
+					current = (current as Record<string, unknown>)[part];
 				} else {
 					res.status(404).json({ error: `Metadata for path '${p}' (resolved: '${searchPath}') not found` });
 					return;
@@ -171,7 +171,7 @@ class DocsRouter {
 					.replace(/\.(md|json)$/, "");
 
 				const parts = relativePath.split("/");
-				let current: any = meta;
+				let current: Record<string, unknown> = meta;
 
 				for (let i = 0; i < parts.length; i++) {
 					const part = parts[i];
@@ -186,7 +186,7 @@ class DocsRouter {
 								? (this.titleCache[item.sha] || parts[i - 1])
 								: parts[i - 1];
 
-							current.title = title;
+							current["title"] = title;
 							continue;
 						}
 
@@ -209,7 +209,7 @@ class DocsRouter {
 									part.slice(1).replace(/-/g, " ")
 							};
 						}
-						current = current[part];
+						current = current[part] as Record<string, unknown>;
 					}
 				}
 			}

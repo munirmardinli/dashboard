@@ -1,9 +1,12 @@
 export class GitHubService {
 	private _config: { token: string; owner: string; repo: string; branch: string; baseUrl: string } | null = null;
-	private cache = new Map<string, { data: any; expiry: number }>();
+	private cache = new Map<string, { data: unknown; expiry: number }>();
 	private CACHE_TTL = 1000 * 60 * 5;
 
-	private treeCache: { data: any; expiry: number } | null = null;
+	private treeCache: {
+		data: { path: string; type: "blob" | "tree"; sha: string }[];
+		expiry: number;
+	} | null = null;
 	private TREE_TTL = 1000 * 60 * 10;
 
 	private get config() {
@@ -39,7 +42,7 @@ export class GitHubService {
 
 		const cached = this.cache.get(url);
 		if (cached && cached.expiry > Date.now() && (!options.method || options.method === "GET")) {
-			return cached.data;
+			return cached.data as T;
 		}
 
 		const response = await fetch(url, {
@@ -73,7 +76,7 @@ export class GitHubService {
 			throw new Error(`GitHub Error: ${response.status} ${response.statusText} - ${text}`);
 		}
 
-		const data = await response.json();
+		const data: unknown = await response.json();
 
 		const method = options.method?.toUpperCase();
 		if (method && method !== "GET" && method !== "HEAD") {
@@ -87,14 +90,15 @@ export class GitHubService {
 			});
 		}
 
-		return data;
+		return data as T;
 	}
 
 	private async safeFetch<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
 		try {
 			return await fn();
-		} catch (err: any) {
-			if (retries > 0 && err.message.includes("403")) {
+		} catch (err: unknown) {
+			const msg = err instanceof Error ? err.message : String(err);
+			if (retries > 0 && msg.includes("403")) {
 				await this.delay(1000);
 				return this.safeFetch(fn, retries - 1);
 			}
@@ -186,7 +190,9 @@ export class GitHubService {
 			throw new Error(`GitHub Error: ${response.status} ${response.statusText} - ${text}`);
 		}
 
-		const result = await response.json();
+		const result = (await response.json()) as {
+			tree: { path: string; type: "blob" | "tree"; sha: string }[];
+		};
 
 		this.treeCache = {
 			data: result.tree,

@@ -17,7 +17,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.static(path.join(process.cwd(), 'public')));
 app.use("/", router);
 
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
 	const message = err instanceof Error ? err.message : String(err);
 	res.status(500).json({ error: message, statusCode: 500 });
 });

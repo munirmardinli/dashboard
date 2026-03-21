@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { GitHubService } from "../utils/github.js";
 
@@ -60,9 +61,9 @@ class DataRouter {
 		}
 
 		if (sortField) {
-			items.sort((a: any, b: any) => {
-				const valA = a[sortField];
-				const valB = b[sortField];
+			items.sort((a: GenericItem, b: GenericItem) => {
+				const valA = (a as Record<string, unknown>)[sortField];
+				const valB = (b as Record<string, unknown>)[sortField];
 
 				if (valA === valB) return 0;
 				if (valA === undefined || valA === null) return 1;
@@ -132,9 +133,9 @@ class DataRouter {
 	private async resolveConfig(): Promise<
 		{ ok: true; config: DashboardConfig } | { ok: false; error: string }
 	> {
-		const token = process.env["GITHUB_TOKEN"]?.trim() ?? "";
-		const owner = process.env["GITHUB_OWNER"]?.trim() ?? "";
-		const repo = process.env["GITHUB_REPO"]?.trim() ?? "";
+		const token = process.env.GITHUB_TOKEN?.trim() ?? "";
+		const owner = process.env.GITHUB_OWNER?.trim() ?? "";
+		const repo = process.env.GITHUB_REPO?.trim() ?? "";
 		if (!token || !owner || !repo) {
 			return {
 				ok: false,
@@ -142,12 +143,12 @@ class DataRouter {
 					".env file is not configured correctly",
 			};
 		}
-		const lang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"] || "de";
+		const lang = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE || "de";
 		try {
 			const { content } = await github.getFile(`${lang}.json`);
 			return { ok: true, config: JSON.parse(content) as DashboardConfig };
 		} catch (e) {
-			const branch = process.env["GITHUB_BRANCH"]?.trim() || "main";
+			const branch = process.env.GITHUB_BRANCH?.trim() || "main";
 			const raw = e instanceof Error ? e.message : String(e);
 			console.error("❌ DataRouter: Konfiguration (GitHub) nicht ladbar:", e);
 
@@ -227,7 +228,7 @@ class DataRouter {
 
 		const newItem = {
 			...item,
-			id: item.id || `item-${Date.now()}`,
+			id: item.id || randomUUID(),
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 			isArchive: false

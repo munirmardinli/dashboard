@@ -32,7 +32,6 @@ class ReminderChecker {
 		this.job = this.scheduleIntervalJob(cronExpression, () => {
 			void this.checkAndSendReminders();
 		});
-		console.log(`⏰ ReminderChecker gestartet (${cronExpression})`);
 	}
 
 	stop(): void {
