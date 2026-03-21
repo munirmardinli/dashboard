@@ -34,11 +34,10 @@ class DataRouter {
 		const l = parseInt(limit);
 		const offset = (p - 1) * l;
 
-		const config = await this.getConfig();
-		if (!config) {
+		const resolved = await this.resolveConfig();
+		if (!resolved.ok) {
 			res.status(503).json({
-				error:
-					"Datenquelle nicht erreichbar (GitHub). Auf dem Server: Internet/DNS für api.github.com prüfen, GITHUB_TOKEN / GITHUB_OWNER / GITHUB_REPO in .env.",
+				error: resolved.error,
 				items: [],
 				total: 0,
 				page: p,
@@ -47,6 +46,7 @@ class DataRouter {
 			});
 			return;
 		}
+		const config = resolved.config;
 
 		let items = (await this.getItemsWithConfig<GenericItem>(config, dataType)).filter(item => !item.isArchive);
 
@@ -87,14 +87,12 @@ class DataRouter {
 
 	async findonly(req: Request, res: Response): Promise<void> {
 		const { dataType = "", id = "" } = req.params;
-		const config = await this.getConfig();
-		if (!config) {
-			res.status(503).json({
-				error:
-					"Datenquelle nicht erreichbar (GitHub). Internet/DNS und GITHUB_* Umgebungsvariablen prüfen.",
-			});
+		const resolved = await this.resolveConfig();
+		if (!resolved.ok) {
+			res.status(503).json({ error: resolved.error });
 			return;
 		}
+		const config = resolved.config;
 		const items = await this.getItemsWithConfig<GenericItem>(config, dataType);
 		const item = items.find(it => it.id === id);
 		
@@ -127,15 +125,63 @@ class DataRouter {
 	}
 
 
-	private async getConfig(): Promise<DashboardConfig | null> {
-		try {
-			const lang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"] || "de";
-			const { content } = await github.getFile(`${lang}.json`);
-			return JSON.parse(content) as DashboardConfig;
-		} catch (e) {
-			console.error("❌ DataRouter: Konfiguration (GitHub) nicht ladbar:", e);
-			return null;
+	/**
+	 * Lokal: .env mit GITHUB_* → ok. Production (Docker/Synology): dieselben Variablen
+	 * als Container-Umgebung setzen — im Dockerfile sind OWNER/REPO/TOKEN standardmäßig leer.
+	 */
+	private async resolveConfig(): Promise<
+		{ ok: true; config: DashboardConfig } | { ok: false; error: string }
+	> {
+		const token = process.env["GITHUB_TOKEN"]?.trim() ?? "";
+		const owner = process.env["GITHUB_OWNER"]?.trim() ?? "";
+		const repo = process.env["GITHUB_REPO"]?.trim() ?? "";
+		if (!token || !owner || !repo) {
+			return {
+				ok: false,
+				error:
+					".env file is not configured correctly",
+			};
 		}
+		const lang = process.env["NEXT_PUBLIC_DEFAULT_LANGUAGE"] || "de";
+		try {
+			const { content } = await github.getFile(`${lang}.json`);
+			return { ok: true, config: JSON.parse(content) as DashboardConfig };
+		} catch (e) {
+			const branch = process.env["GITHUB_BRANCH"]?.trim() || "main";
+			const raw = e instanceof Error ? e.message : String(e);
+			console.error("❌ DataRouter: Konfiguration (GitHub) nicht ladbar:", e);
+
+			if (raw.includes("404") || raw.toLowerCase().includes("not found")) {
+				return {
+					ok: false,
+					error: `GitHub: ${lang}.json not found on branch "${branch}" (404).`,
+				};
+			}
+			if (raw.includes("403")) {
+				return {
+					ok: false,
+					error:
+						"GitHub: 403 — Token braucht repo-Zugriff oder Repo/Owner stimmt nicht.",
+				};
+			}
+			if (raw.includes("ENOTFOUND") || raw.includes("fetch failed")) {
+				return {
+					ok: false,
+					error:
+						"Netzwerk: api.github.com vom Server nicht erreichbar (DNS/Firewall, z. B. Synology).",
+				};
+			}
+
+			return {
+				ok: false,
+				error: `GitHub: ${raw} (Branch ref=${branch}).`,
+			};
+		}
+	}
+
+	private async getConfig(): Promise<DashboardConfig | null> {
+		const r = await this.resolveConfig();
+		return r.ok ? r.config : null;
 	}
 
 	private async getItemsWithConfig<T extends GenericItem>(
@@ -160,10 +206,11 @@ class DataRouter {
 	}
 
 	private async saveItems(dataType: string, items: unknown[]): Promise<void> {
-		const config = await this.getConfig();
-		if (!config) {
-			throw new Error("GitHub nicht erreichbar — Speichern nicht möglich.");
+		const resolved = await this.resolveConfig();
+		if (!resolved.ok) {
+			throw new Error(resolved.error);
 		}
+		const config = resolved.config;
 		const path = config.dataTypes[dataType]?.filePath;
 
 		if (path) {
