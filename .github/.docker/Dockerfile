@@ -4,15 +4,15 @@ FROM node:24-alpine as api
 
 RUN apk add --no-cache wget ca-certificates
 
-RUN mkdir -p \
-    /home/node/app/node_modules \
-    && chown -R node:node /home/node/app
+RUN mkdir -p /home/node/app/node_modules
 
 WORKDIR /home/node/app
 
-COPY --chown=node:node apps/api/package.json /home/node/app/package.json
-COPY --chown=node:node apps/api/node_modules /home/node/app/node_modules
-COPY --chown=node:node apps/api/dist /home/node/app/dist
+COPY apps/api/package.json /home/node/app/package.json
+COPY apps/api/node_modules /home/node/app/node_modules
+COPY apps/api/dist /home/node/app/dist
+
+RUN chown -R node:node /home/node/app
 
 USER node
 

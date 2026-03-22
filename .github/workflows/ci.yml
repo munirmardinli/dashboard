@@ -145,6 +145,9 @@ jobs:
         with:
           name: api-dist
           path: apps/api/dist
+      - name: Install API production dependencies
+        working-directory: apps/api
+        run: npm install
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
       - name: Setup Testcontainers Cloud Client
