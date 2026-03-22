@@ -10,11 +10,8 @@ RUN mkdir -p \
 
 WORKDIR /home/node/app
 
-COPY apps/api/package.json /home/node/app/package.json
-
-RUN npm install --omit=dev --install-strategy=nested --no-package-lock \
-	&& chown -R node:node /home/node/app/node_modules
-
+COPY --chown=node:node apps/api/package.json /home/node/app/package.json
+COPY --chown=node:node apps/api/node_modules /home/node/app/node_modules
 COPY --chown=node:node apps/api/dist /home/node/app/dist
 
 USER node
@@ -79,16 +76,6 @@ ENV NODE_ENV=production \
     HTML_DIR=/usr/share/nginx/html \
     ACCESS_LOG=/var/log/nginx/access.log \
     LOG_LEVEL=info \
-    REMINDER_CRON="*/60 * * * * *" \
-    WHATSAPP_SEND_TEST_ON_START=1 \
-    GITHUB_BRANCH=main \
-    GITHUB_OWNER="" \
-    GITHUB_REPO="" \
-    GITHUB_TOKEN="" \
-    TWILIO_ACCOUNT_SID="" \
-    TWILIO_AUTH_TOKEN="" \
-    TWILIO_WHATSAPP_FROM="" \
-    TWILIO_WHATSAPP_TO="" \
     ERROR_LOG=/var/log/nginx/error.log
 
 EXPOSE 80 4012
