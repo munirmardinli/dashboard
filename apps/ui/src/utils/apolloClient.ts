@@ -5,14 +5,16 @@ import {
 	InMemoryCache,
 	from,
 } from "@apollo/client";
+import { globalVars } from "./globalyVar";
 
-const apiBase =
-	process.env.NEXT_PUBLIC_API_URL ??
-	(process.env.NODE_ENV === "production" ? "" : "http://localhost:4012");
-const graphqlUri = `${apiBase.replace(/\/$/, "")}/graphql`;
+function normalizeApiBase(url: string): string {
+	return (url || "").trim().replace(/\/+$/, "");
+}
+
+const normalizedEndpoint = `${normalizeApiBase(globalVars.API_URL ?? "")}/graphql`;
 
 const httpLink = new HttpLink({
-	uri: graphqlUri,
+	uri: normalizedEndpoint,
 });
 
 const authLink = new ApolloLink((operation, forward) => {
@@ -33,6 +35,7 @@ const client = new ApolloClient({
 		typePolicies: {
 			Query: {
 				fields: {
+					/** Explizite Cache-Keys; vermeidet Überraschungen bei erweiterten Feld-Policys. */
 					datas: {
 						keyArgs: ["dataType", "pagination", "search", "sort"],
 					},
