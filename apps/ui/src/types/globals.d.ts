@@ -1,22 +1,6 @@
 
 declare global {
   /**
-   * Data type identifier - fully dynamic string type
-   * All data types are defined dynamically in de.json under "dataTypes"
-   * No need to update this type when adding new data types - just add them to de.json
-   * 
-   * @example
-   * 
-   * "dataTypes": {
-   *   "myNewType": { ... }
-   * }
-   * 
-   * const dataType: DataType = "myNewType";
-   */
-  type DataType = string;
-  type JsonData = Record<string, unknown>;
-
-  /**
    * Interface for global loading state
    */
   interface GlobalLoadingState {
@@ -25,28 +9,6 @@ declare global {
     setLoading: (loading: boolean, message?: string) => void;
     setLoadingMessage: (message: string) => void;
   }
-
-
-  /**
-   * Base interface for all items with common properties
-   */
-  interface BaseItem {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    isArchive: boolean;
-  }
-
-  interface GenericJsonItem extends BaseItem {
-    [key: string]: unknown | unknown[];
-  }
-
-  /**
-   * Union type for all possible data items - now fully dynamic
-   * All data items use GenericJsonItem which extends BaseItem (id, createdAt, updatedAt, isArchive)
-   * Additional fields are defined dynamically via JSON configuration (de.json)
-   */
-  type DataItem = GenericJsonItem;
 
 
   /**
@@ -134,17 +96,6 @@ declare global {
   }
 
   /**
-   * Simplified navigation item
-   */
-  interface NavigationItem {
-    key: string;
-    label: string;
-    path: string;
-    icon: string;
-  }
-
-
-  /**
    * UI configuration
    */
   interface UIConfig {
@@ -209,15 +160,6 @@ declare global {
   type MetaDataValue = MetaDataLeaf | MetaDataFolder;
 
   type MetaData = Record<string, MetaDataValue>;
-
-  interface FolderItemProps {
-    title: string;
-    pages?: Record<string, string>;
-    parentKey: string;
-    theme: Theme;
-    currentPage: string;
-    nestedItems?: MetaData;
-  }
 
   /** Navigation item structure */
   interface TranslationNavigationItem {
@@ -365,15 +307,6 @@ declare global {
   }
 
   /**
-   * Search parameter type for new query-based routing
-   */
-  type SearchParams = {
-    view?: string;
-    create?: string;
-    id?: string;
-  };
-
-  /**
    * Generic form field for dynamic JSON structures
    * All form fields are defined dynamically via JSON configuration (de.json)
    */
@@ -502,97 +435,8 @@ declare global {
     onBlur?: () => void;
   }
 
-  interface TinyMCEEditorProps {
-    value: string;
-    onChange: (value: string) => void;
-    apiKey: string;
-    init?: TinyMCESettings;
-    placeholder?: string;
-    disabled?: boolean;
-  }
-
-  /**
-   * Interface for the TinyMCE Editor instance
-   * Provides methods to interact with the editor
-   */
-  interface TinyMCEEditorInstance {
-    initialized: boolean;
-    mode: {
-      set: (mode: 'design' | 'readonly') => void;
-    };
-    setContent: (content: string) => void;
-    getContent: () => string;
-    on: (events: string, callback: () => void) => void;
-    remove: () => void;
-    getContainer: () => HTMLElement;
-    iframeElement?: HTMLIFrameElement;
-  }
-
-  /**
-   * AI Request interface for TinyMCE
-   */
-  interface TinyMCEAIRequest {
-    [key: string]: unknown;
-  }
-
-  /**
-   * AI Response handler interface
-   */
-  interface TinyMCEAIResponder {
-    string: (callback: () => Promise<string>) => void;
-  }
-
-  /**
-   * Configuration settings for TinyMCE
-   */
-  interface TinyMCESettings {
-    selector?: string;
-    target?: HTMLElement;
-    plugins?: string[];
-    toolbar?: string;
-    tinycomments_mode?: 'embedded' | 'unbound';
-    tinycomments_author?: string;
-    mergetags_list?: Array<{ value: string; title: string }>;
-    ai_request?: (request: TinyMCEAIRequest, respondWith: TinyMCEAIResponder) => void;
-    uploadcare_public_key?: string;
-    setup?: (editor: TinyMCEEditorInstance) => void;
-    [key: string]: unknown;
-  }
-
-  /**
-   * Global TinyMCE object interface
-   */
-  interface TinyMCE {
-    init: (settings: TinyMCESettings) => Promise<TinyMCEEditorInstance[]>;
-    get: (id: string | HTMLElement | null) => TinyMCEEditorInstance | null;
-    activeEditor: TinyMCEEditorInstance | null;
-    remove: (selector?: string | HTMLElement) => void;
-  }
-
   interface Window {
     webkitAudioContext?: typeof AudioContext;
-    tinymce: TinyMCE;
-  }
-
-  /**
-   * Gemeinsames Interface für Reminder-Status
-   * Wird für Events, Queries und andere Reminder-Items verwendet
-   */
-  interface ReminderStatus {
-    itemId: string;
-    category: string;
-    sentAt: number;
-    itemEnd: number;
-  }
-
-  type JournalType = "privateJournal" | "schoolJournal";
-  interface DocItem {
-    id: string;
-    title: string;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-    isArchive: boolean;
   }
 
   interface Frontmatter {
@@ -609,17 +453,6 @@ declare global {
     [key: string]: string | boolean | string[] | number | undefined | unknown;
   }
 
-  interface DocsState {
-    docs: DocItem[];
-    isLoading: boolean;
-    error: string | null;
-    selectedDocId: string | null;
-    fetchDocs: () => Promise<void>;
-    createDoc: (doc: Partial<DocItem>) => Promise<void>;
-    updateDoc: (id: string, updates: Partial<DocItem>) => Promise<void>;
-    archiveDoc: (id: string) => Promise<void>;
-    setSelectedDocId: (id: string | null) => void;
-  }
   interface SidebarState {
     isOpen: boolean;
     activePath: string | null;
@@ -631,14 +464,6 @@ declare global {
   interface ExpenseItem {
     key: string;
     value: number;
-  }
-
-  interface ExpenseData {
-    id: string;
-    date: string;
-    store: string;
-    items: ExpenseItem[];
-    isArchive: boolean;
   }
 
   interface AnalyzedData {
@@ -727,11 +552,6 @@ declare global {
   interface TechnicalSkill {
     name: string;
     level: number;
-  }
-
-  interface SoftSkill {
-    name: string;
-    icon: string;
   }
 
   interface MediaCompetence {
@@ -992,8 +812,12 @@ declare global {
     id: string;
     color: string;
   }
+  interface MarkdownCodeElementNode {
+    data?: { meta?: string | null };
+  }
+
   interface CodeBlockProps extends React.HTMLAttributes<HTMLElement> {
-    node?: any;
+    node?: MarkdownCodeElementNode | null;
     children?: React.ReactNode;
     className?: string;
   }
@@ -1017,15 +841,7 @@ declare global {
   }
   type FormMode = "create" | "update";
 
-  interface DataApiResponse<T> {
-    items: T[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }
   interface PaginationState {
-    pages: Record<string, number>;
     setPage: (dataType: string, page: number) => void;
     getPage: (dataType: string) => number;
   }

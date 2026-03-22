@@ -3,8 +3,17 @@ import { useState, useEffect, useCallback, useRef, useTransition, useOptimistic 
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Save, X, Trash, Plus, Eye, EyeOff, Copy, Check, ExternalLink } from "lucide-react";
-
-import { DataAPI, DashyAPI } from "@/utils/api";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
+import {
+	DELETE_DASHY,
+	DELETE_DATA,
+	GET_DASHY,
+	GET_DATA,
+	POST_DASHY,
+	POST_DATA,
+	UPDATE_DASHY,
+	UPDATE_DATA,
+} from "@/utils/queries";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -14,6 +23,8 @@ import { getTheme } from '@/utils/theme';
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useTranslation } from "@/hooks/useTranslation";
+import type { GenericJsonItem } from "@/types/items";
+import { invalidateDashyCache, invalidateDataTypeCache } from "@/utils/apolloInvalidate";
 
 export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const router = useRouter();
@@ -34,6 +45,15 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
   const theme = getTheme(mode);
   const isDesktop = useIsDesktop();
   const { t, dataTypes } = useTranslation();
+  const apolloClient = useApolloClient();
+  const [loadItem] = useLazyQuery(GET_DATA);
+  const [loadDashy] = useLazyQuery(GET_DASHY);
+  const [dataCreateMut] = useMutation(POST_DATA);
+  const [dataUpdateMut] = useMutation(UPDATE_DATA);
+  const [dataArchiveMut] = useMutation(DELETE_DATA);
+  const [dashyAddMut] = useMutation(POST_DASHY);
+  const [dashyUpdateMut] = useMutation(UPDATE_DASHY);
+  const [dashyArchiveMut] = useMutation(DELETE_DASHY);
 
   const [items, setItems] = useState<GenericJsonItem[]>([]);
   const [dashyData, setDashyData] = useState<DashyData | null>(null);
@@ -67,30 +87,36 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     const init = async () => {
       setLoading(true, t("ui.initializing"));
       try {
-        startTransition(async () => {
+        startTransition(() => {
           const dtCfg = dataTypes[dataType] as DataTypeConfig | undefined;
           setFullConfig(translations as unknown as BasicConfig);
           if (dtCfg) setConfig(dtCfg);
-          if (dataType && dataType !== 'dashy') {
-            if (actualId !== 'create') {
-              const item = await DataAPI.getItem<GenericJsonItem>(dataType, actualId);
-              if (item) setItems([item]);
-            }
-          } else if (dataType === 'dashy') {
-            const data = await DashyAPI.getDashyData();
-            if (data) setDashyData(data);
-          }
-          setIsInitialized(true);
         });
-      } catch { 
-        setSnack(t("ui.failedToLoad"), 'error'); 
+        if (dataType && dataType !== "dashy") {
+          if (actualId !== "create") {
+            const { data, error } = await loadItem({
+              variables: { dataType, id: actualId },
+              fetchPolicy: "network-only",
+            });
+            if (error) throw error;
+            const item = data?.data as GenericJsonItem | null | undefined;
+            if (item) setItems([item]);
+          }
+        } else if (dataType === "dashy") {
+          const { data, error } = await loadDashy({ fetchPolicy: "network-only" });
+          if (error) throw error;
+          if (data?.dashy) setDashyData(data.dashy as unknown as DashyData);
+        }
+        setIsInitialized(true);
+      } catch {
+        setSnack(t("ui.failedToLoad"), "error");
         lastInitRef.current = "";
-      } finally { 
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     };
-    init();
-  }, [dataType, actualId, setLoading, t, setSnack, dataTypes, translations]);
+    void init();
+  }, [dataType, actualId, setLoading, t, setSnack, dataTypes, translations, loadItem, loadDashy, startTransition]);
 
   useEffect(() => { if (Object.keys(translations).length === 0) loadTranslations(language); }, [translations, language, loadTranslations]);
 
@@ -220,12 +246,24 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
         if (formData.icon) item.icon = formData.icon;
 
         if (isEdit && dashyItemIndex >= 0) {
-          await DashyAPI.updateItem(sectionId, dashyItemIndex, item);
+          await dashyUpdateMut({
+            variables: {
+              sectionId,
+              itemIndex: dashyItemIndex,
+              item: item as unknown as import("../../../api/src/graphql/scalars/jsonScalar.js").JsonValue,
+            },
+          });
           try { useSoundStore.getState().playEvent("update"); } catch { }
         } else {
-          await DashyAPI.createItem(sectionId, item);
+          await dashyAddMut({
+            variables: {
+              sectionId,
+              item: item as unknown as import("../../../api/src/graphql/scalars/jsonScalar.js").JsonValue,
+            },
+          });
           try { useSoundStore.getState().playEvent("create"); } catch { }
         }
+        invalidateDashyCache(apolloClient);
         setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
         router.push(`/?q=${dataType}`);
       } else {
@@ -240,7 +278,13 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           startTransition(() => {
             setOptimisticItems(updated);
           });
-          await DataAPI.updateItem(dataType, queryId, updated);
+          await dataUpdateMut({
+            variables: {
+              dataType,
+              id: queryId,
+              updates: updated,
+            },
+          });
           try { useSoundStore.getState().playEvent("update"); } catch { }
         } else {
           const newItem = {
@@ -253,9 +297,12 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
           startTransition(() => {
             setOptimisticItems(newItem);
           });
-          await DataAPI.createItem(dataType, newItem);
+          await dataCreateMut({
+            variables: { dataType, item: newItem },
+          });
           try { useSoundStore.getState().playEvent("create"); } catch { }
         }
+        invalidateDataTypeCache(apolloClient, dataType, isEdit && queryId ? { singleItemId: queryId } : undefined);
         setSnack(`${dataType} ${t("ui.successfully")} ${isEdit ? t("ui.updated") : t("ui.added")}`, 'success');
         router.push(`/?q=${dataType}`);
       }
@@ -266,7 +313,10 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     if (dataType === 'dashy') {
       if (!isEdit || dashyItemIndex < 0 || !dashySectionId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
       try {
-        await DashyAPI.deleteItem(dashySectionId, dashyItemIndex);
+        await dashyArchiveMut({
+          variables: { sectionId: dashySectionId, itemIndex: dashyItemIndex },
+        });
+        invalidateDashyCache(apolloClient);
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }
         router.push(`/?q=${dataType}`);
@@ -274,7 +324,10 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
     } else {
       if (!isEdit || !queryId || !confirm(`${t("ui.confrimPrefix")} ${t(`pathNames.${dataType}`)} ${t("ui.confrimSuffix")}`)) return;
       try {
-        await DataAPI.archiveItem(dataType, queryId);
+        await dataArchiveMut({
+          variables: { dataType, id: queryId },
+        });
+        invalidateDataTypeCache(apolloClient, dataType, { singleItemId: queryId });
         setSnack(`${dataType} ${t("ui.successfully")} ${t("ui.deleted")}`, 'success');
         try { useSoundStore.getState().playEvent("delete"); } catch { }
         router.push(`/?q=${dataType}`);
@@ -371,7 +424,7 @@ export default function CreateMode({ slug, dataType, id }: CreateModeProps) {
             </button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fill, minmax(350px, 1fr))' : '1fr', gap: '16px' }}>
-            {arrayData.map((item: any, idx: number) => (
+            {arrayData.map((item: ArrayItemData, idx: number) => (
               <div key={idx} style={{
                 position: 'relative',
                 borderRadius: '12px',

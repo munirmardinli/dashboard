@@ -9,9 +9,10 @@ import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 import { useTranslation } from "@/hooks/useTranslation";
-import { MuiPagination } from "./Pagination";
+import { TablePagination } from "./Pagination";
 import { useDataQuery } from "@/hooks/useDataQuery";
 import { usePaginationStore, useFilterStore, loadFilterFromJson } from "@/stores/paginationStore";
+import type { DataItem, GenericJsonItem } from "@/types/items";
 
 export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = [] }) => {
   const router = useRouter();
@@ -312,7 +313,7 @@ export const QueryTable: FC<QueriesTableProps> = ({ dataType, displayFields = []
             </tbody>
           </table>
         </div>
-        <MuiPagination
+        <TablePagination
           currentPage={currentPage}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}

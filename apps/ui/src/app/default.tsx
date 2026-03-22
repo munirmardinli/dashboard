@@ -50,7 +50,10 @@ export const Navigation: FC = () => {
 
   useEffect(() => {
     setMounted(true);
-    initializeSidebarFromJson();
+    void (async () => {
+      const cookie = await cookieService.get();
+      await initializeSidebarFromJson(cookie);
+    })();
   }, []);
 
   useEffect(() => {

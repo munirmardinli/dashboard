@@ -1,7 +1,8 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { DashyAPI } from '@/utils/api';
+import { useLazyQuery } from '@apollo/client';
+import { GET_DASHY } from '@/utils/queries';
 import { useThemeStore } from '@/stores/themeStore';
 import { getTheme, alpha } from '@/utils/theme';
 import {
@@ -31,25 +32,20 @@ import {
 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { useI18nStore } from '@/stores/i18nStore';
-import Loading from '../app/loading';
+import Loading from '@/app/loading';
 
 export default function DashyPage() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
-	const [data, setData] = useState<DashyData | null>(null);
-	const [loading, setLoading] = useState(true);
+	const [loadDashy, { data: queryData, loading, error, called }] = useLazyQuery(GET_DASHY);
+	const data = queryData?.dashy ? (queryData.dashy as unknown as DashyData) : null;
 	const { t } = useI18nStore();
-	const [searchQuery, setSearchQuery] = useState('');
-	const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
 	useEffect(() => {
-		const loadData = async () => {
-			const dashyData = await DashyAPI.getDashyData();
-			setData(dashyData);
-			setLoading(false);
-		};
-		loadData();
-	}, []);
+		void loadDashy();
+	}, [loadDashy]);
+	const [searchQuery, setSearchQuery] = useState('');
+	const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,9 +71,9 @@ export default function DashyPage() {
 		});
 	};
 
-	if (loading) return <Loading />;
+	if (!called || loading) return <Loading />;
 
-	if (!data) {
+	if (error || !data) {
 		return notFound();
 	}
 

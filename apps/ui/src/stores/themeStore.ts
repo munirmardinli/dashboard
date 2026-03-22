@@ -22,10 +22,12 @@ export const useThemeStore = create<ThemeState>((set) => ({
 	},
 }));
 
-export async function initializeThemeFromJson(): Promise<void> {
+export async function initializeThemeFromJson(
+	preloaded?: Record<string, unknown>
+): Promise<void> {
 	if (typeof window === "undefined") return;
-	
-	const data = await cookieService.get();
+
+	const data = preloaded ?? (await cookieService.get());
 	const storedTheme = (data[globalVars.COOKIE_NAME] as ThemeMode) || DEFAULT_THEME;
 	const storedIsRTL = data[globalVars.RTL_COOKIE_NAME] === true || data.languageSelected === "ar";
 	

@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import createCalendar from "ical-generator";
 import { GitHubService } from "../utils/github.js";
+import type { CalendarEvent, CalendarRouteParams } from "../graphql/types/calendarTypes.js";
 
 const github = new GitHubService();
 

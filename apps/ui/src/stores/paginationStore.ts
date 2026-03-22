@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { cookieService } from '@/utils/cookieService';
 
-interface TableFilterState {
+export interface TableFilterState {
   page: number;
   search: string;
   sortField: string;
@@ -10,7 +10,11 @@ interface TableFilterState {
 
 interface FilterStoreState {
   filters: Record<string, TableFilterState>;
-  setFilter: (dataType: string, patch: Partial<TableFilterState>) => void;
+  setFilter: (
+    dataType: string,
+    patch: Partial<TableFilterState>,
+    options?: { persist?: boolean }
+  ) => void;
   getFilter: (dataType: string) => TableFilterState;
 }
 
@@ -21,12 +25,24 @@ async function saveFilters(dataType: string, state: TableFilterState): Promise<v
   cookieService.set({ [`filter_${dataType}`]: state });
 }
 
+function filtersEqual(a: TableFilterState, b: TableFilterState): boolean {
+  return (
+    a.page === b.page &&
+    a.search === b.search &&
+    a.sortField === b.sortField &&
+    a.sortOrder === b.sortOrder
+  );
+}
+
 export const useFilterStore = create<FilterStoreState>((set, get) => ({
   filters: {},
-  setFilter: (dataType, patch) => {
+  setFilter: (dataType, patch, options?: { persist?: boolean }) => {
+    const persist = options?.persist !== false;
     const prev = get().filters[dataType] || DEFAULTS;
     const next = { ...prev, ...patch };
     set((s) => ({ filters: { ...s.filters, [dataType]: next } }));
+    if (!persist) return;
+    if (filtersEqual(prev, next)) return;
     saveFilters(dataType, next);
   },
   getFilter: (dataType) => get().filters[dataType] || DEFAULTS,
@@ -47,13 +63,11 @@ export async function loadFilterFromJson(dataType: string): Promise<void> {
   }
 }
 
-export const usePaginationStore = create<PaginationState>((set, get) => ({
-  pages: {},
+export const usePaginationStore = create<PaginationState>(() => ({
   setPage: (dataType: string, page: number) => {
-    set((state) => ({ pages: { ...state.pages, [dataType]: page } }));
-    useFilterStore.getState().setFilter(dataType, { page });
+    useFilterStore.getState().setFilter(dataType, { page }, { persist: false });
   },
   getPage: (dataType: string) => {
-    return get().pages[dataType] || 1;
+    return useFilterStore.getState().getFilter(dataType).page;
   },
 }));

@@ -1,0 +1,59 @@
+type Query {
+  """Persistiertes Cookie (GitHub: docs/cookie.json)."""
+  cookie: CookieDocument!
+  datas(
+    dataType: String!
+    pagination: DataListPaginationInput
+    search: String
+    sort: DataListSortInput
+  ): DataItemConnection!
+  data(dataType: String!, id: String!): JSON
+  dashy: JSON!
+  contacts: [ContactListEntry!]!
+  contact(name: String!): String!
+  portfolio: JSON!
+  portfolioFile(path: String!): PortfolioFile!
+  randomPie: JSON!
+}
+
+type Mutation {
+  """Teil-Update; Server merged shallow mit bestehender cookie.json."""
+  updateCookie(updates: CookieDocument!): CookieMergePayload!
+  createData(dataType: String!, item: JSON!): JSON!
+  updateData(dataType: String!, id: String!, updates: JSON!): JSON
+  deleteData(dataType: String!, id: String!): Boolean!
+  createDashyItem(sectionId: String!, item: JSON!): JSON!
+  updateDashyItem(sectionId: String!, itemIndex: Int!, item: JSON!): JSON!
+  deleteDashyItem(sectionId: String!, itemIndex: Int!): Boolean!
+  analyzeReceipt(imageBase64: String!): ReceiptAnalyzePayload!
+}
+
+type DataItemConnection {
+  items: [JSON!]!
+  total: Int!
+  page: Int!
+  limit: Int!
+  totalPages: Int!
+  unavailableReason: String
+}
+
+type ContactListEntry {
+  name: String!
+  vcfQueryHint: String!
+}
+
+type CookieMergePayload {
+  success: Boolean!
+  data: CookieDocument!
+}
+
+type PortfolioFile {
+  mimeType: String!
+  base64: String!
+}
+
+type ReceiptAnalyzePayload {
+  success: Boolean!
+  data: JSON
+  error: String
+}

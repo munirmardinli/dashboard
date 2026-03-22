@@ -1,99 +1,152 @@
-import { useState, useCallback, useEffect, useTransition, useRef } from 'react';
-import { DataAPI, DashyAPI } from '@/utils/api';
+import { useState, useEffect, useTransition, useRef, useMemo } from "react";
+import { useQuery } from "@apollo/client";
+import type { BaseItem } from "@/types/items";
+import { GET_DASHY, GET_DATAS } from "@/utils/queries";
 
 export function useDataQuery<T extends BaseItem>(
-  dataType: string,
-  params: QueryParams,
-  options: { enabled?: boolean; debounceMs?: number } = {}
+	dataType: string,
+	params: QueryParams,
+	options: { enabled?: boolean; debounceMs?: number } = {}
 ): QueryResult<T> {
+	const { enabled = true, debounceMs = 0 } = options;
+	const { page, limit, search, sortField, sortOrder } = params;
 
-  const { enabled = true, debounceMs = 0 } = options;
-  const { page, limit, search, sortField, sortOrder } = params;
-  const [items, setItems] = useState<T[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const [loading, setLoading] = useState<boolean>(false);
-  
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const lastParamsRef = useRef<string>("");
+	const [debouncedSearch, setDebouncedSearch] = useState(search);
+	const [, startTransition] = useTransition();
+	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchData = useCallback(async () => {
-    if (!enabled) return;
-    
-    const paramsKey = JSON.stringify({ dataType, page, limit, search, sortField, sortOrder });
-    if (paramsKey === lastParamsRef.current) return;
-    lastParamsRef.current = paramsKey;
+	useEffect(() => {
+		if (timerRef.current) clearTimeout(timerRef.current);
+		if (debounceMs > 0 && search !== undefined) {
+			timerRef.current = setTimeout(() => {
+				startTransition(() => setDebouncedSearch(search));
+			}, debounceMs);
+		} else {
+			setDebouncedSearch(search);
+		}
+		return () => {
+			if (timerRef.current) clearTimeout(timerRef.current);
+		};
+	}, [search, debounceMs]);
 
-    setLoading(true);
-    setError(null);
+	const isDashy = dataType === "dashy";
 
-    try {
-      if (dataType === 'dashy') {
-        const allDashyItems = await DashyAPI.getAllItems();
-        const nonArchived = allDashyItems.filter(i => !i.isArchive) as unknown as T[];
-        
-        let filtered = nonArchived;
-        if (params.search) {
-          const term = params.search.toLowerCase();
-          filtered = nonArchived.filter(item => 
-            Object.values(item as Record<string, unknown>).some(val => String(val).toLowerCase().includes(term))
-          );
-        }
+	const listVariables = useMemo(
+		() => ({
+			dataType,
+			pagination: { page, limit },
+			search: debouncedSearch ? debouncedSearch : null,
+			sort: sortField
+				? {
+						field: sortField,
+						order: (sortOrder === "desc" ? "desc" : "asc") as "asc" | "desc",
+					}
+				: null,
+		}),
+		[dataType, page, limit, debouncedSearch, sortField, sortOrder]
+	);
 
-        if (sortField) {
-          filtered.sort((a, b) => {
-            const valA = (a as any)[sortField];
-            const valB = (b as any)[sortField];
-            if (valA === valB) return 0;
-            const comp = String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' });
-            return sortOrder === 'desc' ? -comp : comp;
-          });
-        }
-        
-        setTotal(filtered.length);
-        setTotalPages(Math.ceil(filtered.length / limit));
-        setItems(filtered.slice((page - 1) * limit, page * limit));
-      } else {
-        const result = await DataAPI.getItems<T>(dataType, params);
-        setItems(result.items);
-        setTotal(result.total);
-        setTotalPages(result.totalPages);
-      }
-    } catch (err) {
-      setError('load-failed');
-    } finally {
-      setLoading(false);
-    }
-  }, [dataType, page, limit, search, sortField, sortOrder, enabled]);
+	const {
+		data: dashyResult,
+		loading: dashyLoading,
+		error: dashyError,
+		refetch: refetchDashy,
+	} = useQuery(GET_DASHY, {
+		skip: !enabled || !isDashy,
+	});
 
-  useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+	const {
+		data: listResult,
+		loading: listLoading,
+		error: listError,
+		refetch: refetchList,
+	} = useQuery(GET_DATAS, {
+		skip: !enabled || isDashy,
+		variables: listVariables,
+	});
 
-    if (debounceMs > 0 && params.search) {
-      timerRef.current = setTimeout(() => {
-        startTransition(() => {
-          fetchData();
-        });
-      }, debounceMs);
-    } else {
-      startTransition(() => {
-        fetchData();
-      });
-    }
+	const derived = useMemo(() => {
+		if (isDashy) {
+			const raw = dashyResult?.dashy as DashyData | undefined;
+			if (!raw) {
+				return { items: [] as T[], total: 0, totalPages: 0 };
+			}
+			const all: DashyItemWithMeta[] = [];
+			raw.sections.forEach((section) => {
+				section.items.forEach((item, index) => {
+					all.push({
+						...item,
+						id: `${section.id}-${index}`,
+						sectionId: section.id,
+						sectionTitle: section.title,
+						itemIndex: index,
+						createdAt: new Date().toISOString(),
+						updatedAt: item.updatedAt || new Date().toISOString(),
+						isArchive: item.isArchive || false,
+					});
+				});
+			});
+			let filtered = all.filter((i) => !i.isArchive) as unknown as T[];
+			if (debouncedSearch) {
+				const term = debouncedSearch.toLowerCase();
+				filtered = filtered.filter((item) =>
+					Object.values(item as Record<string, unknown>).some((val) =>
+						String(val).toLowerCase().includes(term)
+					)
+				);
+			}
+			if (sortField) {
+				filtered.sort((a, b) => {
+					const valA = (a as Record<string, unknown>)[sortField];
+					const valB = (b as Record<string, unknown>)[sortField];
+					if (valA === valB) return 0;
+					const comp = String(valA).localeCompare(String(valB), undefined, {
+						numeric: true,
+						sensitivity: "base",
+					});
+					return sortOrder === "desc" ? -comp : comp;
+				});
+			}
+			const total = filtered.length;
+			const totalPages = Math.ceil(total / limit) || 0;
+			const slice = filtered.slice((page - 1) * limit, page * limit);
+			return { items: slice, total, totalPages };
+		}
 
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [fetchData, debounceMs, search]);
+		const conn = listResult?.datas;
+		if (!conn || conn.unavailableReason) {
+			return { items: [] as T[], total: 0, totalPages: 0 };
+		}
+		return {
+			items: conn.items as unknown as T[],
+			total: conn.total,
+			totalPages: conn.totalPages,
+		};
+	}, [
+		isDashy,
+		dashyResult,
+		listResult,
+		page,
+		limit,
+		debouncedSearch,
+		sortField,
+		sortOrder,
+	]);
 
-  return {
-    items,
-    total,
-    totalPages,
-    loading: loading || isPending,
-    error,
-    refetch: fetchData
-  };
+	const loading = isDashy ? dashyLoading : listLoading;
+	const error = isDashy ? dashyError : listError;
+
+	const refetch = async () => {
+		if (isDashy) await refetchDashy();
+		else await refetchList();
+	};
+
+	return {
+		items: derived.items,
+		total: derived.total,
+		totalPages: derived.totalPages,
+		loading,
+		error: error ? "load-failed" : null,
+		refetch,
+	};
 }

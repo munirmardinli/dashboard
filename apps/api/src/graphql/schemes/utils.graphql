@@ -1,0 +1,55 @@
+scalar JSON
+scalar Date
+scalar DateTime
+scalar Upload
+"""Semantisch JSON-Inhalt von docs/cookie.json (Merge über updateCookie). Laufzeit identisch zu JSON."""
+scalar CookieDocument
+
+# --- Listen-Queries (z. B. `datas`) ---
+
+enum SortEnum {
+  asc
+  desc
+}
+
+"""Pagination für tabellarische Listen: 1-basierte Seite und Einträge pro Seite."""
+input DataListPaginationInput {
+  page: Int
+  limit: Int
+}
+
+"""Einfeld-Sortierung für Listen (z. B. datas)."""
+input DataListSortInput {
+  field: String
+  order: SortEnum
+}
+
+# --- Generische Filter (für künftige Queries; optional nutzbar) ---
+
+input FilterInput {
+  items: [FilterItem]
+  logicOperator: LogicOperator
+}
+
+input FilterItem {
+  field: String
+  operator: FilterOperator
+  id: Int
+  value: String
+}
+
+enum FilterOperator {
+  contains
+  equals
+  startsWith
+  endsWith
+  after
+  before
+  is
+  not
+}
+
+enum LogicOperator {
+  or
+  and
+}

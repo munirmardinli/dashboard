@@ -10,6 +10,22 @@ import { getTheme } from "@/utils/theme";
 import { useTranslation } from "@/hooks/useTranslation";
 import { globalVars } from "@/utils/globalyVar";
 import { cookieService } from "@/utils/cookieService";
+import type { TableFilterState } from "@/stores/paginationStore";
+
+function cookieFilterForDataType(
+	data: Record<string, unknown>,
+	urlQ: string
+): TableFilterState | null {
+	const raw = data[`filter_${urlQ}`];
+	if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+	const o = raw as Record<string, unknown>;
+	const page = typeof o.page === "number" ? o.page : Number(o.page);
+	const search = typeof o.search === "string" ? o.search : "";
+	const sortField = typeof o.sortField === "string" ? o.sortField : "title";
+	const sortOrder = o.sortOrder === "desc" ? "desc" : "asc";
+	if (!Number.isFinite(page)) return null;
+	return { page, search, sortField, sortOrder };
+}
 
 export default function Root() {
 	const mode = useThemeStore((state) => state.mode);
@@ -30,15 +46,14 @@ export default function Root() {
 				const storedPath = data.lastActivePath as string;
 				let url = storedPath || activePath || globalVars.DEFAULT_VIEW;
 				
-				let urlQ = null;
+				let urlQ: string | null = null;
 				try {
-					const parsedUrl = new URL(url, 'http://localhost');
-					urlQ = parsedUrl.searchParams.get('q');
+					urlQ = searchParams.get('q');
 				} catch (e) { }
 
 				let cookiePage = page;
-				if (urlQ && data[`filter_${urlQ}`]) {
-					const filter = data[`filter_${urlQ}`] as any;
+				if (urlQ) {
+					const filter = cookieFilterForDataType(data, urlQ);
 					if (filter && filter.page) cookiePage = String(filter.page);
 				}
 

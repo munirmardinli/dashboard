@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement, useRef } from 'react';
+import { useState, useEffect, Suspense, ReactNode, ReactElement, isValidElement, cloneElement, useRef, type FC } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -23,11 +23,7 @@ import { globalVars } from '@/utils/globalyVar';
 import Image from 'next/image';
 import Loading from '@/app/loading';
 
-function CodeBlock({ children, className, node, ...props }: {
-  children: ReactNode;
-  className?: string;
-  node?: any;
-}) {
+const CodeBlock: FC<CodeBlockProps> = ({ children, className, node, ...props }) => {
   const mode = useThemeStore((s) => s.mode);
   const theme = getTheme(mode);
   const [copied, setCopied] = useState(false);
@@ -35,7 +31,7 @@ function CodeBlock({ children, className, node, ...props }: {
   const match = /language-(\w+)/.exec(className || '');
   const { t } = useI18nStore();
   const language = match ? match[1] : '';
-  const meta = (node as { data?: { meta?: string } })?.data?.meta;
+  const meta = node?.data?.meta;
 
   const titleMatch = /title="([^"]+)"/.exec(meta || '');
   const title = titleMatch ? titleMatch[1] : '';
@@ -114,7 +110,7 @@ function CodeBlock({ children, className, node, ...props }: {
       </div>
     </div>
   );
-}
+};
 
 function MermaidDiagram({ chart }: { chart: string }) {
   const mode = useThemeStore((s) => s.mode);

@@ -1,43 +1,81 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PortfolioAPI } from "@/utils/api";
+import { useEffect, useState, type CSSProperties } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { GET_PORTFOLIO, GET_PORTFOLIO_FILE } from "@/utils/queries";
+import { portfolioApiPathFromSrc } from "@/utils/api";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useI18nStore } from '@/stores/i18nStore';
 import { Github, Linkedin, Mail} from 'lucide-react';
 import Loading from "@/app/loading";
+
+function PortfolioRemoteImage(props: {
+	src: string;
+	alt: string;
+	fill?: boolean;
+	style?: CSSProperties;
+	priority?: boolean;
+}) {
+	const [loadFile] = useLazyQuery(GET_PORTFOLIO_FILE);
+	const { src, alt, fill, style, priority } = props;
+	const [resolved, setResolved] = useState<string | undefined>(() => {
+		const t = src?.trim();
+		if (!t) return undefined;
+		if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:")) return t;
+		return undefined;
+	});
+
+	useEffect(() => {
+		const t = src?.trim();
+		if (!t) return;
+		if (t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:")) {
+			setResolved(t);
+			return;
+		}
+		let cancelled = false;
+		const path = portfolioApiPathFromSrc(t);
+		if (!path) return;
+		void loadFile({ variables: { path } }).then((res) => {
+			if (cancelled || !res.data?.portfolioFile) return;
+			const { mimeType, base64 } = res.data.portfolioFile;
+			setResolved(`data:${mimeType};base64,${base64}`);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [src, loadFile]);
+
+	if (!resolved) {
+		return (
+			<div
+				style={{
+					...(fill ? { position: "absolute", inset: 0 } : { width: "100%", height: "100%" }),
+					background: "rgba(128,128,128,0.12)",
+					...style,
+				}}
+			/>
+		);
+	}
+
+	return (
+		<Image src={resolved} alt={alt} fill={fill} style={style} priority={priority} unoptimized />
+	);
+}
 
 export default function PortfolioPage() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
-	const [data, setData] = useState<PortfolioData | null>(null);
-	const [loading, setLoading] = useState(true);
-	const { t } = useI18nStore();
-	const [error, setError] = useState<string | null>(null);
+	const [loadPortfolio, { data: queryData, loading, error, called }] = useLazyQuery(GET_PORTFOLIO);
+	const data = queryData?.portfolio ? (queryData.portfolio as unknown as PortfolioData) : null;
 
 	useEffect(() => {
-		async function loadData() {
-			try {
-				const portfolioData = await PortfolioAPI.getPortfolioData();
-				if (portfolioData) {
-					setData(portfolioData);
-				} else {
-					setError(t("ui.noEntries"));
-				}
-			} catch (err) {
-				notFound();
-			} finally {
-				setLoading(false);
-			}
-		}
-		loadData();
-	}, []);
+		void loadPortfolio();
+	}, [loadPortfolio]);
 
-	if (loading) return <Loading />;
+	if (!called || loading) return <Loading />;
 
 	if (error || !data) {
 		return notFound();
@@ -105,7 +143,7 @@ export default function PortfolioPage() {
 					boxShadow: `0 0 60px ${theme.primary}40`,
 					border: `4px solid ${theme.paper}`
 				}}>
-					<Image
+					<PortfolioRemoteImage
 						src={data.profile.image ?? ""}
 						alt={data.profile.name}
 						fill
@@ -221,7 +259,7 @@ export default function PortfolioPage() {
 								borderBottom: `1px solid ${theme.divider}`
 							}}>
 								{project.image && (
-									<Image
+									<PortfolioRemoteImage
 										src={project.image}
 										alt={project.title}
 										fill

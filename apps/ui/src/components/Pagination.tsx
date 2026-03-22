@@ -6,7 +6,7 @@ import { useThemeStore } from '@/stores/themeStore';
 import { getTheme } from '@/utils/theme';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
 
-export const MuiPagination: FC<PaginationProps> = ({
+export const TablePagination: FC<PaginationProps> = ({
   currentPage, totalPages, itemsPerPage, totalItems, onPageChange
 }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;

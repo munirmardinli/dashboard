@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode, Suspense, useEffect } from "react";
+import { ApolloProvider } from "@apollo/client";
 import { useGlobalLoadingStore } from "@/stores/globalLoadingStore";
 import { useSnackStore } from "@/stores/snackbarStore";
 import { useSoundStore } from "@/stores/soundStore";
@@ -9,6 +10,8 @@ import { initializeLanguageFromJson, useI18nStore } from "@/stores/i18nStore";
 import { getTheme } from "@/utils/theme";
 import { Roboto_Condensed } from "next/font/google";
 import { useTranslation } from "@/hooks/useTranslation";
+import apolloClient from "@/utils/apolloClient";
+import { cookieService } from "@/utils/cookieService";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -27,8 +30,18 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const { t } = useTranslation();
   const theme = getTheme(mode);
   useEffect(() => {
-    initializeThemeFromJson();
-    initializeLanguageFromJson();
+    let cancelled = false;
+    void (async () => {
+      const cookie = await cookieService.get();
+      if (cancelled) return;
+      await Promise.all([
+        initializeThemeFromJson(cookie),
+        initializeLanguageFromJson(cookie),
+      ]);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -91,12 +104,14 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <meta name="description" content={t("ui.description")} />
       </head>
       <body style={{ margin: 0, padding: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }} suppressHydrationWarning>
-        <Suspense fallback={<Loading />}>
-          <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '50px' }} suppressHydrationWarning>
-            {children}
-          </main>
-        </Suspense>
-        <Footer />
+        <ApolloProvider client={apolloClient}>
+          <Suspense fallback={<Loading />}>
+            <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingBottom: '50px' }} suppressHydrationWarning>
+              {children}
+            </main>
+          </Suspense>
+          <Footer />
+        </ApolloProvider>
         {isLoading && <Loading />}
         {snack.open && (
           <div style={{

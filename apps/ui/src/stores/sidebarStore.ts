@@ -8,7 +8,7 @@ function formatPath(path: string | null | undefined): string | null {
 	return `/?q=${path}`;
 }
 
-export const useSidebarStore = create<SidebarState>((set) => ({
+export const useSidebarStore = create<SidebarState>((set, get) => ({
 	isOpen: false,
 	activePath: null,
 	setIsOpen: (value: boolean) => {
@@ -19,15 +19,18 @@ export const useSidebarStore = create<SidebarState>((set) => ({
 	},
 	setActivePath: (path: string) => {
 		const formattedPath = formatPath(path) || "/";
+		if (get().activePath === formattedPath) return;
 		cookieService.set({ lastActivePath: formattedPath });
 		set({ activePath: formattedPath });
 	},
 }));
 
-export async function initializeSidebarFromJson(): Promise<void> {
+export async function initializeSidebarFromJson(
+	preloaded?: Record<string, unknown>
+): Promise<void> {
 	if (typeof window === "undefined") return;
 
-	const data = await cookieService.get();
+	const data = preloaded ?? (await cookieService.get());
 	const storedPath = formatPath(data.lastActivePath as string);
 	const currentState = useSidebarStore.getState();
 

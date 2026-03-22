@@ -42,12 +42,20 @@
     "prehomelab": "npm install",
     "homelab": "run-script-os",
     "homelab:darwin": "npm run homelab:darwin --workspace=@munirmardinli/homelab",
-    "homelab:linux": "npm run homelab:linux --workspace=@munirmardinli/homelab"
+    "homelab:linux": "npm run homelab:linux --workspace=@munirmardinli/homelab",
+    "generate": "graphql-codegen --config codegen.ts --concurrency 1"
   },
   "devDependencies": {
     "run-script-os": "1.1.6",
     "turbo": "2.8.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-resolvers": "^4.0.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@parcel/watcher": "^2.4.0",
+    "graphql": "^16.8.1"
   },
   "engines": {
     "node": ">=18.0.0",

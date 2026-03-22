@@ -1,10 +1,11 @@
 import { GitHubService } from "./github.js";
 import { sendWhatsapp } from "./whatsapp.js";
+import type { CalendarEvent, ScheduledJob } from "../graphql/types/calendarTypes.js";
 
 class ReminderChecker {
 	private github = new GitHubService();
 	private sentReminders = new Set<string>();
-	private job: globalThis.ScheduledJob | null = null;
+	private job: ScheduledJob | null = null;
 
 	private reminderOffsets: Record<string, number> = {
 		NONE: 0,
@@ -115,7 +116,7 @@ class ReminderChecker {
 	private scheduleIntervalJob(
 		cronExpression: string,
 		callback: () => void
-	): globalThis.ScheduledJob {
+	): ScheduledJob {
 		const intervalMs = this.parseCronExpression(cronExpression);
 
 		if (!intervalMs) {
@@ -127,7 +128,7 @@ class ReminderChecker {
 		let intervalId: NodeJS.Timeout | null = null;
 		let isCancelled = false;
 
-		const job: globalThis.ScheduledJob = {
+		const job: ScheduledJob = {
 			cancel() {
 				if (intervalId !== null) {
 					clearInterval(intervalId);

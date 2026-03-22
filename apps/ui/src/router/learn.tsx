@@ -3,28 +3,21 @@
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
 import { useState, useMemo, useEffect } from "react";
-import { LearnAPI } from "@/utils/api";
+import { useLazyQuery } from "@apollo/client";
+import { GET_RANDOM_PIE } from "@/utils/queries";
 import { notFound } from "next/navigation";
-import { useI18nStore } from '@/stores/i18nStore';
 import Loading from "@/app/loading";
 
 export default function RandomPie() {
 	const mode = useThemeStore((state) => state.mode);
 	const theme = getTheme(mode);
-	const [data, setData] = useState<RandomPieData | null>(null);
-	const [loading, setLoading] = useState(true);
-	const { t } = useI18nStore();
+	const [loadRandomPie, { data: queryData, loading, error, called }] = useLazyQuery(GET_RANDOM_PIE);
 
 	useEffect(() => {
-		const loadData = async () => {
-			const res = await LearnAPI.getRandomPieData();
-			if (res) {
-				setData(res);
-			}
-			setLoading(false);
-		};
-		loadData();
-	}, []);
+		void loadRandomPie();
+	}, [loadRandomPie]);
+
+	const data = queryData?.randomPie ? (queryData.randomPie as unknown as RandomPieData) : null;
 
 	const initialItems: WheelItem[] = useMemo(() => {
 		if (!data) return [];
@@ -50,9 +43,9 @@ export default function RandomPie() {
 		}
 	}, [initialItems]);
 
-	if (loading) return <Loading />;
+	if (!called || loading) return <Loading />;
 
-	if (!data) return notFound();
+	if (error || !data) return notFound();
 
 	const spinWheel = () => {
 		if (isSpinning || items.length === 0) return;

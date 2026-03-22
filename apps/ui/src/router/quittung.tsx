@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Upload, Image as ImageIcon, Loader2, Check, X, Camera } from "lucide-react";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { useI18nStore } from "@/stores/i18nStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getTheme } from "@/utils/theme";
-import { DataAPI, ReceiptAPI } from "@/utils/api";
+import { invalidateDataTypeCache } from "@/utils/apolloInvalidate";
+import { ANALYZE_RECEIPT, POST_DATA } from "@/utils/queries";
 
 function compressImage(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -49,7 +51,6 @@ export default function QuittungPage() {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [imageFile, setImageFile] = useState<File | null>(null);
 	const [analyzedData, setAnalyzedData] = useState<AnalyzedData | null>(null);
-	const [, setExpenses] = useState<ExpenseData[]>([]);
 	const [isAnalyzing, setIsAnalyzing] = useState(false);
 	const [isCompressing, setIsCompressing] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
@@ -58,23 +59,14 @@ export default function QuittungPage() {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const cameraInputRef = useRef<HTMLInputElement>(null);
 	const [mounted, setMounted] = useState(false);
- 
- 	useEffect(() => {
+	const apolloClient = useApolloClient();
+
+	const [analyzeReceiptMut] = useMutation(ANALYZE_RECEIPT);
+	const [createExpenseMut] = useMutation(POST_DATA);
+
+	useEffect(() => {
 		setMounted(true);
- 		fetchExpenses();
- 	}, []);
- 
- 	async function fetchExpenses() {
-		try {
-			const result = await DataAPI.getItems("expense", {
-				page: 1,
-				limit: 10_000,
-			});
-			setExpenses(result.items.filter((exp) => !exp.isArchive) as unknown as ExpenseData[]);
-		} catch (err) {
-			console.error(t("ui.errorDetails"), err);
-		}
-	}
+	}, []);
 
 	async function handleImageSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0];
@@ -104,12 +96,14 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const result = await ReceiptAPI.analyzeReceipt(selectedImage);
-
-			if (result.success && result.data) {
-				setAnalyzedData(result.data);
+			const { data } = await analyzeReceiptMut({
+				variables: { imageBase64: selectedImage },
+			});
+			const result = data?.analyzeReceipt;
+			if (result?.success && result.data) {
+				setAnalyzedData(result.data as unknown as AnalyzedData);
 			} else {
-				setError(result.error || t("ui.errorDetails"));
+				setError(result?.error || t("ui.errorDetails"));
 			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : t("ui.errorDetails"));
@@ -126,7 +120,13 @@ export default function QuittungPage() {
 		setSuccessMessage(null);
 
 		try {
-			const created = await DataAPI.createItem("expense", analyzedData as unknown as Partial<GenericJsonItem>);
+			const { data } = await createExpenseMut({
+				variables: {
+					dataType: "expense",
+					item: analyzedData as unknown as import("../../../api/src/graphql/scalars/jsonScalar.js").JsonValue,
+				},
+			});
+			const created = data?.createData;
 
 			if (created) {
 				setSuccessMessage(t("ui.copiedToClipboard"));
@@ -136,7 +136,7 @@ export default function QuittungPage() {
 				if (fileInputRef.current) {
 					fileInputRef.current.value = "";
 				}
-				await fetchExpenses();
+				invalidateDataTypeCache(apolloClient, "expense");
 			} else {
 				setError(t("ui.errorDetails"));
 			}

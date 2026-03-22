@@ -182,10 +182,12 @@ export const useI18nStore = create<I18nState>((set, get) => {
 	};
 });
 
-export async function initializeLanguageFromJson(): Promise<void> {
+export async function initializeLanguageFromJson(
+	preloaded?: Record<string, unknown>
+): Promise<void> {
 	if (typeof window === "undefined") return;
 
-	const data = await cookieService.get();
+	const data = preloaded ?? (await cookieService.get());
 	const langStr = data.languageSelected as string;
 	const storedLanguage = (langStr === "de" || langStr === "en" || langStr === "fr" || langStr === "ar") ? (langStr as Language) : defaultLanguage;
 	
