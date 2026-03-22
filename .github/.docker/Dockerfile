@@ -10,10 +10,12 @@ RUN mkdir -p \
 
 WORKDIR /home/node/app
 
-COPY --chown=node:node apps/api/package.json /home/node/app/package.json
-COPY --chown=node:node apps/api/node_modules /home/node/app/node_modules
-COPY --chown=node:node apps/api/dist /home/node/app/dist
+COPY apps/api/package.json /home/node/app/package.json
 
+RUN npm install --omit=dev --install-strategy=nested --no-package-lock \
+	&& chown -R node:node /home/node/app/node_modules
+
+COPY --chown=node:node apps/api/dist /home/node/app/dist
 
 USER node
 
