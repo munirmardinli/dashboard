@@ -32,16 +32,6 @@ const server = new ApolloServer<object>({
 
 await server.start();
 
-/* if (process.env.NODE_ENV !== "production") {
-	app.use(
-		"/graphql",
-		graphqlUploadExpress({ maxFileSize: 50_000_000, maxFiles: 10 }),
-		expressMiddleware(server, {
-			context: async () => ({}),
-		})
-	);
-} */
-
 app.use(
 	"/graphql",
 	graphqlUploadExpress({ maxFileSize: 50_000_000, maxFiles: 10 }),
